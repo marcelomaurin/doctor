@@ -8,11 +8,17 @@
   (e.g. Serial1) to the printer constructor.  See notes below.
   ------------------------------------------------------------------------*/
 #include <Stepper.h> 
+#include <Ethernet.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SoftwareSerial.h>
+#include <stdio.h>
+#include <string.h>
+#include "DHT.h"
 #include "Adafruit_Thermal.h"
 #include "adalogo.h"
 #include "adaqrcode.h"
-#include <SPI.h>
-#include <SD.h>
 
 //Flags de Controle
 bool OperflgLeitura = false;
@@ -22,6 +28,22 @@ byte flgTempo = 0; //Controle de Tempo e Temperatura
 
 //Buffer do Teclado
 char customKey;
+
+//Ethernet flags
+bool flgRServer = false; //Controle de retorno Server
+bool flgRClient = false; //Controle de retorno do cliente
+bool flgEthernetErro = true; //Verifica se houve erro de start
+
+float h ;
+float t; 
+float f ;
+
+int flgFIM01;
+int flgFIM02;
+int flgFIM03;
+int flgFIM04;
+int flgFIM05;
+int flgFIM06;
 
 int FOPEPag = 0; //Controle de Pagina da Funcao
 int FOPEMAXPag = 2; //Tres Paginas para Funcoes
@@ -47,6 +69,20 @@ File root; //Pasta root
 File farquivo; //Arquivo de gravacao
 char ArquivoTrabalho[40]; //Arquivo de trabalho a ser carregado
 
+// Enter a MAC address and IP address for your controller below.
+// The IP address will be dependent on your local network:
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+
+IPAddress ip(192, 168, 1, 177);
+IPAddress gateway(192, 168, 1, 1);
+IPAddress subnet(255, 255, 0, 0);
+
+EthernetServer server(23);
+
+
+EthernetClient client;
+EthernetClient Serverclient;
+EthernetServer serverport(23);
 
 
 //http://www.aranacorp.com/en/control-a-stepper-motor-with-arduino/
@@ -82,7 +118,25 @@ char Buffer[40]; //Buffer de Teclado
 #define IN3_01  50 //Motor Passo01
 #define IN4_01  49 //Motor Passo01
 
-#define speakerPin A8 //Speaker
+#define speakerPin A13 //Speaker
+#define DHT22Pin A9 //DHT22
+#define pinSD  4
+
+#define pinFIM01 22 /*Fim de curso*/
+#define pinFIM02 23
+#define pinFIM03 24
+#define pinFIM04 25
+#define pinFIM05 26
+#define pinFIM06 27
+
+
+
+//#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
+#define DHTTYPE DHT11   // DHT 11
+
+DHT dht(DHT22Pin, DHTTYPE);
+
+//SoftwareSerial NextionSerial(pinNextionRX, pinNextionTX); // RX, TX
 
 Stepper Passo01(stepsPerRevolution, IN1_01, IN3_01, IN2_01, IN4_01);  // Pin inversion to make the library work
 
@@ -113,6 +167,11 @@ float Run(String Arquivo);
 void MOPERACAO();
 void FOPEImprime();
 void MCONFIG();
+void Le_DHT22();
+void NextionShow(String info);
+void NextionFieldText(String field,String value);
+void NextionMensage(String info);
+void RetConsole();
 
 SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
 Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
@@ -125,6 +184,16 @@ Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
 
 // -----------------------------------------------------------------------
 
+void Start_FIMDECURSO()
+{
+  Serial.println("configurando Fim de curso");
+  pinMode(pinFIM01, OUTPUT);
+  pinMode(pinFIM02, OUTPUT);
+  pinMode(pinFIM03, OUTPUT);
+  pinMode(pinFIM04, OUTPUT);
+  pinMode(pinFIM05, OUTPUT);
+  pinMode(pinFIM06, OUTPUT);
+}
 
 void Start_Serial()
 {
@@ -139,9 +208,15 @@ void Start_Bluetooth()
 
 void Start_Motor01()
 {
-   Passo01.setSpeed(MAXSPEED);  
+  Serial.println("Motor de passo sendo iniciado");
+  Passo01.setSpeed(MAXSPEED);  
 }
 
+void Start_DHT22()
+{
+  Serial.println("Sensor de temperatura sendo iniciado");
+  dht.begin();
+}
 
 //Inicializa Speaker
 void Speak_Start()
@@ -151,6 +226,29 @@ void Speak_Start()
   Serial.println("Speaker OK");
 }
 
+void Start_SD()
+{
+  Serial.print("Inicializando SD Card.");
+  SD.begin(pinSD);
+  if (!card.init(SPI_HALF_SPEED, pinSD)) {
+    Serial.println("initialization failed");
+    NextionMensage("initialization failed");
+    return;
+  }
+  else
+  {
+    Serial.println("SD Card Iniciado");
+  }
+}
+
+void Start_Nextion()
+{
+  Serial.println("Ativando Nextion Display");
+  // set the data rate for the SoftwareSerial port
+  Serial2.begin(9600);
+  NextionShow("Splah"); //Chamando tela splash
+
+}
 
 void Start_Printer()
 {
@@ -177,8 +275,14 @@ void WellComeBluetooth()
   Serial3.print(Versao);
   Serial3.print(".");
   Serial3.println(Release);
-
+  Serial3.print(F("Humidity: "));
+  Serial3.print(h);
+  Serial3.print(F("%  Temperature: "));
+  Serial3.print(t);
+  Serial3.print(F("°C "));
   Serial3.println(" ");
+  Serial3.println("MAN para ajuda");
+  NextionShow("Menu");
 }
 
 void WellComeConsole()
@@ -192,11 +296,96 @@ void WellComeConsole()
   Serial.print(Versao);
   Serial.print(".");
   Serial.println(Release);
+  Serial.print(F("Humidity: "));
+  Serial.print(h);
+  Serial.print(F("%  Temperature: "));
+  Serial.print(t);
+  Serial.print(F("°C "));
+  Serial.println("MAN para ajuda");
+  //Serial.print(f);
 
   Serial.println(" ");
+  NextionShow("Menu");
 }
 
+//Inicia o Servidor
+void Service_Start()
+{
+  //CLS();
+ // Imprime(2, "Ethernet");
+ // Imprime(3, "Detectando IP...");
 
+  Serial.println("Ethernet start");
+  Serial.println("Detectando IP...");
+  if (Ethernet.begin(mac) == 0)
+  {
+    delay(1000);
+    Serial.println("Ethernet Erro:");
+    Serial.println("Nao detectou IP");
+    //Imprime(2, "Ethernet Erro:");
+    //Imprime(3, "Nao detectou IP");
+    
+    // initialize the ethernet device not using DHCP:
+    //Ethernet.begin(mac, ip, gateway, subnet);
+    Ethernet.begin(mac, ip);
+    flgEthernetErro = true;
+  }
+  else
+  {
+    //CLS();
+    delay(1000);
+    IPAddress myIPAddress = Ethernet.localIP();
+    Serial.print("IP:");
+    Serial.println( Ethernet.localIP());
+    //sprintf(Info,"IP:%s.%s.%s.%s",myIPAddress[0],myIPAddress[1],myIPAddress[2],myIPAddress[3]);
+    // Imprime(0,Info);
+    // sprintf(Info,"Port:23");
+    // Imprime(1,Info);
+    //delay(2000);
+    // start listening for clients
+    delay(1000);
+    Serial.println("Inicializando Serviço Porta 23 ...");
+    serverport.begin();
+    Serial.println("Servico Iniciado.");
+    flgEthernetErro = false; //Ativa Ethernet
+  }
+}
+
+/*Rotina que posiciona o equipamento no local correto*/
+void Calibracao()
+{
+  Serial.println("Iniciando Calibração");
+  NextionShow("CALIB"); //Chamando tela calibração
+  
+  
+}
+
+void setup() {
+ 
+  Start_Serial();
+  Serial.println("Starting modules...");
+  Speak_Start();
+  Beep(); 
+  Start_Nextion();
+  Start_Bluetooth();
+  Start_Motor01();
+  Start_Printer();
+
+  Start_DHT22();
+  Start_FIMDECURSO();
+
+  Start_SD();
+  Service_Start();
+
+  // Font options
+  //MovePasso01();
+  //ImprimeEtiqueta();
+  Le_DHT22();
+
+  Calibracao(); /*Calibração do equipamento*/
+  WellComeConsole(); 
+  Reset();  
+}
 
 
 
@@ -314,7 +503,7 @@ void LOADLeituras()
   //Le_Teclado();
   Le_Serial();
   //Le_Bluetooth();
-  Beep();
+  Chk_Beep();
 }
 
 
@@ -603,6 +792,18 @@ void MOPERACAO()
 //Emula Beep de Alarme
 void Beep()
 {
+  
+    Serial.println('Beep');
+    Sound('a');
+    Sound('c');
+    //delay(500);
+    //Imprime(2, "BEEP - ESC p/ Parar ");
+  
+}
+
+//Emula Beep de Alarme
+void Chk_Beep()
+{
   if ( flgBeep == true)
   {
     Serial.println('Beep');
@@ -611,6 +812,36 @@ void Beep()
     //delay(500);
     //Imprime(2, "BEEP - ESC p/ Parar ");
   }
+}
+
+
+void NextionShow(String info)
+{
+  char strFF = 0xFF;
+  Serial2.print("page "+info+String(strFF)+String(strFF)+String(strFF));  
+  delay(100);  
+}
+
+void NextionFieldText(String field,String value)
+{
+char strFF = 0xFF;  
+  String cmd;
+  
+  cmd = field+".txt=\""+value+"\""+String(strFF)+String(strFF)+String(strFF);
+  Serial.print(cmd);  
+  Serial2.print(cmd);  
+}
+
+void NextionMensage(String info)
+{
+  char strFF = 0xFF;
+  Serial2.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
+  delay(100);
+  String cmd;
+  
+  cmd = "MSGtxt.txt=\""+info+"\""+String(strFF)+String(strFF)+String(strFF);
+  Serial.print(cmd);  
+  Serial2.print(cmd);
 }
 
 
@@ -665,23 +896,21 @@ void MAN()
   Serial.print(Versao);
   Serial.print(".");
   Serial.println(Release);
+  Serial.println("INICIO - Inicia bloco");
+  Serial.println("FIM - Finaliza bloco");
+  Serial.println("BEEP - Emite som");
+  Serial.println("BEEPMSG - Mensagem com SOM");
+  Serial.println("SOUND - Toca som");
+  Serial.println("ESC - ESCAPE");
   Serial.println("MAN - AUXILIO MANUAL");
   Serial.println("LSTDIR - LISTA DIRETORIO");
   Serial.println("LOAD - CARREGA ARQUIVO");
   Serial.println("RUN - RODA SCRIPT");
+  Serial.println("MENSAGEM - Mostra mensagem");
   Serial.println("RESET - RESETA O AMBIENTE");
+  Serial.println("MOPERACAO - MODO OPERACIONAL");
+  Serial.println("MOPERACAO - MODO CONFIG");
   Serial.println(" ");
-}
-
-void setup() {
-  Start_Serial();
-  Start_Motor01();
-  Start_Printer();
-
-  // Font options
-  //MovePasso01();
-  //ImprimeEtiqueta();
-  WellComeConsole();
 }
 
 
@@ -731,7 +960,7 @@ void KeyCMD()
   
 
     //Inicio
-    if (strcmp( Buffer, "INICIO;\n") == 0)
+    if (strcmp( Buffer, "INICIO\n") == 0)
     {
       Serial.println("Inicio");
       Reset();
@@ -739,7 +968,7 @@ void KeyCMD()
     }
 
     //FIM
-    if (strcmp( Buffer, "FIM;\n") == 0)
+    if (strcmp( Buffer, "FIM\n") == 0)
     {
       Serial.println("Fim");
       Reset();
@@ -747,7 +976,7 @@ void KeyCMD()
     }
 
     //RESET
-    if (strcmp( Buffer, "RESET;\n") == 0)
+    if (strcmp( Buffer, "RESET\n") == 0)
     {
       Serial.println("Reset");
       Reset();
@@ -755,16 +984,36 @@ void KeyCMD()
     }
 
     //Beep
-    if (strcmp( Buffer, "BEEP;\n") == 0)
+    if (strcmp( Buffer, "BEEP\n") == 0)
     {
       Serial.println("Beep");
       flgBeep = true;
       resp = true;
     }
 
+    
+    //SOUND
+    if (strcmp( Buffer, "SOUND\n") == 0)
+    {
+      Serial.println("SOUND");
+      //flgBeep = true;
+      Sound('a');
+      Sound('b');
+      Sound('c');
+      resp = true;
+    }
+
+    //Beep
+    if (strcmp( Buffer, "ESC\n") == 0)
+    {
+      Serial.println("ESC");
+      flgBeep = false;
+      resp = true;
+    }
+
 
     //LstDir - Lista o Diretorio
-    if (strcmp( Buffer, "LSTDIR;\n") == 0)
+    if (strcmp( Buffer, "LSTDIR\n") == 0)
     {
       char sMSG1[16];
       strncpy(sMSG1, Buffer, 7);
@@ -778,7 +1027,7 @@ void KeyCMD()
     }
 
     //MAN
-    if (strcmp( Buffer, "MAN;\n") == 0)
+    if (strcmp( Buffer, "MAN\n") == 0)
     {
       //Serial.println(Temperatura);
       MAN();
@@ -800,17 +1049,22 @@ void KeyCMD()
     }
 
 
-    if (strcmp( Buffer, "MENSAGEM=") == 0)
+    if (strstr( Buffer, "MENSAGEM=") != 0)
     {
       char sMSG1[20];
       char sMSG2[20];
-      int posvir = strcmp( Buffer, ",");
-      if (posvir == 0)
+      Serial.println("Achou MENSAGEM");
+      char *posequ = strstr( Buffer, '=');
+      Serial.print("POSEQU=");
+      Serial.println(posequ);
+      if(posequ != 0)
       {
-        //strncpy(sMSG1, &BufferKeypad[10], posvir - 10);
-        strncpy(sMSG2, &Buffer[posvir], strlen(Buffer) - posvir);
-        //Imprime(1, sMSG1);
-        //Imprime(2, sMSG1);
+        memset(sMSG1,'\0',sizeof(sMSG1));
+        strcpy(sMSG1, posequ);
+        Serial.print("sMSG1=");
+        Serial.println(sMSG1);
+        NextionMensage(String(sMSG1));
+        
         resp = true;
       }
     }
@@ -835,7 +1089,7 @@ void KeyCMD()
  
 
     //BeepMsg
-    if (strcmp( Buffer, "BEEPMSG=\n") == 0)
+    if (strcmp( Buffer, "BEEPMSG=") == 0)
     {
       //Serial.print("Temperatura:");
       //Serial.print(Temperatura);
@@ -910,12 +1164,54 @@ void Le_Serial()
   }
 }
 
+void Le_DHT22()
+{
+  
+  // Reading temperature or humidity takes about 250 milliseconds!
+  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+   h = dht.readHumidity();
+  // Read temperature as Celsius (the default)
+   t = dht.readTemperature();
+  // Read temperature as Fahrenheit (isFahrenheit = true)
+   f = dht.readTemperature(true);
+
+  // Check if any reads failed and exit early (to try again).
+  if (isnan(h) || isnan(t) || isnan(f)) {
+    //Serial.println(F("Failed to read from DHT sensor!"));
+    return;
+  }
+
+  // Compute heat index in Fahrenheit (the default)
+  float hif = dht.computeHeatIndex(f, h);
+  // Compute heat index in Celsius (isFahreheit = false)
+  float hic = dht.computeHeatIndex(t, h, false);
+}
+
+void Le_FimCurso()
+{
+  flgFIM01 = digitalRead(pinFIM01)==LOW?LOW:digitalRead(pinFIM01);
+  flgFIM02 = digitalRead(pinFIM02)==LOW?LOW:digitalRead(pinFIM02);
+  flgFIM03 = digitalRead(pinFIM03)==LOW?LOW:digitalRead(pinFIM03);
+  flgFIM04 = digitalRead(pinFIM04)==LOW?LOW:digitalRead(pinFIM04);
+  flgFIM05 = digitalRead(pinFIM05)==LOW?LOW:digitalRead(pinFIM05);
+  flgFIM06 = digitalRead(pinFIM06)==LOW?LOW:digitalRead(pinFIM06);
+  
+}
+
 void Leituras()
 {
   //Le_Teclado();
   Le_Serial();
+  Le_DHT22();
 
-  Beep();
+  Chk_Beep();
+}
+
+//Imprime Retorno de Console
+void RetConsole()
+{
+  //Serial ÃƒÆ’Ã‚Â© padrao para todos os retornos
+  Serial.println("$>");
 }
 
 void loop() {

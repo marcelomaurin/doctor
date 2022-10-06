@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="C:\lazarus\fpc\2.6.4\bin\i386-win32\fpc.exe" Date="1162572796"/>
-  <Params Value=" -MObjFPC -Scghi -Twin32 -g -gl -WG -vewnhi &quot;-FiC:\Users\mmm\Documents\projetos\geison\fase 3\GerPanela\lib\i386-win32&quot; -FuC:\lazarus\components\tachart\lib\i386-win32\win32 -FuC:\lazarus\components\IndustrialStuff\lib\i386-win32 -FuC:\lazarus\components\ideintf\units\i386-win32\win32 -FuC:\lazarus\components\synedit\units\i386-win32\win32 -FuC:\lazarus\components\Sdpo\SdpoSerial\lib\i386-win32 -FuC:\lazarus\components\PascalScript\Source\lib\i386-win32 -FuC:\lazarus\components\lazcontrols\lib\i386-win32\win32 -FuC:\lazarus\lcl\units\i386-win32\win32 -FuC:\lazarus\lcl\units\i386-win32 -FuC:\lazarus\components\lazutils\lib\i386-win32 -FuC:\lazarus\packager\units\i386-win32 &quot;-FuC:\Users\mmm\Documents\projetos\geison\fase 3\GerPanela\&quot; &quot;-FUC:\Users\mmm\Documents\projetos\geison\fase 3\GerPanela\lib\i386-win32\&quot; -l -dUseCThreads -dLCL -dLCLwin32 project1.lpr"/>
-</CONFIG>

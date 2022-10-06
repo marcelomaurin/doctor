@@ -15,6 +15,7 @@ type
   { TfrmMain }
 
   TfrmMain = class(TForm)
+    BTBEEP1: TButton;
     Button1: TButton;
     btSOUND: TButton;
     edSrv: TEdit;
@@ -104,6 +105,7 @@ type
     tbScript: TTabSheet;
     Timer1: TTimer;
     procedure btAtivarClick(Sender: TObject);
+    procedure BTBEEP1Click(Sender: TObject);
     procedure BTBEEPClick(Sender: TObject);
     procedure btCarregarClick(Sender: TObject);
     procedure btClearClick(Sender: TObject);
@@ -173,11 +175,23 @@ begin
   end;
 end;
 
-procedure TfrmMain.BTBEEPClick(Sender: TObject);
+procedure TfrmMain.BTBEEP1Click(Sender: TObject);
 begin
     if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('BEEP;'+#10);
+       SdpoSerial1.WriteData('ESC'+#10);
+  end
+  else
+  begin
+    ShowMessage('Ative a porta USB!');
+  end;
+end;
+
+procedure TfrmMain.BTBEEPClick(Sender: TObject);
+begin
+  if SdpoSerial1.Active then
+  begin
+       SdpoSerial1.WriteData('BEEP'+#10);
   end
   else
   begin
@@ -220,7 +234,7 @@ begin
   if SdpoSerial1.Active then
   begin
        cbFiles.Items.Clear;
-       SdpoSerial1.WriteData('LSTDIR;'+#10);
+       SdpoSerial1.WriteData('LSTDIR'+#10);
   end
   else
   begin
@@ -232,7 +246,7 @@ procedure TfrmMain.BTMANClick(Sender: TObject);
 begin
   if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('MAN;'+#10);
+       SdpoSerial1.WriteData('MAN'+#10);
   end
   else
   begin
@@ -249,7 +263,7 @@ begin
   if SdpoSerial1.Active then
   begin
        tempostart := now();
-      SdpoSerial1.WriteData('TEMPERATURA;'+#10);
+      SdpoSerial1.WriteData('TEMPERATURA'+#10);
        myFormatSettings.DecimalSeparator := '.';
        AnalogSensor1.ValueMax:= 150;
        Info := edTempMax.text;
@@ -268,7 +282,7 @@ procedure TfrmMain.BTMSGClick(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('MSG='+edMsg.TEXT+';'+#10);
+       SdpoSerial1.WriteData('MENSAGEM='+edMsg.TEXT+#10);
   end
   else
   begin
@@ -280,7 +294,7 @@ procedure TfrmMain.BTMSGSTOPClick(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-        SdpoSerial1.WriteData('MSGSTOP='+edMsg.TEXT+';'+#10);
+        SdpoSerial1.WriteData('MSGSTOP='+edMsg.TEXT+#10);
   end
   else
   begin
@@ -299,7 +313,7 @@ procedure TfrmMain.btRele2Click(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('BOMBA2=ON;'+#10);
+       SdpoSerial1.WriteData('RELE2=ON'+#10);
   end
   else
   begin
@@ -311,7 +325,7 @@ procedure TfrmMain.btRele2OFFClick(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('BOMBA2=OFF;'+#10);
+       SdpoSerial1.WriteData('RELE2=OFF'+#10);
   end
   else
   begin
@@ -323,7 +337,7 @@ procedure TfrmMain.btRele3ONClick(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('RELE3=ON;'+#10);
+       SdpoSerial1.WriteData('RELE3=ON'+#10);
   end
   else
   begin
@@ -335,7 +349,7 @@ procedure TfrmMain.btRele3OFFClick(Sender: TObject);
 begin
   if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('RELE3=OFF;'+#10);
+       SdpoSerial1.WriteData('RELE3=OFF'+#10);
   end
   else
   begin
@@ -348,7 +362,7 @@ procedure TfrmMain.btRele4Click(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('RELE4=ON;'+#10);
+       SdpoSerial1.WriteData('RELE4=ON'+#10);
   end
   else
   begin
@@ -360,7 +374,7 @@ procedure TfrmMain.btRele4OFFClick(Sender: TObject);
 begin
      if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('RELE4=OFF;'+#10);
+       SdpoSerial1.WriteData('RELE4=OFF'+#10);
   end
   else
   begin
@@ -373,7 +387,7 @@ procedure TfrmMain.btRele5Click(Sender: TObject);
 begin
     if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('BOMBA1=OFF;'+#10);
+       SdpoSerial1.WriteData('RELE1=OFF'+#10);
   end
   else
   begin
@@ -388,7 +402,7 @@ begin
   begin
        if (cbFiles.ItemIndex<>-1) then
        begin
-            SdpoSerial1.WriteData('RUN('+cbFiles.Items[cbFiles.ItemIndex]+');'+#10);
+            SdpoSerial1.WriteData('RUN('+cbFiles.Items[cbFiles.ItemIndex]+')'+#10);
 
        end;
   end
@@ -480,7 +494,7 @@ begin
   begin
     SynEdit1.Lines.SaveToFile(arquivo);
   end;
-  frmMain.Text := 'Gerenciador de Panela '+ arquivo;
+  frmMain.Text := 'Gerenciador DOCTOR '+ arquivo;
 
 end;
 
@@ -488,7 +502,7 @@ procedure TfrmMain.btRele1Click(Sender: TObject);
 begin
   if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('BOMBA1=ON;'+#10);
+       SdpoSerial1.WriteData('RELE1=ON'+#10);
   end
   else
   begin
@@ -506,7 +520,7 @@ begin
              arquivo := edFile.Text;
              //SynEdit1.Lines.LoadFromFile(arquivo);
               flgErro := false;
-             frmMain.Text := 'Gerenciador de Panela '+ arquivo;
+             frmMain.Text := 'Gerenciador DOCTOR '+ arquivo;
              SdpoSerial1.WriteData('LOAD='+arquivo+';'+#10);
              sleep(400);
              for a := 0 to SynEdit1.Lines.Count-1  do
@@ -533,7 +547,7 @@ procedure TfrmMain.btSOUNDClick(Sender: TObject);
 begin
   if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('SOUND;'+#10);
+       SdpoSerial1.WriteData('SOUND'+#10);
   end
   else
   begin
@@ -607,7 +621,7 @@ begin
    posicao := pos('RELE1:',Info);
    if (posicao > 0) then
    begin
-     posicaofim := pos('ON;', Info);
+     posicaofim := pos('ON', Info);
      if (posicaofim>0) then
      begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
@@ -616,7 +630,7 @@ begin
           ledRele1.State:= lsOff;
 
      end;
-     posicaofim := pos('OFF;', Info);
+     posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
@@ -630,7 +644,7 @@ begin
    posicao := pos('RELE2:',Info);
    if (posicao > 0) then
    begin
-     posicaofim := pos('ON;', Info);
+     posicaofim := pos('ON', Info);
      if (posicaofim>0) then
      begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
@@ -639,7 +653,7 @@ begin
           ledRele2.State:= lsOff;
 
      end;
-     posicaofim := pos('OFF;', Info);
+     posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
@@ -653,7 +667,7 @@ begin
    posicao := pos('RELE3:',Info);
    if (posicao > 0) then
    begin
-     posicaofim := pos('ON;', Info);
+     posicaofim := pos('ON', Info);
      if (posicaofim>0) then
      begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
@@ -662,7 +676,7 @@ begin
           ledRele3.State:= lsOff;
 
      end;
-     posicaofim := pos('OFF;', Info);
+     posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
@@ -676,7 +690,7 @@ begin
    posicao := pos('RELE4:',Info);
    if (posicao > 0) then
    begin
-     posicaofim := pos('ON;', Info);
+     posicaofim := pos('ON', Info);
      if (posicaofim>0) then
      begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
@@ -685,7 +699,7 @@ begin
           ledRele4.State:= lsOff;
 
      end;
-     posicaofim := pos('OFF;', Info);
+     posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
@@ -849,7 +863,7 @@ end;
 
 procedure TfrmMain.Timer1Timer(Sender: TObject);
 begin
-  ShowMessage('Versão não licenciada!');
+  //ShowMessage('Versão não licenciada!');
 end;
 
 end.
