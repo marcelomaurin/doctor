@@ -67,7 +67,7 @@ Sd2Card card;
 SdVolume volume;
 File root; //Pasta root
 File farquivo; //Arquivo de gravacao
-char ArquivoTrabalho[40]; //Arquivo de trabalho a ser carregado
+char ArquivoTrabalho[90]; //Arquivo de trabalho a ser carregado
 
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
@@ -154,15 +154,15 @@ float Reset();
 void LstDir(File dir, int numTabs);
 void MAN();
 void LOAD(File root, char sMSG1[20]); //Carrega a aplicação para o SD
-void LOADLoop(File root, char Info[40]);
+int LOADLoop(File root, char *Info);
 void LOADLeituras();
 void LOADAnalisa();
 void LOADKeyCMD();
-void LOADRemoveTemp();
-void LOADCancela();
+void LOADRemoveArquivo(char *filename);
+void LOADCancela(char *filename);
 void LOADBloco(char Info[40]);
 void LOADFIMARQUIVO();
-void LOADCOPYTEMP();
+
 float Run(String Arquivo);
 void MOPERACAO();
 void FOPEImprime();
@@ -171,7 +171,10 @@ void Le_DHT22();
 void NextionShow(String info);
 void NextionFieldText(String field,String value);
 void NextionMensage(String info);
+void NextionMensageStop(String info);
 void RetConsole();
+void NextionWAITESC();
+void NextionMensageSTOP(String info);
 
 SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
 Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
@@ -447,16 +450,21 @@ void MovePasso01_Esq()
 }
 
 //Carrega a aplicação para o SD
-void LOAD(File root, char sMSG1[20])
+void LOAD(File root, char *sMSG1)
 {
   //Imprime(1, "Carregando APP...");
-
+  Serial.println("Carregando APP..");
+  NextionShow("LOAD");
   //Copia arquivo
+  memset(ArquivoTrabalho,'\0',sizeof(ArquivoTrabalho));
   sprintf(ArquivoTrabalho, "%s", sMSG1);
+  Serial.print("ArquivoTrabalho:");
+  Serial.println(ArquivoTrabalho);
   //Imprime(2, ArquivoTrabalho);
 
   //Realiza operação de Loop
   LOADLoop(root, ArquivoTrabalho);
+  NextionShow("Menu");
 
 }
 
@@ -468,18 +476,28 @@ void LOADAnalisa()
 }
 
 
-void LOADLoop(File root, char Info[40])
+int LOADLoop(File root, char *Info)
 {
-  //Tenta carregar arquivo temp.out para ser temporario
+  memset(Buffer,'\0',sizeof(Buffer)); /*Zera buffer*/
+  Serial.println("Iniciando rotina LOADLoop");
+  //Tenta carregar arquivo t para ser temporario
+  Serial.print("Criando arquivo:");
+  Serial.println(Info);
   File farquivo = SD.open("temp.out", FILE_WRITE);
+  //File farquivo = SD.open(String(Info), FILE_WRITE);
   //Limpa os buffer
   if (!farquivo)
   {
+    Serial.println("Erro SD");
+    Serial.println("Nao pode abrir SD");
+    NextionShow("Nao pode abrir SD");
     //Imprime(1, "Erro SD");
-   // Imprime(2, "Nao pode abrir SD");
+    // Imprime(2, "Nao pode abrir SD");
+    return -1;
   }
   else
   {
+    Serial.println("Iniciou bloco de gravação do arquivo");
     flgEscape = false; //Sai quando verdadeiro
     //Loop
     while (!flgEscape)
@@ -489,10 +507,13 @@ void LOADLoop(File root, char Info[40])
       LOADAnalisa();
       //arquivo.println("Leitura Potenciometro: ");
     }
+    Serial.println("Finalizou bloco de gravação do arquivo");
   }
   farquivo.close();
+  Serial.println("Fechou arquivo ");
   //Apaga o Arquivo Temporario
-  LOADRemoveTemp();
+  //LOADRemoveTemp();
+  return 0;
 }
 
 //Realiza Leitura do arquivo
@@ -508,16 +529,16 @@ void LOADLeituras()
 
 
 //Apaga o arquivo temporario
-void LOADCancela()
+void LOADCancela(char *filename)
 {
-  LOADRemoveTemp();
+  LOADRemoveArquivo(filename);
   flgEscape = true;
 }
 
 //Apaga Arquivo Temporario
-void LOADRemoveTemp()
+void LOADRemoveArquivo(char *filename)
 {
-  SD.remove("temp.out");
+  SD.remove(filename);
 }
 
 void LOADBloco(char Info[40])
@@ -528,16 +549,20 @@ void LOADBloco(char Info[40])
 //Finaliza o arquivo temporario copiando para arquivo final
 void LOADFIMARQUIVO()
 {
+  Serial.println("Fim do Arquivo");
   //Imprime(1, "Carregando Arquivo  ");
   //Imprime(2, "Copiando Arquivo    ");
   //Copia o temporario para o definitivo
-  LOADCOPYTEMP();
-  LOADRemoveTemp();
+  //LOADCOPYTEMP();
+  //LOADRemoveTemp();
   flgEscape = true;
 }
 
+/*
 void LOADCOPYTEMP()
 {
+  Serial.print("Copiando arquivo para ");
+  Serial.println(ArquivoTrabalho);
   // open the file named ourfile.txt
   File FOrigem = SD.open("temp.out");
   File FDestino = SD.open(ArquivoTrabalho, FILE_WRITE);
@@ -553,7 +578,10 @@ void LOADCOPYTEMP()
     FOrigem.close();
     FDestino.close();
   }
+  Serial.println("Finalizou copia");
 }
+
+*/
 
 //Comando de entrada do Teclado
 void LOADKeyCMD()
@@ -562,30 +590,35 @@ void LOADKeyCMD()
 
   //incluir busca /n
 
-  if (strchr (Buffer, '\n') != 0)
+  if (strstr (Buffer, "\n") == 0)
+  {  
+    //Serial.println("Sem fim de linha");    
+  } else
   {
     Serial.print("Comando:");
     Serial.println(Buffer);
 
     //Funcao Cancela dados
-    if (strcmp( Buffer, "CANCELA;\n") == 0)
+    if (strcmp( Buffer, "CANCELA\n") == 0)
     {
-      LOADCancela();
+      LOADCancela(ArquivoTrabalho);
       resp = true;
     }
 
     //Funcao Carrega Bloco
-    if (strcmp( Buffer, "BLOCO=") == 0)
+    if (strstr( Buffer, "BLOCO=") != 0)
     {
       //FUNCMDefault();
-      char Info[40];
-      sprintf(Info, "0000000000000000");
-      LOADBloco(Info);
+      char *Info;
+      Info = strstr(Buffer,"=")+1;     
+      Serial.print("Bloco Dados:"); 
+      Serial.println(Info);
+      LOADBloco(Info); /*Grava comando*/
       resp = true;
     }
 
     //Funcao Carrega Bloco
-    if (strcmp( Buffer, "FIMARQUIVO;\n") == 0)
+    if (strstr( Buffer, "FIMARQUIVO\n") != 0)
     {
       LOADFIMARQUIVO();
       resp = true;
@@ -603,7 +636,7 @@ void LOADKeyCMD()
     else
     {
       //strcpy(BufferKeypad,'\0');
-      memset(Buffer, 0, sizeof(Buffer));
+      memset(Buffer, '\0', sizeof(Buffer));
     }
     //RetConsole(); //Retorno de Comando de Console
   }
@@ -832,6 +865,11 @@ char strFF = 0xFF;
   Serial2.print(cmd);  
 }
 
+void NextionWAITESC()
+{
+  
+}
+
 void NextionMensage(String info)
 {
   char strFF = 0xFF;
@@ -839,10 +877,24 @@ void NextionMensage(String info)
   delay(100);
   String cmd;
   
-  cmd = "MSGtxt.txt=\""+info+"\""+String(strFF)+String(strFF)+String(strFF);
+  cmd = "MSGtxt.txt=\""+info+"\" "+String(strFF)+String(strFF)+String(strFF);
   Serial.print(cmd);  
   Serial2.print(cmd);
 }
+
+void NextionMensageSTOP(String info)
+{
+  char strFF = 0xFF;
+  Serial2.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
+  delay(100);
+  String cmd;
+  
+  cmd = "MSGtxt.txt=\""+info+"\" "+String(strFF)+String(strFF)+String(strFF);
+  Serial.print(cmd);  
+  Serial2.print(cmd);
+  NextionWAITESC();
+}
+
 
 
 //Reseta todas as entradas para o valor padrão
@@ -1035,15 +1087,20 @@ void KeyCMD()
     }
 
     //Load - Carrega arquivo no SD
-    if (strncmp( "LOAD=",Buffer, 5) == 0)
+    if (strstr( Buffer,"LOAD=") != 0)
     {
-      char sMSG1[16];
-      //strncpy(sMSG1, BufferKeypad, 7);
-      strncpy(sMSG1, &Buffer[6], strlen(Buffer) - 6);
-      //Imprime(0, sMSG1);
-      //root = card.open(sMSG1);
+      char *MSG1;
+      MSG1 = strstr(Buffer,"=")+1;
+      
+      Serial.println("Iniciou Load");
+      //strncpy(MSG1, BufferKeypad, 7);
+      //strncpy(MSG1, &Buffer[6], strlen(Buffer) - 6);
+      //Imprime(0, MSG1);
+      Serial.print("Arquivo:");
+      Serial.println(MSG1);
+      //root = card.open(MSG1);
       root = SD.open("/");
-     LOAD(root, sMSG1);
+      LOAD(root, MSG1);
 
       resp = true;
     }
@@ -1054,16 +1111,39 @@ void KeyCMD()
       char sMSG1[20];
       char sMSG2[20];
       Serial.println("Achou MENSAGEM");
-      char *posequ = strstr( Buffer, '=');
+      char *posequ = strstr( Buffer, "=");
       Serial.print("POSEQU=");
       Serial.println(posequ);
       if(posequ != 0)
       {
+        posequ ++;
         memset(sMSG1,'\0',sizeof(sMSG1));
         strcpy(sMSG1, posequ);
         Serial.print("sMSG1=");
-        Serial.println(sMSG1);
-        NextionMensage(String(sMSG1));
+        Serial.println(posequ);
+        NextionMensage(String(posequ));
+        
+        resp = true;
+      }
+    }
+
+    
+    if (strstr( Buffer, "MSGSTOP=") != 0)
+    {
+      char sMSG1[20];
+      char sMSG2[20];
+      Serial.println("Achou MENSAGEM");
+      char *posequ = strstr( Buffer, "=");
+      Serial.print("POSEQU=");
+      Serial.println(posequ);
+      if(posequ != 0)
+      {
+        posequ ++;
+        memset(sMSG1,'\0',sizeof(sMSG1));
+        strcpy(sMSG1, posequ);
+        Serial.print("sMSG1=");
+        Serial.println(posequ);
+        NextionMensageSTOP(String(posequ));
         
         resp = true;
       }

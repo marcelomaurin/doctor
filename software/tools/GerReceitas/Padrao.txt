@@ -1,0 +1,31 @@
+INICIAR;
+MSG=Bem vindo ao sistema;
+MSGSTOP=Insira a amostra que será analisada;
+SOUND;
+MSGSTOP=Feche a tampa e pressione OK;
+MSG=Iniciando processo
+LEVAR=MOD1;
+SOUND;
+MSG=FASE1;
+CALL=MOD1,[$FILENAME];
+WAIT=MOD1;
+SOUND;
+LEVAR=MOD2;
+SOUND;
+MSG=FASE2;
+CALL=MOD2,[$FILENAME];
+WAIT=MOD2;
+SOUND;
+MSG=ANALISE EXAME;
+LEVAR=MOD4;
+SOUND;
+CALL=MOD4,[$FILENAME];
+WAIT=MOD4;
+SOUND;
+MSG=Retornando Amostra;
+CALL=MOD0,[$FILENAME];
+WAIT=MOD0;
+BEEP;
+MSGSTOP=RETIRE A AMOSTRA e Press OK;
+MSG=Fim de processo
+FIM;

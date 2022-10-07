@@ -282,7 +282,7 @@ procedure TfrmMain.BTMSGClick(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('MSG='+edMsg.TEXT+#10);
+       SdpoSerial1.WriteData('MENSAGEM='+edMsg.TEXT+#10);
   end
   else
   begin
@@ -521,11 +521,11 @@ begin
              //SynEdit1.Lines.LoadFromFile(arquivo);
               flgErro := false;
              frmMain.Text := 'Gerenciador DOCTOR '+ arquivo;
-             SdpoSerial1.WriteData('LOAD='+arquivo+';'+#10);
+             SdpoSerial1.WriteData('LOAD='+arquivo+#10);
              sleep(400);
              for a := 0 to SynEdit1.Lines.Count-1  do
              begin
-               SdpoSerial1.WriteData( SynEdit1.Lines[a]+#13+#10);
+               SdpoSerial1.WriteData( 'BLOCO='+SynEdit1.Lines[a]+#10);
                sleep(100);
                Application.ProcessMessages;
                if flgErro then
@@ -534,7 +534,7 @@ begin
                end;
              end;
              //SdpoSerial1.WriteData( '+'+#13+#10);
-             SdpoSerial1.WriteData( '+');
+             SdpoSerial1.WriteData( 'FIMARQUIVO');
 
   end
   else
