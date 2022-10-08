@@ -67,7 +67,7 @@ Sd2Card card;
 SdVolume volume;
 File root; //Pasta root
 File farquivo; //Arquivo de gravacao
-char ArquivoTrabalho[90]; //Arquivo de trabalho a ser carregado
+char ArquivoTrabalho[40]; //Arquivo de trabalho a ser carregado
 
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
@@ -83,6 +83,8 @@ EthernetServer server(23);
 EthernetClient client;
 EthernetClient Serverclient;
 EthernetServer serverport(23);
+
+
 
 
 //http://www.aranacorp.com/en/control-a-stepper-motor-with-arduino/
@@ -129,6 +131,9 @@ char Buffer[40]; //Buffer de Teclado
 #define pinFIM05 26
 #define pinFIM06 27
 
+#define pinRELE01 42
+#define pinRELE02 44
+
 
 
 //#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
@@ -156,11 +161,11 @@ void MAN();
 void LOAD(File root, char sMSG1[20]); //Carrega a aplicação para o SD
 int LOADLoop(File root, char *Info);
 void LOADLeituras();
-void LOADAnalisa();
-void LOADKeyCMD();
-void LOADRemoveArquivo(char *filename);
-void LOADCancela(char *filename);
-void LOADBloco(char Info[40]);
+void LOADAnalisa(File * farquivo);
+void LOADKeyCMD(File * farquivo);
+void LOADRename(String filename);
+void LOADCancela(String filename);
+void LOADBloco(File * farquivo, char *Info);
 void LOADFIMARQUIVO();
 
 float Run(String Arquivo);
@@ -175,6 +180,8 @@ void NextionMensageStop(String info);
 void RetConsole();
 void NextionWAITESC();
 void NextionMensageSTOP(String info);
+void Rele01(bool Value);
+void Rele02(bool Value);
 
 SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
 Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
@@ -196,6 +203,14 @@ void Start_FIMDECURSO()
   pinMode(pinFIM04, OUTPUT);
   pinMode(pinFIM05, OUTPUT);
   pinMode(pinFIM06, OUTPUT);
+}
+
+void Start_RELES()
+{
+  pinMode(pinRELE01, OUTPUT);
+  pinMode(pinRELE02, OUTPUT);
+  digitalWrite(pinRELE01, HIGH);
+  digitalWrite(pinRELE02, HIGH);
 }
 
 void Start_Serial()
@@ -250,6 +265,7 @@ void Start_Nextion()
   // set the data rate for the SoftwareSerial port
   Serial2.begin(9600);
   NextionShow("Splah"); //Chamando tela splash
+  NextionFieldText("t2",Versao+"."+Release);
 
 }
 
@@ -285,7 +301,7 @@ void WellComeBluetooth()
   Serial3.print(F("°C "));
   Serial3.println(" ");
   Serial3.println("MAN para ajuda");
-  NextionShow("Menu");
+
 }
 
 void WellComeConsole()
@@ -308,7 +324,7 @@ void WellComeConsole()
   //Serial.print(f);
 
   Serial.println(" ");
-  NextionShow("Menu");
+
 }
 
 //Inicia o Servidor
@@ -373,6 +389,7 @@ void setup() {
   Start_Bluetooth();
   Start_Motor01();
   Start_Printer();
+  Start_RELES();
 
   Start_DHT22();
   Start_FIMDECURSO();
@@ -388,6 +405,7 @@ void setup() {
   Calibracao(); /*Calibração do equipamento*/
   WellComeConsole(); 
   Reset();  
+  NextionShow("Menu");
 }
 
 
@@ -406,6 +424,32 @@ void Sound(char serByte)
         delayMicroseconds(tones[count]);
       }
     }
+  }
+}
+
+void Rele01(bool Value)
+{
+  //pinrele01
+  if (Value == true)
+  {
+    digitalWrite(pinRELE01, HIGH);
+  }
+  else
+  {
+    digitalWrite(pinRELE01, LOW);
+  }
+}
+
+void Rele02(bool Value)
+{
+  //pinrele01
+  if (Value == true)
+  {
+    digitalWrite(pinRELE02, HIGH);
+  }
+  else
+  {
+    digitalWrite(pinRELE02, LOW);
   }
 }
 
@@ -457,7 +501,7 @@ void LOAD(File root, char *sMSG1)
   NextionShow("LOAD");
   //Copia arquivo
   memset(ArquivoTrabalho,'\0',sizeof(ArquivoTrabalho));
-  sprintf(ArquivoTrabalho, "%s", sMSG1);
+  sprintf(ArquivoTrabalho,"%s",sMSG1);
   Serial.print("ArquivoTrabalho:");
   Serial.println(ArquivoTrabalho);
   //Imprime(2, ArquivoTrabalho);
@@ -469,9 +513,9 @@ void LOAD(File root, char *sMSG1)
 }
 
 //Analisa Entrada de Informacoes de Entrada
-void LOADAnalisa()
+void LOADAnalisa(File * farquivo)
 {
-  LOADKeyCMD(); //Analisa o que esta na entrada do buffer de teclado
+  LOADKeyCMD(farquivo); //Analisa o que esta na entrada do buffer de teclado
   //LOADKeyCMDBluetooth(); //Analisa o que esta na entrada do buffer do bluetooth
 }
 
@@ -483,7 +527,7 @@ int LOADLoop(File root, char *Info)
   //Tenta carregar arquivo t para ser temporario
   Serial.print("Criando arquivo:");
   Serial.println(Info);
-  File farquivo = SD.open("temp.out", FILE_WRITE);
+  farquivo = SD.open("temp.out", FILE_WRITE);
   //File farquivo = SD.open(String(Info), FILE_WRITE);
   //Limpa os buffer
   if (!farquivo)
@@ -504,7 +548,7 @@ int LOADLoop(File root, char *Info)
     {
       LOADLeituras();
       //Realiza analise das informações encontradas
-      LOADAnalisa();
+      LOADAnalisa(&farquivo);
       //arquivo.println("Leitura Potenciometro: ");
     }
     Serial.println("Finalizou bloco de gravação do arquivo");
@@ -512,7 +556,9 @@ int LOADLoop(File root, char *Info)
   farquivo.close();
   Serial.println("Fechou arquivo ");
   //Apaga o Arquivo Temporario
-  //LOADRemoveTemp();
+  //LOADRename(Info);
+   LOADCOPYTEMP(Info);
+   LOADRemoveTemp();
   return 0;
 }
 
@@ -525,25 +571,94 @@ void LOADLeituras()
   Le_Serial();
   //Le_Bluetooth();
   Chk_Beep();
+  Le_DHT22();
+  Le_FimCurso(); /*Leitura de fim de curso*/
 }
 
 
 //Apaga o arquivo temporario
-void LOADCancela(char *filename)
+void LOADCancela(String filename)
 {
-  LOADRemoveArquivo(filename);
+  //LOADRemoveArquivo(filename);
+  //SD.remove("temp.out");
   flgEscape = true;
 }
 
 //Apaga Arquivo Temporario
-void LOADRemoveArquivo(char *filename)
+void LOADRename(String filename)
 {
-  SD.remove(filename);
+  if (SD.exists("temp.out")) 
+  {
+    //SD.rename("temp.out",filename);
+    // open the file named ourfile.txt
+    Serial.println("Iniciando copia de arquivo temp.out"); 
+    File FOrigem = SD.open("temp.out");
+    char filename[40];
+    sprintf(filename,"%s",ArquivoTrabalho);
+    File FDestino = SD.open(filename, FILE_WRITE);
+    FDestino.close();
+    //FDestino = SD.open(ArquivoTrabalho, FILE_WRITE);
+    FDestino = SD.open("receita.rec", FILE_WRITE); /*Bug nao resolvido*/
+    char info;
+    long cont;
+    // if the file is available, read the file
+    if (FOrigem)
+    {
+      Serial.println("Abriu origem");
+      for(cont = 0;cont<=FOrigem.size();cont++)
+      {
+        
+        info = FOrigem.read();
+        Serial.print(info);
+        FDestino.write(info);
+      }
+    
+    }
+    Serial.println("Finalizando copia de arquivo temp.out"); 
+    FOrigem.close();
+    FDestino.close();
+    SD.remove("temp.out");
+  }
 }
 
-void LOADBloco(char Info[40])
+//Apaga Arquivo Temporario
+void LOADRemoveTemp()
 {
-  farquivo.print(Info);
+  SD.remove("temp.out");
+}
+
+//Copia o Arquivo Temporario para o Arquivo definitivo
+void LOADCOPYTEMP(char *Info)
+{
+  // open the file named ourfile.txt
+  char filename[40];
+  sprintf(filename,"%s",ArquivoTrabalho);
+  Serial.print("filename:");
+  Serial.println(filename);
+  File FOrigem = SD.open("temp.out");
+  File FDestino = SD.open(filename, FILE_WRITE);
+  Serial.print("Arquivo nome:");
+  Serial.println(Info);
+  //File FDestino = SD.open(Info, FILE_WRITE);
+
+  // if the file is available, read the file
+  if (FOrigem)
+  {
+    while (FOrigem.available())
+    {
+      //Serial.write();
+      FDestino.write(FOrigem.read());
+    }
+    FOrigem.close();
+    FDestino.close();
+  }
+}
+
+void LOADBloco(File *farquivo, char *Info)
+{
+  Serial.print("Gravou:");
+  Serial.println(Info);
+  farquivo->print(Info);
 }
 
 //Finaliza o arquivo temporario copiando para arquivo final
@@ -584,7 +699,7 @@ void LOADCOPYTEMP()
 */
 
 //Comando de entrada do Teclado
-void LOADKeyCMD()
+void LOADKeyCMD(File * farquivo)
 {
   bool resp = false;
 
@@ -611,9 +726,9 @@ void LOADKeyCMD()
       //FUNCMDefault();
       char *Info;
       Info = strstr(Buffer,"=")+1;     
-      Serial.print("Bloco Dados:"); 
-      Serial.println(Info);
-      LOADBloco(Info); /*Grava comando*/
+      //Serial.print("Bloco Dados:"); 
+      //Serial.println(Info);
+      LOADBloco(farquivo, Info); /*Grava comando*/
       resp = true;
     }
 
@@ -791,9 +906,12 @@ void FOPELeituras()
 {
   //FOPELe_Teclado(); //Porque as funcoes do teclado mudam durante o programa
   Le_Serial(); //Le dados do Serial
+  Le_DHT22();
+  Le_FimCurso(); /*Leitura de fim de curso*/
   //Precisa implementar o tempo em ciclos para leitura
   //Le_Temperatura();
   FOPEKeyCMD();
+
 }
 
 
@@ -877,7 +995,7 @@ void NextionMensage(String info)
   delay(100);
   String cmd;
   
-  cmd = "MSGtxt.txt=\""+info+"\" "+String(strFF)+String(strFF)+String(strFF);
+  cmd = "MSGtxt.txt=\""+info+"\""+String(strFF)+String(strFF)+String(strFF);
   Serial.print(cmd);  
   Serial2.print(cmd);
 }
@@ -927,7 +1045,11 @@ void LstDir(File dir, int numTabs)
     for (uint8_t i = 0; i < numTabs; i++) {
       Serial.print('\t');
     }
-    Serial.print(entry.name());
+    if (!entry.isDirectory()) {
+    Serial.print("FILENAME:");
+    Serial.println(entry.name());
+    }
+    /*
     if (entry.isDirectory()) {
       Serial.println("/");
       LstDir(entry, numTabs + 1);
@@ -936,6 +1058,7 @@ void LstDir(File dir, int numTabs)
       Serial.print("\t\t");
       Serial.println(entry.size(), DEC);
     }
+    */
     entry.close();
   }
 }
@@ -962,6 +1085,8 @@ void MAN()
   Serial.println("RESET - RESETA O AMBIENTE");
   Serial.println("MOPERACAO - MODO OPERACIONAL");
   Serial.println("MOPERACAO - MODO CONFIG");
+  Serial.println("RELE01 - ACIONAMENTO RELE01");
+  Serial.println("RELE02 - ACIONAMENTO RELE02");
   Serial.println(" ");
 }
 
@@ -1099,7 +1224,7 @@ void KeyCMD()
       Serial.print("Arquivo:");
       Serial.println(MSG1);
       //root = card.open(MSG1);
-      root = SD.open("/");
+      //root = SD.open("/");
       LOAD(root, MSG1);
 
       resp = true;
@@ -1164,6 +1289,58 @@ void KeyCMD()
         //Imprime(2, sMSG1);
         resp = true;
       }
+    }
+
+    if (strncmp("RELE01=", Buffer, 6) == 0)
+    {
+      char Info[20];
+      strcpy(Info, &Buffer[6]);
+      //Imprime(1, "BOMBA               ");
+      //Imprime(2, "                    ");
+      //Imprime(2, Info);
+      Serial.println(Info);
+      if (strstr(Info, "ON\n") == 0)
+      {
+        //Aciona o RELE01
+        Rele01(true);
+      }
+      else
+      {
+        //Abre o RELE01
+        Rele01(false);
+      }
+      resp = true;
+    }
+    
+    if (strncmp("RELE02=", Buffer, 6) == 0)
+    {
+      char Info[20];
+      strcpy(Info, &Buffer[6]);
+      //Imprime(1, "RE               ");
+      //Imprime(2, "                    ");
+      //Imprime(2, Info);
+      Serial.println(Info);
+      if (strstr(Info, "ON\n") == 0)
+      {
+        //Aciona o RELE02
+        Rele02(true);
+      }
+      else
+      {
+        //Abre o RELE02
+        Rele02(false);
+      }
+      resp = true;
+    }
+
+    //TEMPERATURA
+    if(strstr( Buffer, "TEMPERATURA\n")!= 0)
+    {
+      Serial.print("TEMPERATURA=");
+      Serial.println(t);
+      Serial.print("HUMIDADE=");
+      Serial.println(h);
+      resp = true;
     }
 
  
@@ -1265,6 +1442,18 @@ void Le_DHT22()
   float hif = dht.computeHeatIndex(f, h);
   // Compute heat index in Celsius (isFahreheit = false)
   float hic = dht.computeHeatIndex(t, h, false);
+
+  char temperatura[10];
+  memset(temperatura,'\0',sizeof(temperatura));
+  //sprintf(temperatura,"%f",t);
+  dtostrf(t, 3, 2, temperatura);  // 8 char min total width, 6 after decimal
+  //Serial.print("TEMPERATURA:");
+  //Serial.println(temperatura);
+  NextionFieldText("temp",String(temperatura));
+  memset(temperatura,'\0',sizeof(temperatura));
+  //sprintf(temperatura,"%f",t);
+  dtostrf(h, 4, 2, temperatura);  // 8 char min total width, 6 after decimal
+  NextionFieldText("hum",String(temperatura));
 }
 
 void Le_FimCurso()
@@ -1283,6 +1472,8 @@ void Leituras()
   //Le_Teclado();
   Le_Serial();
   Le_DHT22();
+  Le_FimCurso();
+ 
 
   Chk_Beep();
 }

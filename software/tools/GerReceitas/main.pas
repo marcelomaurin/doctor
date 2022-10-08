@@ -20,6 +20,8 @@ type
     btSOUND: TButton;
     edSrv: TEdit;
     edFirmware: TEdit;
+    indGTemp: TindGnouMeter;
+    indGTemp1: TindGnouMeter;
     Label18: TLabel;
     Label19: TLabel;
     Label20: TLabel;
@@ -35,8 +37,6 @@ type
     btCarregar: TButton;
     btGravar: TButton;
     BTMSGSTOP: TButton;
-    btRele3OFF: TButton;
-    btRele4OFF: TButton;
     btRele2OFF: TButton;
     btRele5: TButton;
     btUSBCarregar: TButton;
@@ -44,8 +44,6 @@ type
     btNovo: TButton;
     btRele1: TButton;
     btRele2: TButton;
-    btRele3ON: TButton;
-    btRele4: TButton;
     BTLSTDIR: TButton;
     BTMSG: TButton;
     btClear: TButton;
@@ -256,21 +254,11 @@ begin
 end;
 
 procedure TfrmMain.btMedirClick(Sender: TObject);
-var
-  myFormatSettings: TFormatSettings;
-  Info :String;
+
 begin
   if SdpoSerial1.Active then
   begin
-       tempostart := now();
-      SdpoSerial1.WriteData('TEMPERATURA'+#10);
-       myFormatSettings.DecimalSeparator := '.';
-       AnalogSensor1.ValueMax:= 150;
-       Info := edTempMax.text;
-      AnalogSensor1.ValueRed := trunc(StrToFloat(Info,myFormatSettings));
-      Info := edTempMin.text;
-      //AnalogSensor1.ValueYellow := trunc(StrToFloat(Info,myFormatSettings));
-      AnalogSensor1.ValueMin:= 0;
+    SdpoSerial1.WriteData('TEMPERATURA'+#10);
   end
   else
   begin
@@ -313,7 +301,7 @@ procedure TfrmMain.btRele2Click(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('RELE2=ON'+#10);
+       SdpoSerial1.WriteData('RELE02=ON'+#10);
   end
   else
   begin
@@ -325,7 +313,7 @@ procedure TfrmMain.btRele2OFFClick(Sender: TObject);
 begin
    if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('RELE2=OFF'+#10);
+       SdpoSerial1.WriteData('RELE02=OFF'+#10);
   end
   else
   begin
@@ -335,51 +323,23 @@ end;
 
 procedure TfrmMain.btRele3ONClick(Sender: TObject);
 begin
-   if SdpoSerial1.Active then
-  begin
-       SdpoSerial1.WriteData('RELE3=ON'+#10);
-  end
-  else
-  begin
-    ShowMessage('Ative a porta USB!');
-  end;
+
 end;
 
 procedure TfrmMain.btRele3OFFClick(Sender: TObject);
 begin
-  if SdpoSerial1.Active then
-  begin
-       SdpoSerial1.WriteData('RELE3=OFF'+#10);
-  end
-  else
-  begin
-    ShowMessage('Ative a porta USB!');
-  end;
+
 
 end;
 
 procedure TfrmMain.btRele4Click(Sender: TObject);
 begin
-   if SdpoSerial1.Active then
-  begin
-       SdpoSerial1.WriteData('RELE4=ON'+#10);
-  end
-  else
-  begin
-    ShowMessage('Ative a porta USB!');
-  end;
+
 end;
 
 procedure TfrmMain.btRele4OFFClick(Sender: TObject);
 begin
-     if SdpoSerial1.Active then
-  begin
-       SdpoSerial1.WriteData('RELE4=OFF'+#10);
-  end
-  else
-  begin
-    ShowMessage('Ative a porta USB!');
-  end;
+
 
 end;
 
@@ -387,7 +347,7 @@ procedure TfrmMain.btRele5Click(Sender: TObject);
 begin
     if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('RELE1=OFF'+#10);
+       SdpoSerial1.WriteData('RELE01=OFF'+#10);
   end
   else
   begin
@@ -502,7 +462,7 @@ procedure TfrmMain.btRele1Click(Sender: TObject);
 begin
   if SdpoSerial1.Active then
   begin
-       SdpoSerial1.WriteData('RELE1=ON'+#10);
+       SdpoSerial1.WriteData('RELE01=ON'+#10);
   end
   else
   begin
@@ -583,6 +543,8 @@ var
   Info2: String;
   myFormatSettings: TFormatSettings;
   Tempo : double;
+  strtemperatura : string;
+  temperatura : double;
 begin
    posicao := pos('Atual:',Info);
    if (posicao > 0) then
@@ -606,14 +568,18 @@ begin
    end;
    //FILENAME:
    posicao := pos('FILENAME:',Info);
-   if (posicao > 0) then
+   if (posicao <> 0) then
    begin
-     posicaofim := pos(';', Info);
+     posicaofim := pos(#10,Info);
      if (posicaofim>0) then
      begin
-          Info := Copy(Info,posicao+9,posicaofim-(posicao+9));
-          cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
+          if  (pos('.REC',INFO)<>0) or (pos('.rec',INFO)<>0) then
+          begin
+             Info := Copy(Info,posicao+9,posicaofim-(posicao+9));
+
+             cbFiles.Items.Append(Info);
+             //indGnouMeter1.Value:= StrToFloat(Info);
+          end;
 
      end;
    end;
@@ -813,6 +779,26 @@ begin
             Showmessage('Versão Incorreta do Firmware');
             //Application.Terminate;
         end;
+    end;
+
+        //Versao:0.M
+    posicao := pos('TEMPERATURA=', Info);
+    if (posicao>0) then
+    begin
+        strtemperatura := copy(Info,pos('=',Info)+1,length(Info)-(pos('=',Info)+3));
+        DecimalSeparator := '.';
+        temperatura := strtofloat(strtemperatura);
+        indGTemp.Value:= temperatura;
+
+    end;
+    posicao := pos('HUMIDADE=', Info);
+    if (posicao>0) then
+    begin
+        strtemperatura := copy(Info,pos('=',Info)+1,length(Info)-(pos('=',Info)+3));
+        DecimalSeparator := '.';
+        temperatura := strtofloat(strtemperatura);
+        indGTemp1.Value:= temperatura;
+
     end;
 
 

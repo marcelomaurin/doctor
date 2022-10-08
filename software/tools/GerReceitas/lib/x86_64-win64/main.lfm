@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 1882
+  Left = 2046
   Height = 520
-  Top = -1056
+  Top = -1118
   Width = 773
   Caption = 'Gerenciador de Receita'
   ClientHeight = 520
@@ -1370,7 +1370,7 @@ object frmMain: TfrmMain
         Top = 21
         Width = 210
         TabOrder = 3
-        Text = 'Novo.txt'
+        Text = 'RECEITA.REC'
       end
       object btUSBCarregar: TButton
         Left = 592
@@ -1409,31 +1409,13 @@ object frmMain: TfrmMain
         TabOrder = 7
       end
       object btRele2: TButton
-        Left = 195
+        Left = 194
         Height = 25
         Top = 166
         Width = 75
         Caption = 'Rele2 ON'
         OnClick = btRele2Click
         TabOrder = 8
-      end
-      object btRele3ON: TButton
-        Left = 194
-        Height = 25
-        Top = 195
-        Width = 75
-        Caption = 'Rele3 ON'
-        OnClick = btRele3ONClick
-        TabOrder = 9
-      end
-      object btRele4: TButton
-        Left = 195
-        Height = 25
-        Top = 224
-        Width = 75
-        Caption = 'Rele4 ON'
-        OnClick = btRele4Click
-        TabOrder = 10
       end
       object BTLSTDIR: TButton
         Left = 195
@@ -1442,7 +1424,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'LSTDIR'
         OnClick = BTLSTDIRClick
-        TabOrder = 11
+        TabOrder = 9
       end
       object btRele2OFF: TButton
         Left = 280
@@ -1451,16 +1433,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'Rele2 OFF'
         OnClick = btRele2OFFClick
-        TabOrder = 12
-      end
-      object btRele4OFF: TButton
-        Left = 280
-        Height = 25
-        Top = 224
-        Width = 75
-        Caption = 'Rele4 OFF'
-        OnClick = btRele4OFFClick
-        TabOrder = 13
+        TabOrder = 10
       end
       object btRele5: TButton
         Left = 280
@@ -1469,16 +1442,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'Rele01 OFF'
         OnClick = btRele5Click
-        TabOrder = 14
-      end
-      object btRele3OFF: TButton
-        Left = 280
-        Height = 25
-        Top = 196
-        Width = 75
-        Caption = 'Rele3 OFF'
-        OnClick = btRele3OFFClick
-        TabOrder = 15
+        TabOrder = 11
       end
       object Label8: TLabel
         Left = 442
@@ -1494,7 +1458,7 @@ object frmMain: TfrmMain
         Top = 113
         Width = 301
         MaxLength = 20
-        TabOrder = 16
+        TabOrder = 12
       end
       object BTMSG: TButton
         Left = 504
@@ -1503,7 +1467,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'MSG'
         OnClick = BTMSGClick
-        TabOrder = 17
+        TabOrder = 13
       end
       object BTMSGSTOP: TButton
         Left = 592
@@ -1512,7 +1476,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'MSGSTOP'
         OnClick = BTMSGSTOPClick
-        TabOrder = 18
+        TabOrder = 14
       end
       object cbFiles: TComboBox
         Left = 280
@@ -1520,8 +1484,7 @@ object frmMain: TfrmMain
         Top = 272
         Width = 208
         ItemHeight = 15
-        TabOrder = 19
-        Text = 'cbFiles'
+        TabOrder = 15
       end
       object btClear: TButton
         Left = 195
@@ -1530,7 +1493,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'Clear'
         OnClick = btClearClick
-        TabOrder = 20
+        TabOrder = 16
       end
       object btRUN: TButton
         Left = 506
@@ -1539,7 +1502,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'RUN'
         OnClick = btRUNClick
-        TabOrder = 21
+        TabOrder = 17
       end
       object btTempMin: TButton
         Left = 194
@@ -1548,7 +1511,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'TempMin'
         OnClick = btTempMinClick
-        TabOrder = 22
+        TabOrder = 18
       end
       object Label9: TLabel
         Left = 284
@@ -1579,7 +1542,7 @@ object frmMain: TfrmMain
         Height = 23
         Top = 364
         Width = 80
-        TabOrder = 23
+        TabOrder = 19
         Text = '32'
       end
       object edTempMin: TEdit
@@ -1587,7 +1550,7 @@ object frmMain: TfrmMain
         Height = 23
         Top = 365
         Width = 80
-        TabOrder = 24
+        TabOrder = 20
         Text = '30'
       end
       object edTempo: TEdit
@@ -1595,7 +1558,7 @@ object frmMain: TfrmMain
         Height = 23
         Top = 364
         Width = 80
-        TabOrder = 25
+        TabOrder = 21
         Text = '0'
       end
       object Button1: TButton
@@ -1605,7 +1568,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'Transferir'
         OnClick = Button1Click
-        TabOrder = 26
+        TabOrder = 22
       end
       object btSOUND: TButton
         Left = 280
@@ -1614,7 +1577,7 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'SOUND'
         OnClick = btSOUNDClick
-        TabOrder = 27
+        TabOrder = 23
       end
       object BTBEEP1: TButton
         Left = 16
@@ -1623,7 +1586,31 @@ object frmMain: TfrmMain
         Width = 75
         Caption = 'ESC'
         OnClick = BTBEEP1Click
-        TabOrder = 28
+        TabOrder = 24
+      end
+      object indGTemp: TindGnouMeter
+        Left = 8
+        Height = 200
+        Top = 97
+        Width = 56
+        Caption = 'Temp'
+        SignalUnit = 'C'
+        ValueMax = 100
+        Digits = 0
+        Increment = 10
+        MarkerColor = clBlue
+      end
+      object indGTemp1: TindGnouMeter
+        Left = 96
+        Height = 200
+        Top = 97
+        Width = 56
+        Caption = 'Hum'
+        SignalUnit = '%'
+        ValueMax = 100
+        Digits = 0
+        Increment = 10
+        MarkerColor = clBlue
       end
     end
     object tbEthernet: TTabSheet
