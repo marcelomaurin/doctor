@@ -57,6 +57,13 @@ int flgFIMB2;
 int flgFIMC1;
 int flgFIMC2;
 
+int lastflgFIMA1 = -1;
+int lastflgFIMA2 = -1;
+int lastflgFIMB1 = -1;
+int lastflgFIMB2 = -1;
+int lastflgFIMC1 = -1;
+int lastflgFIMC2 = -1;
+
 int FOPEPag = 0; //Controle de Pagina da Funcao
 int FOPEMAXPag = 2; //Tres Paginas para Funcoes
 //int FOPERMAXPag = 2; //tres Paginas para Operacoes
@@ -136,12 +143,12 @@ char Buffer[40]; //Buffer de Teclado
 #define DHT22Pin A9 //DHT22
 #define pinSD  4
 
-#define pinFIMA1 22 /*Fim de curso*/
-#define pinFIMA2 23
-#define pinFIMB1 24
-#define pinFIMB2 25
-#define pinFIMC1 26
-#define pinFIMC2 27
+#define pinFIMA1 26 /*Fim de curso*/
+#define pinFIMA2 27
+#define pinFIMB1 28
+#define pinFIMB2 29
+#define pinFIMC1 30
+#define pinFIMC2 31
 
 #define pinRELE01 42
 #define pinRELE02 44
@@ -178,7 +185,7 @@ void LOADRename(String filename);
 void LOADCancela(String filename);
 void LOADBloco(File * farquivo, char *Info);
 void LOADFIMARQUIVO();
-
+void MostraTemperatura();
 float Run(String Arquivo);
 void MOPERACAO();
 void FOPEImprime();
@@ -211,12 +218,12 @@ Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
 void Start_FIMDECURSO()
 {
   Serial.println("configurando Fim de curso");
-  pinMode(pinFIMA1, OUTPUT);
-  pinMode(pinFIMA2, OUTPUT);
-  pinMode(pinFIMB1, OUTPUT);
-  pinMode(pinFIMB2, OUTPUT);
-  pinMode(pinFIMC1, OUTPUT);
-  pinMode(pinFIMC2, OUTPUT);
+  pinMode(pinFIMA1, INPUT);
+  pinMode(pinFIMA2, INPUT);
+  pinMode(pinFIMB1, INPUT);
+  pinMode(pinFIMB2, INPUT);
+  pinMode(pinFIMC1, INPUT);
+  pinMode(pinFIMC2, INPUT);
 }
 
 void Start_RELES()
@@ -308,11 +315,7 @@ void WellComeBluetooth()
   Serial3.print(Versao);
   Serial3.print(".");
   Serial3.println(Release);
-  Serial3.print(F("Humidity: "));
-  Serial3.print(h);
-  Serial3.print(F("%  Temperature: "));
-  Serial3.print(t);
-  Serial3.print(F("°C "));
+  
   Serial3.println(" ");
   Serial3.println("MAN para ajuda");
 
@@ -329,11 +332,7 @@ void WellComeConsole()
   Serial.print(Versao);
   Serial.print(".");
   Serial.println(Release);
-  Serial.print(F("Humidity: "));
-  Serial.print(h);
-  Serial.print(F("%  Temperature: "));
-  Serial.print(t);
-  Serial.print(F("°C "));
+  MostraTemperatura();
   Serial.println("MAN para ajuda");
   //Serial.print(f);
 
@@ -391,11 +390,13 @@ void Calibracao()
   NextionShow("CALIB"); //Chamando tela calibração
 
   Serial.println("Calibração Eixo X");
+  /*
   while (!flgFIMA1 )
   {
       MovePassoA_Esq(3);
       Le_FimCurso();
   }
+  */
   
   
 }
@@ -525,11 +526,13 @@ void MovePassoA_Esq(int passo)
 
 void RetornaServos()
 {
+  
   while(!flgFIMA1)
   {      
     MovePassoA_Esq(passoA);
     Le_FimCurso();
   }
+  
 }
 
 //Carrega a aplicação para o SD
@@ -1018,8 +1021,8 @@ char strFF = 0xFF;
   String cmd;
   
   cmd = field+".txt=\""+value+"\""+String(strFF)+String(strFF)+String(strFF);
-  Serial.print(cmd);  
-  Serial2.print(cmd);  
+  //Serial.print(cmd);  
+  //Serial2.print(cmd);  
 }
 
 void NextionWAITESC()
@@ -1064,7 +1067,7 @@ float Reset()
   passoB = 10;
   passoC = 10;
 
-  RetornaServos();
+  //RetornaServos();
 
   /*Posicao de servo motores*/
   posSERVA = 0;
@@ -1379,10 +1382,7 @@ void KeyCMD()
     //TEMPERATURA
     if(strstr( Buffer, "TEMPERATURA\n")!= 0)
     {
-      Serial.print("TEMPERATURA=");
-      Serial.println(t);
-      Serial.print("HUMIDADE=");
-      Serial.println(h);
+      MostraTemperatura();
       resp = true;
     }
 
@@ -1500,16 +1500,23 @@ void Le_DHT22()
 }
 
 void Le_FimCurso()
-{
-  
-  flgFIMA1 = digitalRead(pinFIMA1)<20?LOW:digitalRead(pinFIMA1);
-  flgFIMA2 = digitalRead(pinFIMA2)<20?LOW:digitalRead(pinFIMA2);
-  flgFIMB1 = digitalRead(pinFIMB1)<20?LOW:digitalRead(pinFIMB1);
-  flgFIMB2 = digitalRead(pinFIMB2)<20?LOW:digitalRead(pinFIMB2);
-  flgFIMC1 = digitalRead(pinFIMC1)<20?LOW:digitalRead(pinFIMC1);
-  flgFIMC2 = digitalRead(pinFIMC2)<20?LOW:digitalRead(pinFIMC2);  
-  Serial.print("flgFIMA1=");  Serial.println(flgFIMA1);
-  Serial.print("flgFIMA2=");  Serial.println(flgFIMA2);
+{  
+  flgFIMA1 = digitalRead(pinFIMA1)!=HIGH?HIGH:LOW;  
+  flgFIMA2 = digitalRead(pinFIMA2)!=HIGH?HIGH:LOW;
+  flgFIMB1 = digitalRead(pinFIMB1)!=HIGH?HIGH:LOW;
+  flgFIMB2 = digitalRead(pinFIMB2)!=HIGH?HIGH:LOW;
+  flgFIMC1 = digitalRead(pinFIMC1)!=HIGH?HIGH:LOW;
+  flgFIMC2 = digitalRead(pinFIMC2)!=HIGH?HIGH:LOW;  
+  if(lastflgFIMA1!=flgFIMA1)
+  {
+     Serial.print("flgFIMA1=");  Serial.println(flgFIMA1==HIGH?"ON":"OFF");
+     lastflgFIMA1 = flgFIMA1;
+  }
+  if(lastflgFIMA2!=flgFIMA2)
+  {
+    Serial.print("flgFIMA2=");  Serial.println(flgFIMA2==HIGH?"ON":"OFF");
+    lastflgFIMA2 = flgFIMA2;
+  }
 }
 
 void Leituras()
@@ -1521,6 +1528,14 @@ void Leituras()
  
 
   Chk_Beep();
+}
+
+void MostraTemperatura()
+{
+  Serial.print("TEMPERATURA=");
+  Serial.println(t);
+  Serial.print("HUMIDADE=");
+  Serial.println(h);
 }
 
 //Imprime Retorno de Console

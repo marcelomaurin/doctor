@@ -30,6 +30,11 @@ type
     Label22: TLabel;
     Label23: TLabel;
     Label24: TLabel;
+    Label25: TLabel;
+    Label26: TLabel;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label29: TLabel;
     ledFIMCURSOA1: TAdvLed;
     ledFIMCURSOA2: TAdvLed;
     LEDNEIXOA: TLEDNumber;
@@ -136,6 +141,7 @@ type
     procedure btSOUNDClick(Sender: TObject);
     procedure edConsoleChange(Sender: TObject);
     procedure edConsoleKeyPress(Sender: TObject; var Key: char);
+    procedure Label29Click(Sender: TObject);
     procedure SdpoSerial1RxData(Sender: TObject);
     procedure tbUSBContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
@@ -542,6 +548,11 @@ begin
     end;
 end;
 
+procedure TfrmMain.Label29Click(Sender: TObject);
+begin
+
+end;
+
 //Realiza analise de comando
 procedure TfrmMain.Analisa(Info : string);
 var
@@ -637,7 +648,7 @@ begin
    end;
 
 
-   posicao := pos('flgFIMA1',Info);
+   posicao := pos('flgFIMA1=',Info);
    if (posicao > 0) then
    begin
      posicaofim := pos('ON', Info);
@@ -646,7 +657,7 @@ begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          ledFIMCURSOA1.State:= lsOff;
+          ledFIMCURSOA1.State:= lsOn;
 
      end;
      posicaofim := pos('OFF', Info);
@@ -655,7 +666,7 @@ begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          ledFIMCURSOA1.State:= lsOn;
+          ledFIMCURSOA1.State:= lsOff;
      end;
    end;
    posicao := pos('flgFIMA2=',Info);
@@ -667,7 +678,7 @@ begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          ledFIMCURSOA2.State:= lsOff;
+          ledFIMCURSOA2.State:= lsOn;
 
      end;
      posicaofim := pos('OFF', Info);
@@ -676,7 +687,7 @@ begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          ledFIMCURSOA2.State:= lsOn;
+          ledFIMCURSOA2.State:= lsOff;
      end;
    end;
    posicao := pos('POSSERVA=',Info);
@@ -688,7 +699,7 @@ begin
           Info := Copy(Info,posicao+9,posicaofim-(posicao+9));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          LEDNEIXOA.Caption:= lsOff;
+          LEDNEIXOA.Caption:= Info;
 
      end;
      posicaofim := pos('OFF', Info);
@@ -771,62 +782,62 @@ begin
    posicao := pos('IP:', Info);
    if (posicao>0) then
    begin
-       edIP.Text:= copy(Info,posicao+4,pos(#13,Info)-posicao+4);
+       edIP.Text:= copy(Info,posicao+3,pos(#13,Info)-posicao+3);
    end;
 
    //Identificando Servico Ethernet
-    posicao := pos('Ethernet Server Porta:', Info);
-    if (posicao>0) then
-    begin
+   posicao := pos('Ethernet Server Porta:', Info);
+   if (posicao>0) then
+   begin
         edSrv.Text:= copy(Info,posicao+22,pos(#13,Info)-posicao+22);
-    end;
+   end;
 
-    //Comando Vazio!
+   //Comando Vazio!
    //Identifica Comando Vazio
-    posicao := pos('Comando Vazio!', Info);
-    if (posicao>0) then
-    begin
+   posicao := pos('Comando Vazio!', Info);
+   if (posicao>0) then
+   begin
         //edSrv.Text:= copy(Info,posicao+22,pos(#13,Info)-posicao+22);
-    end;
+   end;
 
-    //Erro no Script Linha:
-    posicao := pos('Erro no Script Linha:', Info);
-    if (posicao>0) then
-    begin
+   //Erro no Script Linha:
+   posicao := pos('Erro no Script Linha:', Info);
+   if (posicao>0) then
+   begin
         //edSrv.Text:= copy(Info,posicao+22,pos(#13,Info)-posicao+22);
         Showmessage(Info);
-    end;
-    //Versao:0.M
-    posicao := pos('Versao:', Info);
-    if (posicao>0) then
-    begin
+   end;
+   //Versao:0.M
+   posicao := pos('Versao:', Info);
+   if (posicao<>0) then
+   begin
         edFirmware.Text:= copy(Info,posicao+7,pos(#13,Info)-(posicao+7));
         if (edFirmware.Text <> lbVersao.Caption) then
         begin
             Showmessage('Versão Incorreta do Firmware');
             //Application.Terminate;
         end;
-    end;
+   end;
 
         //Versao:0.M
-    posicao := pos('TEMPERATURA=', Info);
-    if (posicao>0) then
-    begin
+   posicao := pos('TEMPERATURA=', Info);
+   if (posicao>0) then
+   begin
         strtemperatura := copy(Info,pos('=',Info)+1,length(Info)-(pos('=',Info)+3));
         DecimalSeparator := '.';
         temperatura := strtofloat(strtemperatura);
         indGTemp.Value:= temperatura;
 
-    end;
-    posicao := pos('HUMIDADE=', Info);
-    if (posicao>0) then
-    begin
+   end;
+   posicao := pos('HUMIDADE=', Info);
+   if (posicao>0) then
+   begin
         strtemperatura := copy(Info,pos('=',Info)+1,length(Info)-(pos('=',Info)+3));
         DecimalSeparator := '.';
         temperatura := strtofloat(strtemperatura);
         indGTemp1.Value:= temperatura;
 
-    end;
+   end;
 
 
 end;
@@ -842,29 +853,27 @@ begin
 
     while(true)  do
     begin
-       posfim := pos(#10,buffer);
-         //Verifica se tem fim de linha
-         if (posfim >0) then
-         begin
-              comando := copy(buffer,1,posfim);
-              Analisa(comando);
-              Console.Lines.Append(comando);
-              (*
+       posfim := pos(#10,buffer); //Quebra em linhas
+       //Verifica se tem fim de linha
+       if (posfim >0) then
+       begin
+           comando := copy(buffer,1,posfim);
+           Analisa(comando);
+           Console.Lines.Append(comando);
+           (*
               if(posfim = length(buffer)) then
               begin
                    buffer := '';
               end
               else
               begin
-              *)
-                   buffer := Copy(buffer,posfim+1, (length(buffer)-posfim));
-              //end;
-         end;
-         if (posfim <=0) then
-         begin
-
-              break;
-         end;
+           *)
+           buffer := Copy(buffer,posfim+1, (length(buffer)-posfim));
+       end;
+       if (posfim <=0) then
+       begin
+          break;
+       end;
     end;
 end;
 
