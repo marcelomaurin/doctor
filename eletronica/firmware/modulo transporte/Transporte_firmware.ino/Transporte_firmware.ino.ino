@@ -38,12 +38,24 @@ float h ;
 float t; 
 float f ;
 
-int flgFIM01;
-int flgFIM02;
-int flgFIM03;
-int flgFIM04;
-int flgFIM05;
-int flgFIM06;
+//Avancos dos motores de passo
+int passoA;
+int passoB;
+int passoC;
+
+/*Posicao de servos*/
+long int posSERVA;
+long int posSERVB;
+long int posSERVC;
+
+
+
+int flgFIMA1;
+int flgFIMA2;
+int flgFIMB1;
+int flgFIMB2;
+int flgFIMC1;
+int flgFIMC2;
 
 int FOPEPag = 0; //Controle de Pagina da Funcao
 int FOPEMAXPag = 2; //Tres Paginas para Funcoes
@@ -115,21 +127,21 @@ char Buffer[40]; //Buffer de Teclado
 #define RX_PIN 5 //Arduino receive   GREEN WIRE   labeled TX on printer
 #define GND_PIN 7 //Arduino receive   GREEN WIRE   labeled TX on printer
 
-#define IN1_01  52 //Motor Passo01
-#define IN2_01  51 //Motor Passo01
-#define IN3_01  50 //Motor Passo01
-#define IN4_01  49 //Motor Passo01
+#define IN1_01  34 //Motor Passo01
+#define IN2_01  35 //Motor Passo01
+#define IN3_01  36 //Motor Passo01
+#define IN4_01  37 //Motor Passo01
 
 #define speakerPin A13 //Speaker
 #define DHT22Pin A9 //DHT22
 #define pinSD  4
 
-#define pinFIM01 22 /*Fim de curso*/
-#define pinFIM02 23
-#define pinFIM03 24
-#define pinFIM04 25
-#define pinFIM05 26
-#define pinFIM06 27
+#define pinFIMA1 22 /*Fim de curso*/
+#define pinFIMA2 23
+#define pinFIMB1 24
+#define pinFIMB2 25
+#define pinFIMC1 26
+#define pinFIMC2 27
 
 #define pinRELE01 42
 #define pinRELE02 44
@@ -147,8 +159,7 @@ Stepper Passo01(stepsPerRevolution, IN1_01, IN3_01, IN2_01, IN4_01);  // Pin inv
 
 
 /*Funcoes predefinidas*/
-void MovePasso01_Dir();
-void MovePasso01_Esq();
+
 void ImprimeEtiqueta();
 void Beep();
 void Sound(char serByte);
@@ -182,6 +193,9 @@ void NextionWAITESC();
 void NextionMensageSTOP(String info);
 void Rele01(bool Value);
 void Rele02(bool Value);
+void MovePassoA_Dir();
+void MovePassoA_Esq();
+void RetornaServos();
 
 SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
 Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
@@ -197,12 +211,12 @@ Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
 void Start_FIMDECURSO()
 {
   Serial.println("configurando Fim de curso");
-  pinMode(pinFIM01, OUTPUT);
-  pinMode(pinFIM02, OUTPUT);
-  pinMode(pinFIM03, OUTPUT);
-  pinMode(pinFIM04, OUTPUT);
-  pinMode(pinFIM05, OUTPUT);
-  pinMode(pinFIM06, OUTPUT);
+  pinMode(pinFIMA1, OUTPUT);
+  pinMode(pinFIMA2, OUTPUT);
+  pinMode(pinFIMB1, OUTPUT);
+  pinMode(pinFIMB2, OUTPUT);
+  pinMode(pinFIMC1, OUTPUT);
+  pinMode(pinFIMC2, OUTPUT);
 }
 
 void Start_RELES()
@@ -375,6 +389,13 @@ void Calibracao()
 {
   Serial.println("Iniciando Calibração");
   NextionShow("CALIB"); //Chamando tela calibração
+
+  Serial.println("Calibração Eixo X");
+  while (!flgFIMA1 )
+  {
+      MovePassoA_Esq(3);
+      Le_FimCurso();
+  }
   
   
 }
@@ -383,16 +404,16 @@ void setup() {
  
   Start_Serial();
   Serial.println("Starting modules...");
-  Speak_Start();
+  Speak_Start();  
   Beep(); 
+  Start_FIMDECURSO();
   Start_Nextion();
   Start_Bluetooth();
   Start_Motor01();
   Start_Printer();
   Start_RELES();
 
-  Start_DHT22();
-  Start_FIMDECURSO();
+  Start_DHT22(); 
 
   Start_SD();
   Service_Start();
@@ -406,6 +427,8 @@ void setup() {
   WellComeConsole(); 
   Reset();  
   NextionShow("Menu");
+  
+
 }
 
 
@@ -477,20 +500,36 @@ void ImprimeEtiqueta() {
   printer.println(' ');  
 }
 
-void MovePasso01_Dir()
+void MovePassoA_Dir(int passo)
 {
+  
     // 1 rotation counterclockwise:  
-    Serial.println("counterclockwise");    
-    Passo01.step(stepsPerRevolution);  
+    //Serial.println("counterclockwise");    
+    Passo01.step(passo);  
+    posSERVA = posSERVA+ passo;
+    Serial.print("POSSERVA=");  
+    Serial.println(posSERVA);
     //delay(1000); 
 }
 
-void MovePasso01_Esq()
+void MovePassoA_Esq(int passo)
 {
   // 1 rotation clockwise: 
-  Serial.println("clockwise");  
-  Passo01.step(-stepsPerRevolution); 
+ 
+  Passo01.step(-passo); 
+  posSERVA = posSERVA- passo;
+  Serial.print("POSSERVA=");  
+  Serial.println(posSERVA);
   //delay(1000); 
+}
+
+void RetornaServos()
+{
+  while(!flgFIMA1)
+  {      
+    MovePassoA_Esq(passoA);
+    Le_FimCurso();
+  }
 }
 
 //Carrega a aplicação para o SD
@@ -1021,13 +1060,17 @@ float Reset()
   Serial.println('Reset rodou');
   flgBeep = false;
   /* incluir sub comandos de inicialização*/
+  passoA = 10;
+  passoB = 10;
+  passoC = 10;
 
+  RetornaServos();
+
+  /*Posicao de servo motores*/
+  posSERVA = 0;
+  posSERVB = 0;
+  posSERVC = 0;
   
-
-  //Zera buffer teclado
-  //memset(Linha,0,sizeof(Linha));
-  WellComeConsole();
-
 }
 
 
@@ -1458,13 +1501,15 @@ void Le_DHT22()
 
 void Le_FimCurso()
 {
-  flgFIM01 = digitalRead(pinFIM01)==LOW?LOW:digitalRead(pinFIM01);
-  flgFIM02 = digitalRead(pinFIM02)==LOW?LOW:digitalRead(pinFIM02);
-  flgFIM03 = digitalRead(pinFIM03)==LOW?LOW:digitalRead(pinFIM03);
-  flgFIM04 = digitalRead(pinFIM04)==LOW?LOW:digitalRead(pinFIM04);
-  flgFIM05 = digitalRead(pinFIM05)==LOW?LOW:digitalRead(pinFIM05);
-  flgFIM06 = digitalRead(pinFIM06)==LOW?LOW:digitalRead(pinFIM06);
   
+  flgFIMA1 = digitalRead(pinFIMA1)<20?LOW:digitalRead(pinFIMA1);
+  flgFIMA2 = digitalRead(pinFIMA2)<20?LOW:digitalRead(pinFIMA2);
+  flgFIMB1 = digitalRead(pinFIMB1)<20?LOW:digitalRead(pinFIMB1);
+  flgFIMB2 = digitalRead(pinFIMB2)<20?LOW:digitalRead(pinFIMB2);
+  flgFIMC1 = digitalRead(pinFIMC1)<20?LOW:digitalRead(pinFIMC1);
+  flgFIMC2 = digitalRead(pinFIMC2)<20?LOW:digitalRead(pinFIMC2);  
+  Serial.print("flgFIMA1=");  Serial.println(flgFIMA1);
+  Serial.print("flgFIMA2=");  Serial.println(flgFIMA2);
 }
 
 void Leituras()

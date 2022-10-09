@@ -24,9 +24,15 @@ type
     indGTemp1: TindGnouMeter;
     Label18: TLabel;
     Label19: TLabel;
+    Label2: TLabel;
     Label20: TLabel;
     Label21: TLabel;
     Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    ledFIMCURSOA1: TAdvLed;
+    ledFIMCURSOA2: TAdvLed;
+    LEDNEIXOA: TLEDNumber;
     ledRele1: TAdvLed;
     ledRele2: TAdvLed;
     ledRele3: TAdvLed;
@@ -629,8 +635,9 @@ begin
      end;
 
    end;
-    //RELE3:
-   posicao := pos('RELE3:',Info);
+
+
+   posicao := pos('flgFIMA1',Info);
    if (posicao > 0) then
    begin
      posicaofim := pos('ON', Info);
@@ -639,7 +646,7 @@ begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          ledRele3.State:= lsOff;
+          ledFIMCURSOA1.State:= lsOff;
 
      end;
      posicaofim := pos('OFF', Info);
@@ -648,12 +655,10 @@ begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          ledRele3.State:= lsOn;
+          ledFIMCURSOA1.State:= lsOn;
      end;
-
    end;
-    //RELE4:
-   posicao := pos('RELE4:',Info);
+   posicao := pos('flgFIMA2=',Info);
    if (posicao > 0) then
    begin
      posicaofim := pos('ON', Info);
@@ -662,7 +667,7 @@ begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          ledRele4.State:= lsOff;
+          ledFIMCURSOA2.State:= lsOff;
 
      end;
      posicaofim := pos('OFF', Info);
@@ -671,9 +676,31 @@ begin
           //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
           //cbFiles.Items.Append(Info);
           //indGnouMeter1.Value:= StrToFloat(Info);
-          ledRele4.State:= lsOn;
+          ledFIMCURSOA2.State:= lsOn;
      end;
    end;
+   posicao := pos('POSSERVA=',Info);
+   if (posicao > 0) then
+   begin
+     posicaofim := pos(#10, Info);
+     if (posicaofim>0) then
+     begin
+          Info := Copy(Info,posicao+9,posicaofim-(posicao+9));
+          //cbFiles.Items.Append(Info);
+          //indGnouMeter1.Value:= StrToFloat(Info);
+          LEDNEIXOA.Caption:= lsOff;
+
+     end;
+     posicaofim := pos('OFF', Info);
+     if (posicaofim>0) then
+     begin
+          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
+          //cbFiles.Items.Append(Info);
+          //indGnouMeter1.Value:= StrToFloat(Info);
+          ledFIMCURSOA2.State:= lsOn;
+     end;
+   end;
+
    //Erro SD!
    posicao := pos('Erro SD', Info);
    if (posicao>0) then
@@ -797,7 +824,7 @@ begin
         strtemperatura := copy(Info,pos('=',Info)+1,length(Info)-(pos('=',Info)+3));
         DecimalSeparator := '.';
         temperatura := strtofloat(strtemperatura);
-        indGTemp.Value:= temperatura;
+        indGTemp1.Value:= temperatura;
 
     end;
 

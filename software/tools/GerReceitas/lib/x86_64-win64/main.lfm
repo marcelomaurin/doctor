@@ -688,6 +688,7 @@ object frmMain: TfrmMain
         Lines.Strings = (
           'INICIAR'
           'MSG=Bem vindo ao sistema'
+          'WAITIME=2'
           'MSGSTOP=Insira a amostra que será analisada'
           'SOUND'
           'MSGSTOP=Feche a tampa e pressione OK'
@@ -1418,9 +1419,9 @@ object frmMain: TfrmMain
         TabOrder = 8
       end
       object BTLSTDIR: TButton
-        Left = 195
+        Left = 196
         Height = 25
-        Top = 272
+        Top = 210
         Width = 75
         Caption = 'LSTDIR'
         OnClick = BTLSTDIRClick
@@ -1479,84 +1480,84 @@ object frmMain: TfrmMain
         TabOrder = 14
       end
       object cbFiles: TComboBox
-        Left = 280
+        Left = 281
         Height = 23
-        Top = 272
+        Top = 210
         Width = 208
         ItemHeight = 15
         TabOrder = 15
       end
       object btClear: TButton
-        Left = 195
+        Left = 196
         Height = 25
-        Top = 304
+        Top = 242
         Width = 75
         Caption = 'Clear'
         OnClick = btClearClick
         TabOrder = 16
       end
       object btRUN: TButton
-        Left = 506
+        Left = 507
         Height = 25
-        Top = 270
+        Top = 208
         Width = 75
         Caption = 'RUN'
         OnClick = btRUNClick
         TabOrder = 17
       end
       object btTempMin: TButton
-        Left = 194
+        Left = 195
         Height = 25
-        Top = 362
+        Top = 300
         Width = 75
         Caption = 'TempMin'
         OnClick = btTempMinClick
         TabOrder = 18
       end
       object Label9: TLabel
-        Left = 284
+        Left = 285
         Height = 15
-        Top = 345
+        Top = 283
         Width = 52
         Caption = 'TempMax'
         ParentColor = False
       end
       object Label10: TLabel
-        Left = 398
+        Left = 399
         Height = 15
-        Top = 345
+        Top = 283
         Width = 50
         Caption = 'TempMin'
         ParentColor = False
       end
       object Label11: TLabel
-        Left = 496
+        Left = 497
         Height = 15
-        Top = 345
+        Top = 283
         Width = 36
         Caption = 'Tempo'
         ParentColor = False
       end
       object edTempMax: TEdit
-        Left = 284
+        Left = 285
         Height = 23
-        Top = 364
+        Top = 302
         Width = 80
         TabOrder = 19
         Text = '32'
       end
       object edTempMin: TEdit
-        Left = 396
+        Left = 397
         Height = 23
-        Top = 365
+        Top = 303
         Width = 80
         TabOrder = 20
         Text = '30'
       end
       object edTempo: TEdit
-        Left = 496
+        Left = 497
         Height = 23
-        Top = 364
+        Top = 302
         Width = 80
         TabOrder = 21
         Text = '0'
@@ -1611,6 +1612,56 @@ object frmMain: TfrmMain
         Digits = 0
         Increment = 10
         MarkerColor = clBlue
+      end
+      object ledFIMCURSOA1: TAdvLed
+        Left = 640
+        Height = 25
+        Top = 216
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+      object ledFIMCURSOA2: TAdvLed
+        Left = 642
+        Height = 25
+        Top = 256
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+      object Label2: TLabel
+        Left = 672
+        Height = 15
+        Top = 216
+        Width = 71
+        Caption = 'Fim Curso A1'
+        ParentColor = False
+      end
+      object Label23: TLabel
+        Left = 672
+        Height = 15
+        Top = 256
+        Width = 71
+        Caption = 'Fim Curso A2'
+        ParentColor = False
+      end
+      object Label24: TLabel
+        Left = 642
+        Height = 15
+        Top = 336
+        Width = 36
+        Caption = 'EIXO A'
+        ParentColor = False
+      end
+      object LEDNEIXOA: TLEDNumber
+        Left = 641
+        Height = 30
+        Top = 352
+        Width = 102
+        Caption = '000000'
+        Columns = 6
       end
     end
     object tbEthernet: TTabSheet
