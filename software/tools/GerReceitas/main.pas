@@ -16,28 +16,41 @@ type
 
   TfrmMain = class(TForm)
     BTBEEP1: TButton;
+    btCalibracao: TButton;
+    btDEFMOD: TButton;
     Button1: TButton;
     btSOUND: TButton;
-    edSrv: TEdit;
-    edFirmware: TEdit;
+    edDEFMOD_NRO: TEdit;
+    edDEFMOD_VALOR: TEdit;
     indGTemp: TindGnouMeter;
     indGTemp1: TindGnouMeter;
-    Label18: TLabel;
-    Label19: TLabel;
     Label2: TLabel;
-    Label20: TLabel;
-    Label21: TLabel;
-    Label22: TLabel;
     Label23: TLabel;
     Label24: TLabel;
-    Label25: TLabel;
     Label26: TLabel;
     Label27: TLabel;
-    Label28: TLabel;
     Label29: TLabel;
+    Label33: TLabel;
+    Label34: TLabel;
+    Label35: TLabel;
+    Label36: TLabel;
+    Label37: TLabel;
     ledFIMCURSOA1: TAdvLed;
     ledFIMCURSOA2: TAdvLed;
     LEDNEIXOA: TLEDNumber;
+    LOCAL_DEFMOD1: TEdit;
+    edSrv: TEdit;
+    edFirmware: TEdit;
+    Label18: TLabel;
+    Label19: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label25: TLabel;
+    Label28: TLabel;
+    Label30: TLabel;
+    Label31: TLabel;
+    Label32: TLabel;
     ledRele1: TAdvLed;
     ledRele2: TAdvLed;
     ledRele3: TAdvLed;
@@ -105,6 +118,8 @@ type
     SynEdit1: TSynEdit;
     Console: TSynMemo;
     TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
     tbTermUSB: TTabSheet;
     tbBluetooth: TTabSheet;
     tbEthernet: TTabSheet;
@@ -116,8 +131,10 @@ type
     procedure btAtivarClick(Sender: TObject);
     procedure BTBEEP1Click(Sender: TObject);
     procedure BTBEEPClick(Sender: TObject);
+    procedure btCalibracaoClick(Sender: TObject);
     procedure btCarregarClick(Sender: TObject);
     procedure btClearClick(Sender: TObject);
+    procedure btDEFMODClick(Sender: TObject);
     procedure btDesativarClick(Sender: TObject);
     procedure BTLSTDIRClick(Sender: TObject);
     procedure BTMANClick(Sender: TObject);
@@ -209,6 +226,18 @@ begin
   end;
 end;
 
+procedure TfrmMain.btCalibracaoClick(Sender: TObject);
+begin
+  if SdpoSerial1.Active then
+  begin
+       SdpoSerial1.WriteData('CALIBRACAO'+#10);
+  end
+  else
+  begin
+    ShowMessage('Ative a porta USB!');
+  end;
+end;
+
 procedure TfrmMain.btCarregarClick(Sender: TObject);
 begin
   OpenDialog1.InitialDir:= ExtractFileDir(Application.ExeName);
@@ -223,6 +252,22 @@ end;
 procedure TfrmMain.btClearClick(Sender: TObject);
 begin
   cbFiles.Items.Clear;
+end;
+
+procedure TfrmMain.btDEFMODClick(Sender: TObject);
+var
+  info : string;
+   myFormatSettings: TFormatSettings;
+begin
+  if SdpoSerial1.Active then
+  begin
+      info := 'DEFMOD='+edDEFMOD_NRO.text+','+edDEFMOD_VALOR.text+#10;
+      SdpoSerial1.WriteData(Info);
+  end
+  else
+  begin
+    ShowMessage('Ative a porta USB!');
+  end;
 end;
 
 procedure TfrmMain.btDesativarClick(Sender: TObject);
@@ -828,6 +873,13 @@ begin
         temperatura := strtofloat(strtemperatura);
         indGTemp.Value:= temperatura;
 
+   end;
+   //LOCAL_DEFMOD1=300
+   posicao := pos('LOCAL_DEFMOD1=', Info);
+   if (posicao>0) then
+   begin
+        strtemperatura := copy(Info,pos('=',Info)+1,length(Info)-(pos('=',Info)+1));
+        LOCAL_DEFMOD1.text:= strtemperatura;
    end;
    posicao := pos('HUMIDADE=', Info);
    if (posicao>0) then

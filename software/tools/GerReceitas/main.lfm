@@ -1,10 +1,10 @@
 object frmMain: TfrmMain
-  Left = 2046
-  Height = 520
-  Top = -1118
+  Left = 1885
+  Height = 557
+  Top = -1033
   Width = 773
   Caption = 'Gerenciador de Receita'
-  ClientHeight = 520
+  ClientHeight = 557
   ClientWidth = 773
   Position = poMainFormCenter
   LCLVersion = '2.2.2.0'
@@ -18,16 +18,16 @@ object frmMain: TfrmMain
   end
   object PageControl1: TPageControl
     Left = 0
-    Height = 470
+    Height = 507
     Top = 50
     Width = 773
-    ActivePage = tbSobre
+    ActivePage = tbSetup
     Align = alClient
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 1
     object tbSobre: TTabSheet
       Caption = 'Sobre'
-      ClientHeight = 442
+      ClientHeight = 479
       ClientWidth = 765
       object Label1: TLabel
         Left = 129
@@ -70,9 +70,119 @@ object frmMain: TfrmMain
         ParentColor = False
       end
     end
+    object TabSheet3: TTabSheet
+      Caption = 'Info Equipamento'
+      ClientHeight = 479
+      ClientWidth = 765
+      object Label27: TLabel
+        Left = 8
+        Height = 15
+        Top = 40
+        Width = 89
+        Caption = 'Posição de Eixos'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label24: TLabel
+        Left = 9
+        Height = 15
+        Top = 60
+        Width = 36
+        Caption = 'EIXO A'
+        ParentColor = False
+      end
+      object LEDNEIXOA: TLEDNumber
+        Left = 8
+        Height = 30
+        Top = 73
+        Width = 102
+        Caption = '000000'
+        Columns = 6
+      end
+      object Label29: TLabel
+        Left = 16
+        Height = 15
+        Top = 152
+        Width = 96
+        Caption = 'Sensor Ambiente'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+        OnClick = Label29Click
+      end
+      object indGTemp: TindGnouMeter
+        Left = 0
+        Height = 200
+        Top = 173
+        Width = 56
+        Caption = 'Temp'
+        SignalUnit = 'C'
+        ValueMax = 100
+        Digits = 0
+        Increment = 10
+        MarkerColor = clBlue
+      end
+      object indGTemp1: TindGnouMeter
+        Left = 88
+        Height = 200
+        Top = 173
+        Width = 56
+        Caption = 'Hum'
+        SignalUnit = '%'
+        ValueMax = 100
+        Digits = 0
+        Increment = 10
+        MarkerColor = clBlue
+      end
+      object Label35: TLabel
+        Left = 632
+        Height = 15
+        Top = 181
+        Width = 103
+        Caption = 'Status de sensores'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label36: TLabel
+        Left = 664
+        Height = 15
+        Top = 208
+        Width = 71
+        Caption = 'Fim Curso A1'
+        ParentColor = False
+      end
+      object Label37: TLabel
+        Left = 664
+        Height = 15
+        Top = 240
+        Width = 71
+        Caption = 'Fim Curso A2'
+        ParentColor = False
+      end
+      object ledFIMCURSOA1: TAdvLed
+        Left = 632
+        Height = 25
+        Top = 208
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+      object ledFIMCURSOA2: TAdvLed
+        Left = 632
+        Height = 25
+        Top = 240
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+    end
     object tbSetup: TTabSheet
       Caption = 'Setup'
-      ClientHeight = 442
+      ClientHeight = 479
       ClientWidth = 765
       object Label4: TLabel
         Left = 40
@@ -154,412 +264,13 @@ object frmMain: TfrmMain
         TabOrder = 4
       end
     end
-    object tbUSB: TTabSheet
-      Caption = 'USB'
-      ClientHeight = 442
-      ClientWidth = 765
-      OnContextPopup = tbUSBContextPopup
-      object btAtivar: TButton
-        Left = 160
-        Height = 25
-        Top = 5
-        Width = 75
-        Caption = 'Ativar'
-        OnClick = btAtivarClick
-        TabOrder = 0
-      end
-      object btDesativar: TButton
-        Left = 248
-        Height = 25
-        Top = 5
-        Width = 75
-        Caption = 'Desativar'
-        OnClick = btDesativarClick
-        TabOrder = 1
-      end
-      object ledCtrl: TAdvLed
-        Left = 112
-        Height = 25
-        Top = 8
-        Width = 25
-        State = lsDisabled
-        Blink = False
-        AutoSize = False
-      end
-      object btMedir: TButton
-        Left = 8
-        Height = 25
-        Top = 396
-        Width = 115
-        Caption = 'Medir'
-        OnClick = btMedirClick
-        TabOrder = 2
-      end
-      object Label7: TLabel
-        Left = 196
-        Height = 15
-        Top = 82
-        Width = 45
-        Caption = 'Arquivo:'
-        ParentColor = False
-      end
-      object edFile: TEdit
-        Left = 253
-        Height = 23
-        Top = 82
-        Width = 242
-        TabOrder = 3
-        Text = 'RECEITA.REC'
-      end
-      object btUSBCarregar: TButton
-        Left = 507
-        Height = 25
-        Top = 82
-        Width = 75
-        Caption = 'Carregar'
-        OnClick = btUSBCarregarClick
-        TabOrder = 4
-      end
-      object BTMAN: TButton
-        Left = 194
-        Height = 25
-        Top = 160
-        Width = 75
-        Caption = 'MAN'
-        OnClick = BTMANClick
-        TabOrder = 5
-      end
-      object BTBEEP: TButton
-        Left = 192
-        Height = 25
-        Top = 192
-        Width = 75
-        Caption = 'Beep'
-        OnClick = BTBEEPClick
-        TabOrder = 6
-      end
-      object btRele1: TButton
-        Left = 195
-        Height = 25
-        Top = 231
-        Width = 75
-        Caption = 'Rele01 ON'
-        OnClick = btRele1Click
-        TabOrder = 7
-      end
-      object btRele2: TButton
-        Left = 194
-        Height = 25
-        Top = 262
-        Width = 75
-        Caption = 'Rele2 ON'
-        OnClick = btRele2Click
-        TabOrder = 8
-      end
-      object BTLSTDIR: TButton
-        Left = 196
-        Height = 25
-        Top = 306
-        Width = 75
-        Caption = 'LSTDIR'
-        OnClick = BTLSTDIRClick
-        TabOrder = 9
-      end
-      object btRele2OFF: TButton
-        Left = 280
-        Height = 25
-        Top = 264
-        Width = 75
-        Caption = 'Rele2 OFF'
-        OnClick = btRele2OFFClick
-        TabOrder = 10
-      end
-      object btRele5: TButton
-        Left = 280
-        Height = 25
-        Top = 231
-        Width = 75
-        Caption = 'Rele01 OFF'
-        OnClick = btRele5Click
-        TabOrder = 11
-      end
-      object Label8: TLabel
-        Left = 192
-        Height = 15
-        Top = 112
-        Width = 59
-        Caption = 'Mensagem'
-        ParentColor = False
-      end
-      object edMsg: TEdit
-        Left = 195
-        Height = 23
-        Top = 129
-        Width = 301
-        MaxLength = 20
-        TabOrder = 12
-      end
-      object BTMSG: TButton
-        Left = 507
-        Height = 25
-        Top = 129
-        Width = 75
-        Caption = 'MSG'
-        OnClick = BTMSGClick
-        TabOrder = 13
-      end
-      object BTMSGSTOP: TButton
-        Left = 590
-        Height = 25
-        Top = 129
-        Width = 75
-        Caption = 'MSGSTOP'
-        OnClick = BTMSGSTOPClick
-        TabOrder = 14
-      end
-      object cbFiles: TComboBox
-        Left = 281
-        Height = 23
-        Top = 306
-        Width = 208
-        ItemHeight = 15
-        TabOrder = 15
-      end
-      object btClear: TButton
-        Left = 196
-        Height = 25
-        Top = 338
-        Width = 75
-        Caption = 'Clear'
-        OnClick = btClearClick
-        TabOrder = 16
-      end
-      object btRUN: TButton
-        Left = 507
-        Height = 25
-        Top = 304
-        Width = 75
-        Caption = 'RUN'
-        OnClick = btRUNClick
-        TabOrder = 17
-      end
-      object btTempMin: TButton
-        Left = 195
-        Height = 25
-        Top = 396
-        Width = 75
-        Caption = 'TempMin'
-        OnClick = btTempMinClick
-        TabOrder = 18
-      end
-      object Label9: TLabel
-        Left = 285
-        Height = 15
-        Top = 379
-        Width = 52
-        Caption = 'TempMax'
-        ParentColor = False
-      end
-      object Label10: TLabel
-        Left = 399
-        Height = 15
-        Top = 379
-        Width = 50
-        Caption = 'TempMin'
-        ParentColor = False
-      end
-      object Label11: TLabel
-        Left = 497
-        Height = 15
-        Top = 379
-        Width = 36
-        Caption = 'Tempo'
-        ParentColor = False
-      end
-      object edTempMax: TEdit
-        Left = 285
-        Height = 23
-        Top = 398
-        Width = 80
-        TabOrder = 19
-        Text = '32'
-      end
-      object edTempMin: TEdit
-        Left = 397
-        Height = 23
-        Top = 399
-        Width = 80
-        TabOrder = 20
-        Text = '30'
-      end
-      object edTempo: TEdit
-        Left = 497
-        Height = 23
-        Top = 398
-        Width = 80
-        TabOrder = 21
-        Text = '0'
-      end
-      object Button1: TButton
-        Left = 590
-        Height = 25
-        Top = 80
-        Width = 75
-        Caption = 'Transferir'
-        OnClick = Button1Click
-        TabOrder = 22
-      end
-      object btSOUND: TButton
-        Left = 280
-        Height = 25
-        Top = 192
-        Width = 75
-        Caption = 'SOUND'
-        OnClick = btSOUNDClick
-        TabOrder = 23
-      end
-      object BTBEEP1: TButton
-        Left = 688
-        Height = 25
-        Top = 127
-        Width = 75
-        Caption = 'ESC'
-        OnClick = BTBEEP1Click
-        TabOrder = 24
-      end
-      object indGTemp: TindGnouMeter
-        Left = 0
-        Height = 200
-        Top = 173
-        Width = 56
-        Caption = 'Temp'
-        SignalUnit = 'C'
-        ValueMax = 100
-        Digits = 0
-        Increment = 10
-        MarkerColor = clBlue
-      end
-      object indGTemp1: TindGnouMeter
-        Left = 88
-        Height = 200
-        Top = 173
-        Width = 56
-        Caption = 'Hum'
-        SignalUnit = '%'
-        ValueMax = 100
-        Digits = 0
-        Increment = 10
-        MarkerColor = clBlue
-      end
-      object ledFIMCURSOA1: TAdvLed
-        Left = 632
-        Height = 25
-        Top = 208
-        Width = 25
-        State = lsDisabled
-        Blink = False
-        AutoSize = False
-      end
-      object ledFIMCURSOA2: TAdvLed
-        Left = 632
-        Height = 25
-        Top = 240
-        Width = 25
-        State = lsDisabled
-        Blink = False
-        AutoSize = False
-      end
-      object Label2: TLabel
-        Left = 664
-        Height = 15
-        Top = 208
-        Width = 71
-        Caption = 'Fim Curso A1'
-        ParentColor = False
-      end
-      object Label23: TLabel
-        Left = 664
-        Height = 15
-        Top = 240
-        Width = 71
-        Caption = 'Fim Curso A2'
-        ParentColor = False
-      end
-      object Label24: TLabel
-        Left = 631
-        Height = 15
-        Top = 331
-        Width = 36
-        Caption = 'EIXO A'
-        ParentColor = False
-      end
-      object LEDNEIXOA: TLEDNumber
-        Left = 630
-        Height = 30
-        Top = 344
-        Width = 102
-        Caption = '000000'
-        Columns = 6
-      end
-      object Label25: TLabel
-        Left = 8
-        Height = 15
-        Top = 8
-        Width = 102
-        Caption = 'Status da Conexão'
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-      end
-      object Label26: TLabel
-        Left = 632
-        Height = 15
-        Top = 181
-        Width = 103
-        Caption = 'Status de sensores'
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-      end
-      object Label27: TLabel
-        Left = 630
-        Height = 15
-        Top = 311
-        Width = 89
-        Caption = 'Posição de Eixos'
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-      end
-      object Label28: TLabel
-        Left = 192
-        Height = 15
-        Top = 56
-        Width = 150
-        Caption = 'Comandos do Equipamento'
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-      end
-      object Label29: TLabel
-        Left = 16
-        Height = 15
-        Top = 152
-        Width = 96
-        Caption = 'Sensor Ambiente'
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-        OnClick = Label29Click
-      end
-    end
     object tbScript: TTabSheet
       Caption = 'Scripts'
-      ClientHeight = 442
+      ClientHeight = 479
       ClientWidth = 765
       inline SynEdit1: TSynEdit
         Left = 0
-        Height = 368
+        Height = 405
         Top = 74
         Width = 765
         Align = alClient
@@ -1125,14 +836,434 @@ object frmMain: TfrmMain
         end
       end
     end
+    object tbUSB: TTabSheet
+      Caption = 'USB'
+      ClientHeight = 479
+      ClientWidth = 765
+      OnContextPopup = tbUSBContextPopup
+      object btAtivar: TButton
+        Left = 160
+        Height = 25
+        Hint = 'Inicia a comunicação com o equipamento'
+        Top = 5
+        Width = 75
+        Caption = 'Ativar'
+        OnClick = btAtivarClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+      end
+      object btDesativar: TButton
+        Left = 248
+        Height = 25
+        Hint = 'Fecha a comunicação com o equipamento'
+        Top = 5
+        Width = 75
+        Caption = 'Desativar'
+        OnClick = btDesativarClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+      end
+      object ledCtrl: TAdvLed
+        Left = 112
+        Height = 25
+        Top = 8
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+      object btMedir: TButton
+        Left = 8
+        Height = 25
+        Hint = 'Coleta de temperatura ambiente'
+        Top = 396
+        Width = 115
+        Caption = 'Medir'
+        OnClick = btMedirClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+      end
+      object Label7: TLabel
+        Left = 196
+        Height = 15
+        Top = 82
+        Width = 45
+        Caption = 'Arquivo:'
+        ParentColor = False
+      end
+      object edFile: TEdit
+        Left = 253
+        Height = 23
+        Hint = 'Nome da receita a ser trabalhada'
+        Top = 82
+        Width = 242
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        Text = 'RECEITA.REC'
+      end
+      object btUSBCarregar: TButton
+        Left = 507
+        Height = 25
+        Hint = 'Carrega para aba de Script a receita em memória.'
+        Top = 82
+        Width = 75
+        Caption = 'Carregar'
+        OnClick = btUSBCarregarClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 4
+      end
+      object BTMAN: TButton
+        Left = 194
+        Height = 25
+        Hint = 'Solicita listagem de comandos'
+        Top = 160
+        Width = 75
+        Caption = 'MAN'
+        OnClick = BTMANClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 5
+      end
+      object BTBEEP: TButton
+        Left = 195
+        Height = 25
+        Hint = 'Toca um aviso sonoro no equipamento'
+        Top = 192
+        Width = 72
+        Caption = 'Beep'
+        OnClick = BTBEEPClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 6
+      end
+      object btRele1: TButton
+        Left = 194
+        Height = 26
+        Hint = 'Aciona o RELE01'
+        Top = 224
+        Width = 75
+        Caption = 'Rele01 ON'
+        OnClick = btRele1Click
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 7
+      end
+      object btRele2: TButton
+        Left = 194
+        Height = 25
+        Hint = 'Aciona o Rele 02'
+        Top = 256
+        Width = 75
+        Caption = 'Rele2 ON'
+        OnClick = btRele2Click
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 8
+      end
+      object BTLSTDIR: TButton
+        Left = 412
+        Height = 25
+        Hint = 'Carrega listagem de receitas contidas no SD do equipamento'
+        Top = 450
+        Width = 72
+        Caption = 'LSTDIR'
+        OnClick = BTLSTDIRClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 9
+      end
+      object btRele2OFF: TButton
+        Left = 280
+        Height = 25
+        Hint = 'Desliga o RELE 02'
+        Top = 256
+        Width = 75
+        Caption = 'Rele2 OFF'
+        OnClick = btRele2OFFClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 10
+      end
+      object btRele5: TButton
+        Left = 280
+        Height = 25
+        Hint = 'Desliga o RELE 01'
+        Top = 224
+        Width = 75
+        Caption = 'Rele01 OFF'
+        OnClick = btRele5Click
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 11
+      end
+      object Label8: TLabel
+        Left = 192
+        Height = 15
+        Top = 112
+        Width = 59
+        Caption = 'Mensagem'
+        ParentColor = False
+      end
+      object edMsg: TEdit
+        Left = 195
+        Height = 23
+        Hint = 'Texto da mensagem que se deseja enviar'
+        Top = 129
+        Width = 301
+        MaxLength = 20
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 12
+      end
+      object BTMSG: TButton
+        Left = 507
+        Height = 25
+        Hint = 'Mensagem sem parada'
+        Top = 129
+        Width = 75
+        Caption = 'MSG'
+        OnClick = BTMSGClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 13
+      end
+      object BTMSGSTOP: TButton
+        Left = 590
+        Height = 25
+        Hint = 'Mensagem com parada'
+        Top = 129
+        Width = 75
+        Caption = 'MSGSTOP'
+        OnClick = BTMSGSTOPClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 14
+      end
+      object cbFiles: TComboBox
+        Left = 195
+        Height = 23
+        Top = 452
+        Width = 208
+        ItemHeight = 15
+        TabOrder = 15
+      end
+      object btClear: TButton
+        Left = 489
+        Height = 25
+        Hint = 'Limpa listagem atual de receitas'
+        Top = 450
+        Width = 75
+        Caption = 'Clear'
+        OnClick = btClearClick
+        TabOrder = 16
+      end
+      object btRUN: TButton
+        Left = 195
+        Height = 25
+        Hint = 'Executa a receita apontada na listagem'
+        Top = 402
+        Width = 75
+        Caption = 'RUN'
+        OnClick = btRUNClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 17
+      end
+      object btTempMin: TButton
+        Left = 196
+        Height = 25
+        Top = 288
+        Width = 75
+        Caption = 'TempMin'
+        OnClick = btTempMinClick
+        TabOrder = 18
+      end
+      object Label9: TLabel
+        Left = 296
+        Height = 15
+        Top = 290
+        Width = 52
+        Caption = 'TempMax'
+        ParentColor = False
+      end
+      object Label10: TLabel
+        Left = 448
+        Height = 15
+        Top = 290
+        Width = 50
+        Caption = 'TempMin'
+        ParentColor = False
+      end
+      object Label11: TLabel
+        Left = 584
+        Height = 15
+        Top = 290
+        Width = 36
+        Caption = 'Tempo'
+        ParentColor = False
+      end
+      object edTempMax: TEdit
+        Left = 358
+        Height = 23
+        Top = 290
+        Width = 80
+        TabOrder = 19
+        Text = '32'
+      end
+      object edTempMin: TEdit
+        Left = 500
+        Height = 23
+        Top = 290
+        Width = 80
+        TabOrder = 20
+        Text = '30'
+      end
+      object edTempo: TEdit
+        Left = 632
+        Height = 23
+        Top = 290
+        Width = 80
+        TabOrder = 21
+        Text = '0'
+      end
+      object Button1: TButton
+        Left = 590
+        Height = 25
+        Hint = 'Transfere a receita para o SD do Equipamento'
+        Top = 80
+        Width = 75
+        Caption = 'Transferir'
+        OnClick = Button1Click
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 22
+      end
+      object btSOUND: TButton
+        Left = 280
+        Height = 25
+        Top = 192
+        Width = 75
+        Caption = 'SOUND'
+        OnClick = btSOUNDClick
+        TabOrder = 23
+      end
+      object BTBEEP1: TButton
+        Left = 688
+        Height = 25
+        Top = 127
+        Width = 75
+        Caption = 'ESC'
+        OnClick = BTBEEP1Click
+        TabOrder = 24
+      end
+      object Label25: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 102
+        Caption = 'Status da Conexão'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label28: TLabel
+        Left = 192
+        Height = 15
+        Top = 56
+        Width = 150
+        Caption = 'Comandos do Equipamento'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object btCalibracao: TButton
+        Left = 368
+        Height = 25
+        Hint = 'Realiza a calibração do equipamento, pode demorar muito.'
+        Top = 192
+        Width = 84
+        Caption = 'CALIBRAÇÃO'
+        OnClick = btCalibracaoClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 25
+      end
+      object Label30: TLabel
+        Left = 195
+        Height = 15
+        Top = 378
+        Width = 208
+        Caption = 'Comandos de Scripts do Equipamento'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label31: TLabel
+        Left = 197
+        Height = 15
+        Top = 434
+        Width = 46
+        Caption = 'Receitas:'
+        ParentColor = False
+      end
+      object btDEFMOD: TButton
+        Left = 197
+        Height = 25
+        Hint = 'Realiza a calibração do equipamento, pode demorar muito.'
+        Top = 320
+        Width = 72
+        Caption = 'DEFMOD'
+        OnClick = btDEFMODClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 26
+      end
+      object Label33: TLabel
+        Left = 325
+        Height = 15
+        Top = 325
+        Width = 23
+        Caption = 'Nro:'
+        ParentColor = False
+      end
+      object Label34: TLabel
+        Left = 456
+        Height = 15
+        Top = 325
+        Width = 39
+        Caption = 'VALOR:'
+        ParentColor = False
+      end
+      object edDEFMOD_NRO: TEdit
+        Left = 358
+        Height = 23
+        Top = 325
+        Width = 80
+        TabOrder = 27
+        Text = '1'
+      end
+      object edDEFMOD_VALOR: TEdit
+        Left = 500
+        Height = 23
+        Top = 325
+        Width = 80
+        TabOrder = 28
+        Text = '300'
+      end
+    end
     object tbTermUSB: TTabSheet
       Caption = 'Terminal'
-      ClientHeight = 442
+      ClientHeight = 479
       ClientWidth = 765
       object edConsole: TEdit
         Left = 0
         Height = 23
-        Top = 419
+        Top = 456
         Width = 765
         Align = alBottom
         OnChange = edConsoleChange
@@ -1142,7 +1273,7 @@ object frmMain: TfrmMain
       inline Console: TSynMemo
         Cursor = crIBeam
         Left = 0
-        Height = 419
+        Height = 456
         Top = 0
         Width = 765
         Align = alClient
@@ -1629,6 +1760,28 @@ object frmMain: TfrmMain
         end
       end
     end
+    object TabSheet2: TTabSheet
+      Caption = 'Parametros'
+      ClientHeight = 479
+      ClientWidth = 765
+      object Label32: TLabel
+        Left = 24
+        Height = 15
+        Top = 24
+        Width = 99
+        Caption = 'LOCAL_DEFMOD1:'
+        ParentColor = False
+      end
+      object LOCAL_DEFMOD1: TEdit
+        Left = 24
+        Height = 23
+        Top = 44
+        Width = 176
+        ReadOnly = True
+        TabOrder = 0
+        Text = 'LOCAL_DEFMOD1'
+      end
+    end
     object tbEthernet: TTabSheet
       Caption = 'Ethernet'
       ParentShowHint = False
@@ -1636,7 +1789,7 @@ object frmMain: TfrmMain
     end
     object TabSheet1: TTabSheet
       Caption = 'Painel'
-      ClientHeight = 442
+      ClientHeight = 479
       ClientWidth = 765
       ParentShowHint = False
       ShowHint = True
@@ -1812,6 +1965,32 @@ object frmMain: TfrmMain
       ParentShowHint = False
       ShowHint = True
     end
+  end
+  object Label23: TLabel
+    Left = 664
+    Height = 15
+    Top = 240
+    Width = 71
+    Caption = 'Fim Curso A2'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 664
+    Height = 15
+    Top = 208
+    Width = 71
+    Caption = 'Fim Curso A1'
+    ParentColor = False
+  end
+  object Label26: TLabel
+    Left = 632
+    Height = 15
+    Top = 181
+    Width = 103
+    Caption = 'Status de sensores'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
   end
   object SdpoSerial1: TSdpoSerial
     Active = False

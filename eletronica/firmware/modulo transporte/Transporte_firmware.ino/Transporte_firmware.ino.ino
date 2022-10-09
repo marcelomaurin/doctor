@@ -64,6 +64,15 @@ int lastflgFIMB2 = -1;
 int lastflgFIMC1 = -1;
 int lastflgFIMC2 = -1;
 
+/*Posicao local do Modulo1*/
+long LOCAL_DEFMOD1 = 0;
+/*Posicao local do Modulo2*/
+long LOCAL_DEFMOD2 = 0;
+/*Posicao local do Modulo3*/
+long LOCAL_DEFMOD3 = 0;
+/*Posicao local do Modulo4*/
+long LOCAL_DEFMOD4 = 0;
+
 int FOPEPag = 0; //Controle de Pagina da Funcao
 int FOPEMAXPag = 2; //Tres Paginas para Funcoes
 //int FOPERMAXPag = 2; //tres Paginas para Operacoes
@@ -203,6 +212,9 @@ void Rele02(bool Value);
 void MovePassoA_Dir();
 void MovePassoA_Esq();
 void RetornaServos();
+long fLOCAL_DEFMOD(int modulo);
+void fDEFMOD(int modulo,char *MSG1);
+void gravaDEFMOD(int modulo, long valor);
 
 SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
 Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
@@ -390,13 +402,13 @@ void Calibracao()
   NextionShow("CALIB"); //Chamando tela calibração
 
   Serial.println("Calibração Eixo X");
-  /*
+  
   while (!flgFIMA1 )
   {
       MovePassoA_Esq(3);
       Le_FimCurso();
   }
-  */
+  Serial.println("Fim de calibração");
   
   
 }
@@ -424,7 +436,7 @@ void setup() {
   //ImprimeEtiqueta();
   Le_DHT22();
 
-  Calibracao(); /*Calibração do equipamento*/
+  //Calibracao(); /*Calibração do equipamento*/
   WellComeConsole(); 
   Reset();  
   NextionShow("Menu");
@@ -450,6 +462,7 @@ void Sound(char serByte)
     }
   }
 }
+
 
 void Rele01(bool Value)
 {
@@ -533,6 +546,128 @@ void RetornaServos()
     Le_FimCurso();
   }
   
+}
+
+/*Carrega configuração do modulo local*/
+long int fLOCAL_DEFMOD(int modulo)
+{
+  File arquivo;
+  int tamanho =0;
+  char linha[255];
+  char param[255];
+  char *posicao=NULL;
+  char *fimdelinha=NULL;
+  int flgfinded = 0;
+  Serial.println("Inicio fLOCAL_DEFMOD");
+  if(modulo==1) flgfinded  = SD.exists("DEFMOD1.CFG");
+  if(modulo==2) flgfinded  = SD.exists("DEFMOD2.CFG");
+  if(modulo==3) flgfinded  = SD.exists("DEFMOD3.CFG");
+  if(modulo==4) flgfinded  = SD.exists("DEFMOD4.CFG");
+  Serial.print("flgfinded:");
+  Serial.println(flgfinded);
+  if(flgfinded==1){
+    if(modulo==1)   arquivo = SD.open("DEFMOD1.CFG");
+    if(modulo==2)   arquivo = SD.open("DEFMOD2.CFG");
+    if(modulo==3)   arquivo = SD.open("DEFMOD3.CFG");
+    if(modulo==4)   arquivo = SD.open("DEFMOD4.CFG");
+    Serial.println("Abriu arquivo");
+    while (arquivo.available()) 
+    {      
+      arquivo.read(linha,tamanho);
+      Serial.print("linha:");
+      Serial.println(linha);
+      if (tamanho !=0)
+      {      
+        posicao=strstr(linha,"DEFMOD=");
+        if(posicao!=NULL)
+        {
+          posicao= posicao +1;
+          fimdelinha = strstr(linha,"\0");
+          memset(param,'\0',sizeof(param)); /*inicializa param*/
+          strncpy(param,posicao,posicao-(fimdelinha-1));
+          Serial.print("LOCAL_DEFMOD1=");
+          Serial.println(param);
+          arquivo.close();
+          char *ptr;
+          long valor;
+          valor = strtol(param,&ptr,10);
+          Serial.println("Fim2 fLOCAL_DEFMOD");
+          return valor;
+        }
+        else
+        {
+          arquivo.close();
+          return 0;
+        }
+      } else
+      {
+          arquivo.close();
+          return 0;
+      }
+    }
+  } else {
+    return 0;
+  }
+  
+  arquivo.close();
+  Serial.println("Fim fLOCAL_DEFMOD");
+  return 0;
+}
+
+
+void removeDEFMOD(int modulo)
+{
+  if(modulo==1)
+  {
+    if(SD.exists("DEFMOD1.CFG")) SD.remove("DEFMOD1.CFG");
+  }
+  if(modulo==2)
+  {
+    if(SD.exists("DEFMOD2.CFG")) SD.remove("DEFMOD2.CFG");
+  }
+  if(modulo==3)
+  {   
+    if(SD.exists("DEFMOD3.CFG")) SD.remove("DEFMOD3.CFG");
+  }
+  if(modulo==4)
+  {
+    if(SD.exists("DEFMOD4.CFG")) SD.remove("DEFMOD4.CFG");
+  }
+}
+
+void gravaDEFMOD(int modulo, long valor)
+{
+  File arquivo;
+  char info[255];
+  memset(info,'\0',sizeof(info));
+  Serial.println("gravaDEFMOD");
+  sprintf(info,"LOCAL_DEFMOD%i=%i\n",modulo,valor);
+  removeDEFMOD(modulo);
+  if(modulo==1)   arquivo = SD.open("DEFMOD1.CFG", FILE_WRITE);
+  if(modulo==2)   arquivo = SD.open("DEFMOD2.CFG", FILE_WRITE);
+  if(modulo==3)   arquivo = SD.open("DEFMOD3.CFG", FILE_WRITE);
+  if(modulo==4)   arquivo = SD.open("DEFMOD4.CFG", FILE_WRITE);
+  arquivo.write("DEFMOD=",7);
+  arquivo.write(info);
+  arquivo.close();
+}
+
+void fDEFMOD(int modulo,char *MSG1)
+{
+  char *ptr;
+  long local = 0;
+  
+  local = strtol(MSG1,&ptr,10);
+  Serial.println("fDEFMOD");
+  if (modulo==1) LOCAL_DEFMOD1 = local;
+  if (modulo==2) LOCAL_DEFMOD2 = local;
+  if (modulo==3) LOCAL_DEFMOD3 = local;
+  if (modulo==4) LOCAL_DEFMOD4 = local;
+  gravaDEFMOD(modulo,local);
+  Serial.print("LOCAL_DEFMOD");
+  Serial.print(modulo);
+  Serial.print("=");
+  Serial.println(local);
 }
 
 //Carrega a aplicação para o SD
@@ -1060,6 +1195,12 @@ void NextionMensageSTOP(String info)
 //Reseta todas as entradas para o valor padrão
 float Reset()
 {
+  Serial.println("RESET");
+  /*Inicializa Modulos*/
+  LOCAL_DEFMOD1=0;
+  LOCAL_DEFMOD2=0;
+  LOCAL_DEFMOD3=0;
+  LOCAL_DEFMOD4=0;
   Serial.println('Reset rodou');
   flgBeep = false;
   /* incluir sub comandos de inicialização*/
@@ -1067,12 +1208,32 @@ float Reset()
   passoB = 10;
   passoC = 10;
 
-  //RetornaServos();
+  RetornaServos();
 
   /*Posicao de servo motores*/
   posSERVA = 0;
+  Serial.print("POSSERVA=");  
+  Serial.println(posSERVA);
   posSERVB = 0;
+  Serial.print("POSSERVB=");  
+  Serial.println(posSERVB);
   posSERVC = 0;
+  Serial.print("POSSERVC=");  
+  Serial.println(posSERVC);
+
+  LOCAL_DEFMOD1=fLOCAL_DEFMOD(1);
+  LOCAL_DEFMOD2=fLOCAL_DEFMOD(2);
+  LOCAL_DEFMOD3=fLOCAL_DEFMOD(3);
+  LOCAL_DEFMOD4=fLOCAL_DEFMOD(4);
+  Serial.print("LOCAL_DEFMOD1=");
+  Serial.println(LOCAL_DEFMOD1);
+  Serial.print("LOCAL_DEFMOD2=");
+  Serial.println(LOCAL_DEFMOD2);
+  Serial.print("LOCAL_DEFMOD3=");
+  Serial.println(LOCAL_DEFMOD3);
+  Serial.print("LOCAL_DEFMOD4=");
+  Serial.println(LOCAL_DEFMOD4);
+  Serial.println("Fim de RESET");
   
 }
 
@@ -1274,6 +1435,42 @@ void KeyCMD()
       LOAD(root, MSG1);
 
       resp = true;
+    }
+
+    //DEFMOD1=
+    if (strstr( Buffer,"DEFMOD=") != 0)
+    {
+      char *IGUAL;
+      char *virgula;
+      char *fim;
+      int nro =0;
+      char *ptr;
+      char param01[20];
+      Serial.println("DEFMOD");
+      Serial.print("Buffer:");
+      Serial.println(Buffer);
+      IGUAL = strstr(Buffer,"=");
+      virgula = strstr(Buffer,",");
+      if(virgula!=NULL)
+      {
+        fim = strstr(Buffer,"\n");
+        memset(param01,'\n',sizeof(param01));
+        
+        strncpy(param01,(char*)(IGUAL+1),virgula-(IGUAL+1));
+        //strncpy(virgula, (char*)(virgula+1),(fim-(virgula+1)));
+        nro = strtol(param01,&ptr,10);
+        Serial.print("NRO:");
+        Serial.println(nro);
+        Serial.print("param02:");
+        Serial.println(virgula+1);
+      
+        fDEFMOD(nro,virgula+1);
+        resp = true;
+      }
+      else {
+        Serial.println("Comando mau formado");
+        resp = false;
+      }
     }
 
 
