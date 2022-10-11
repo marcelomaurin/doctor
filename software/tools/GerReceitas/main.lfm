@@ -21,9 +21,9 @@ object frmMain: TfrmMain
     Height = 507
     Top = 50
     Width = 773
-    ActivePage = tbSetup
+    ActivePage = tbScript
     Align = alClient
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 1
     object tbSobre: TTabSheet
       Caption = 'Sobre'
@@ -710,38 +710,39 @@ object frmMain: TfrmMain
         MouseTextActions = <>
         MouseSelActions = <>
         Lines.Strings = (
-          'INICIAR'
+          'START'
           'MSG=Bem vindo ao sistema'
           'WAITIME=2'
+          'DEFINE'
           'MSGSTOP=Insira a amostra que será analisada'
           'SOUND'
           'MSGSTOP=Feche a tampa e pressione OK'
           'MSG=Iniciando processo'
-          'LEVAR=MOD1'
+          'MOVE=MOD1'
           'SOUND'
           'MSG=FASE1'
-          'CALL=MOD1,[$FILENAME]'
+          'CALL=MOD1'
           'WAIT=MOD1'
           'SOUND'
-          'LEVAR=MOD2'
+          'MOVE=MOD2'
           'SOUND'
           'MSG=FASE2'
-          'CALL=MOD2,[$FILENAME]'
+          'CALL=MOD2'
           'WAIT=MOD2'
           'SOUND'
           'MSG=ANALISE EXAME'
-          'LEVAR=MOD4'
+          'MOVE=MOD4'
           'SOUND'
-          'CALL=MOD4,[$FILENAME]'
+          'CALL=MOD4'
           'WAIT=MOD4'
           'SOUND'
           'MSG=Retornando Amostra'
-          'CALL=MOD0,[$FILENAME]'
-          'WAIT=MOD0'
+          'MOVE=MOD0'
+          'REPORT'
           'BEEP'
           'MSGSTOP=RETIRE A AMOSTRA e Press OK'
           'MSG=Fim de processo'
-          'FIM'
+          'END'
         )
         VisibleSpecialChars = [vscSpace, vscTabAtLast]
         SelectedColor.BackPriority = 50
@@ -887,9 +888,9 @@ object frmMain: TfrmMain
         TabOrder = 2
       end
       object Label7: TLabel
-        Left = 196
+        Left = 197
         Height = 15
-        Top = 82
+        Top = 392
         Width = 45
         Caption = 'Arquivo:'
         ParentColor = False
@@ -898,7 +899,7 @@ object frmMain: TfrmMain
         Left = 253
         Height = 23
         Hint = 'Nome da receita a ser trabalhada'
-        Top = 82
+        Top = 370
         Width = 242
         ParentShowHint = False
         ShowHint = True
@@ -906,10 +907,10 @@ object frmMain: TfrmMain
         Text = 'RECEITA.REC'
       end
       object btUSBCarregar: TButton
-        Left = 507
+        Left = 568
         Height = 25
         Hint = 'Carrega para aba de Script a receita em memória.'
-        Top = 82
+        Top = 407
         Width = 75
         Caption = 'Carregar'
         OnClick = btUSBCarregarClick
@@ -969,7 +970,7 @@ object frmMain: TfrmMain
         Left = 412
         Height = 25
         Hint = 'Carrega listagem de receitas contidas no SD do equipamento'
-        Top = 450
+        Top = 407
         Width = 72
         Caption = 'LSTDIR'
         OnClick = BTLSTDIRClick
@@ -1004,7 +1005,7 @@ object frmMain: TfrmMain
       object Label8: TLabel
         Left = 192
         Height = 15
-        Top = 112
+        Top = 72
         Width = 59
         Caption = 'Mensagem'
         ParentColor = False
@@ -1013,7 +1014,7 @@ object frmMain: TfrmMain
         Left = 195
         Height = 23
         Hint = 'Texto da mensagem que se deseja enviar'
-        Top = 129
+        Top = 89
         Width = 301
         MaxLength = 20
         ParentShowHint = False
@@ -1024,7 +1025,7 @@ object frmMain: TfrmMain
         Left = 507
         Height = 25
         Hint = 'Mensagem sem parada'
-        Top = 129
+        Top = 89
         Width = 75
         Caption = 'MSG'
         OnClick = BTMSGClick
@@ -1036,7 +1037,7 @@ object frmMain: TfrmMain
         Left = 590
         Height = 25
         Hint = 'Mensagem com parada'
-        Top = 129
+        Top = 89
         Width = 75
         Caption = 'MSGSTOP'
         OnClick = BTMSGSTOPClick
@@ -1047,7 +1048,7 @@ object frmMain: TfrmMain
       object cbFiles: TComboBox
         Left = 195
         Height = 23
-        Top = 452
+        Top = 409
         Width = 208
         ItemHeight = 15
         TabOrder = 15
@@ -1056,17 +1057,17 @@ object frmMain: TfrmMain
         Left = 489
         Height = 25
         Hint = 'Limpa listagem atual de receitas'
-        Top = 450
+        Top = 407
         Width = 75
         Caption = 'Clear'
         OnClick = btClearClick
         TabOrder = 16
       end
       object btRUN: TButton
-        Left = 195
+        Left = 648
         Height = 25
         Hint = 'Executa a receita apontada na listagem'
-        Top = 402
+        Top = 407
         Width = 75
         Caption = 'RUN'
         OnClick = btRUNClick
@@ -1132,10 +1133,10 @@ object frmMain: TfrmMain
         Text = '0'
       end
       object Button1: TButton
-        Left = 590
+        Left = 507
         Height = 25
         Hint = 'Transfere a receita para o SD do Equipamento'
-        Top = 80
+        Top = 368
         Width = 75
         Caption = 'Transferir'
         OnClick = Button1Click
@@ -1155,7 +1156,7 @@ object frmMain: TfrmMain
       object BTBEEP1: TButton
         Left = 688
         Height = 25
-        Top = 127
+        Top = 87
         Width = 75
         Caption = 'ESC'
         OnClick = BTBEEP1Click
@@ -1174,9 +1175,9 @@ object frmMain: TfrmMain
       object Label28: TLabel
         Left = 192
         Height = 15
-        Top = 56
-        Width = 150
-        Caption = 'Comandos do Equipamento'
+        Top = 352
+        Width = 108
+        Caption = 'Comandos de script'
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
@@ -1193,20 +1194,10 @@ object frmMain: TfrmMain
         ShowHint = True
         TabOrder = 25
       end
-      object Label30: TLabel
-        Left = 195
-        Height = 15
-        Top = 378
-        Width = 208
-        Caption = 'Comandos de Scripts do Equipamento'
-        Font.Style = [fsBold]
-        ParentColor = False
-        ParentFont = False
-      end
       object Label31: TLabel
         Left = 197
         Height = 15
-        Top = 434
+        Top = 370
         Width = 46
         Caption = 'Receitas:'
         ParentColor = False
@@ -1254,6 +1245,16 @@ object frmMain: TfrmMain
         Width = 80
         TabOrder = 28
         Text = '300'
+      end
+      object Label30: TLabel
+        Left = 192
+        Height = 15
+        Top = 56
+        Width = 150
+        Caption = 'Comandos do Equipamento'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
       end
     end
     object tbTermUSB: TTabSheet

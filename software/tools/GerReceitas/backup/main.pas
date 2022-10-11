@@ -30,6 +30,7 @@ type
     Label26: TLabel;
     Label27: TLabel;
     Label29: TLabel;
+    Label30: TLabel;
     Label33: TLabel;
     Label34: TLabel;
     Label35: TLabel;
@@ -48,7 +49,6 @@ type
     Label22: TLabel;
     Label25: TLabel;
     Label28: TLabel;
-    Label30: TLabel;
     Label31: TLabel;
     Label32: TLabel;
     ledRele1: TAdvLed;
@@ -463,32 +463,8 @@ a: integer;
 begin
    if SdpoSerial1.Active then
   begin
-        //OpenDialog1.InitialDir:= ExtractFileDir(Application.ExeName);
-       OpenDialog1.InitialDir:= 'C:\Users\mmm\Documents\projetos\geison\fase 3\receitas';
-        if   OpenDialog1.Execute then
-        begin
-             arquivo := OpenDialog1.FileName;
-             SynEdit1.Lines.LoadFromFile(arquivo);
-             flgErro := false;
-             frmMain.Text := 'Gerenciador de Panela '+ arquivo;
-             SdpoSerial1.WriteData('LOAD='+OpenDialog1.FileName+';'+#10);
-             sleep(400);
-             for a := 0 to SynEdit1.Lines.Count-1  do
-             begin
-               SdpoSerial1.WriteData( SynEdit1.Lines[a]+#13+#10);
-               sleep(100);
-               Application.ProcessMessages;
-               sleep(100);
-               if flgErro then
-               begin
-                 break;
-               end;
-             end;
-             //SdpoSerial1.WriteData( '+'+#13+#10);
-             SdpoSerial1.WriteData( '+');
-
-
-       end;
+    SdpoSerial1.WriteData('READ='+cbFiles.Items[cbFiles.ItemIndex]+#10);
+    SynEdit1.Lines.clear;
   end
   else
   begin
@@ -645,6 +621,18 @@ begin
 
      end;
    end;
+   posicao := pos('READY=',Info);
+   if (posicao <> 0) then
+   begin
+     posicaofim := pos(#10,Info);
+     if (posicaofim>0) then
+     begin
+          Info := Copy(Info,posicao+6,posicaofim-(posicao+6));
+          SynEdit1.Lines.Append(Info);
+          delay(50);
+     end;
+   end;
+
    //RELE1:
    posicao := pos('RELE1:',Info);
    if (posicao > 0) then

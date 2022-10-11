@@ -188,6 +188,7 @@ void MAN();
 void LOAD(File root, char sMSG1[20]); //Carrega a aplicação para o SD
 int LOADLoop(File root, char *Info);
 void LOADLeituras();
+void LOADLEARQUIVO(char Arquivo[]);
 void LOADAnalisa(File * farquivo);
 void LOADKeyCMD(File * farquivo);
 void LOADRename(String filename);
@@ -687,6 +688,38 @@ void LOAD(File root, char *sMSG1)
   LOADLoop(root, ArquivoTrabalho);
   NextionShow("Menu");
 
+}
+
+void LOADLEARQUIVO(char Arquivo[])
+{
+  File arquivo;
+  Serial.println("Carregando APP..");
+  NextionShow("LOAD");
+  Serial.print("Arquivo=");
+  Serial.println(Arquivo);
+  //arquivo = SD.open(Arquivo);
+  arquivo = SD.open("ARQUIVO.REC");
+  Serial.println("Teste1");
+  // if the file is available, read the file
+  //if(arquivo)
+  {
+    Serial.println("Lendo...");
+    char info = ' ';
+    while(arquivo.available())
+    {
+      //Serial.write();
+      if (info =='\n')
+      {
+        Serial.print("READY=");
+      }
+      info = arquivo.read();
+      Serial.write(info);
+     
+    }
+    Serial.println("Fechou");
+    arquivo.close();
+  }
+  
 }
 
 //Analisa Entrada de Informacoes de Entrada
@@ -1592,6 +1625,39 @@ void KeyCMD()
       //Serial.print(Temperatura);
       Serial.println(";");
       resp = true;
+    }
+
+    //BeepMsg
+    if (strstr( Buffer, "READ=") != 0)
+    {
+      char sMSG1[40];
+      char sMSG2[40];
+      char *poscr;
+      Serial.println("Achou MENSAGEM");
+      char *posequ = strstr( Buffer, "=");
+      Serial.print("POSEQU=");
+      Serial.println(posequ);
+      if(posequ != 0)
+      {
+        posequ++;
+        poscr = strstr(sMSG1,"\n");
+        if (poscr!=0)
+        {
+          Serial.println("Teste4");
+          memset(sMSG1,'\0',sizeof(sMSG1));
+          strncpy(sMSG1, posequ,int(poscr-posequ));
+        } else {
+          Serial.println("Teste3");
+          strcpy(sMSG1, posequ);  
+        }
+        Serial.print("sMSG1=");
+        Serial.println(posequ);
+        LOADLEARQUIVO(posequ);
+        
+        resp = true;
+      }
+      
+      
     }
 
 
