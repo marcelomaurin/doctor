@@ -629,7 +629,7 @@ begin
      begin
           Info := Copy(Info,posicao+6,posicaofim-(posicao+6));
           SynEdit1.Lines.Append(Info);
-          delay(50);
+          sleep(50);
      end;
    end;
 

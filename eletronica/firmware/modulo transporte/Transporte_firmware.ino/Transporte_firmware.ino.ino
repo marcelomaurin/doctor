@@ -1,12 +1,3 @@
-/*------------------------------------------------------------------------
-  Example sketch for Adafruit Thermal Printer library for Arduino.
-  Demonstrates a few text styles & layouts, bitmap printing, etc.
-
-  IMPORTANT: DECLARATIONS DIFFER FROM PRIOR VERSIONS OF THIS LIBRARY.
-  This is to support newer & more board types, especially ones that don't
-  support SoftwareSerial (e.g. Arduino Due).  You can pass any Stream
-  (e.g. Serial1) to the printer constructor.  See notes below.
-  ------------------------------------------------------------------------*/
 #include <Stepper.h> 
 #include <Ethernet.h>
 #include <Wire.h>
@@ -549,6 +540,40 @@ void RetornaServos()
   
 }
 
+
+int analise_DEFMOD(int modulo, char linha[])
+{
+  char *posicao=NULL;
+  char *fimdelinha=NULL;
+  char param[255];
+  Serial.print("Linha:");
+  Serial.println(linha);
+  posicao=strstr(linha,"LOCAL_DEFMOD=");
+  if(posicao!=NULL)
+  {
+          posicao=strstr(linha,"=");
+          posicao= posicao +1;
+          fimdelinha = strstr(linha,"\0");
+          memset(param,'\0',sizeof(param)); /*inicializa param*/
+          strcpy(param,posicao);
+          Serial.print("LOCAL_DEFMOD=");
+          Serial.print(modulo);
+          Serial.print(",");
+          Serial.println(param);
+          
+          char *ptr;
+          long valor;
+          valor = strtol(param,&ptr,10);
+          Serial.println("Fim2 fLOCAL_DEFMOD");
+          return valor;
+  }
+   else
+  {
+          //arquivo.close();
+          return 0;
+  } 
+}
+
 /*Carrega configuração do modulo local*/
 long int fLOCAL_DEFMOD(int modulo)
 {
@@ -559,6 +584,9 @@ long int fLOCAL_DEFMOD(int modulo)
   char *posicao=NULL;
   char *fimdelinha=NULL;
   int flgfinded = 0;
+  char info;
+  long valor = 0;
+  
   Serial.println("Inicio fLOCAL_DEFMOD");
   if(modulo==1) flgfinded  = SD.exists("DEFMOD1.CFG");
   if(modulo==2) flgfinded  = SD.exists("DEFMOD2.CFG");
@@ -572,41 +600,29 @@ long int fLOCAL_DEFMOD(int modulo)
     if(modulo==3)   arquivo = SD.open("DEFMOD3.CFG");
     if(modulo==4)   arquivo = SD.open("DEFMOD4.CFG");
     Serial.println("Abriu arquivo");
+    memset(linha,'\0',sizeof(linha));
     while (arquivo.available()) 
     {      
-      arquivo.read(linha,tamanho);
-      Serial.print("linha:");
-      Serial.println(linha);
-      if (tamanho !=0)
-      {      
-        posicao=strstr(linha,"DEFMOD=");
-        if(posicao!=NULL)
-        {
-          posicao= posicao +1;
-          fimdelinha = strstr(linha,"\0");
-          memset(param,'\0',sizeof(param)); /*inicializa param*/
-          strncpy(param,posicao,posicao-(fimdelinha-1));
-          Serial.print("LOCAL_DEFMOD1=");
-          Serial.println(param);
-          arquivo.close();
-          char *ptr;
-          long valor;
-          valor = strtol(param,&ptr,10);
-          Serial.println("Fim2 fLOCAL_DEFMOD");
-          return valor;
-        }
-        else
-        {
-          arquivo.close();
-          return 0;
-        }
+      info = arquivo.read();
+      //Serial.print("info:");
+      //Serial.println(info);
+      
+
+      if(info=='\n')
+      {
+        //Serial.print("linha:");
+        //Serial.println(linha);
+        valor = analise_DEFMOD(modulo,linha);
+        arquivo.close();
+        return valor;
       } else
       {
-          arquivo.close();
-          return 0;
+        sprintf(linha,"%s%c",linha,info);
+        
       }
-    }
+    }      
   } else {
+    arquivo.close();
     return 0;
   }
   
@@ -642,14 +658,14 @@ void gravaDEFMOD(int modulo, long valor)
   char info[255];
   memset(info,'\0',sizeof(info));
   Serial.println("gravaDEFMOD");
-  sprintf(info,"LOCAL_DEFMOD%i=%i\n",modulo,valor);
+  sprintf(info,"LOCAL_DEFMOD=%i\n",valor);
   removeDEFMOD(modulo);
   if(modulo==1)   arquivo = SD.open("DEFMOD1.CFG", FILE_WRITE);
   if(modulo==2)   arquivo = SD.open("DEFMOD2.CFG", FILE_WRITE);
   if(modulo==3)   arquivo = SD.open("DEFMOD3.CFG", FILE_WRITE);
   if(modulo==4)   arquivo = SD.open("DEFMOD4.CFG", FILE_WRITE);
-  arquivo.write("DEFMOD=",7);
-  arquivo.write(info);
+  //arquivo.write("DEFMOD=",7);
+  arquivo.println(info);
   arquivo.close();
 }
 
@@ -713,7 +729,7 @@ void LOADLEARQUIVO(char Arquivo[])
         Serial.print("READY=");
       }
       info = arquivo.read();
-      Serial.write(info);
+      Serial.print(info);
      
     }
     Serial.println("Fechou");
