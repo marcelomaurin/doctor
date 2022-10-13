@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "GerReceita"
-#define MyAppVersion "0.2.11"
+#define MyAppVersion "0.2.12"
 #define MyAppPublisher "Maurinsoft"
 #define MyAppURL "http://maurinsoft.com.br"
 #define MyAppExeName "GerReceita.exe"
@@ -23,7 +23,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=win_gerrec_000211
+OutputBaseFilename=win_gerrec_000212
 Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=admin 

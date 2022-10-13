@@ -1,11 +1,13 @@
 object frmMain: TfrmMain
-  Left = 1911
+  Left = 577
   Height = 557
-  Top = -1140
+  Top = 176
   Width = 773
   Caption = 'Gerenciador de Receita'
   ClientHeight = 557
   ClientWidth = 773
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   Position = poMainFormCenter
   LCLVersion = '2.2.2.0'
   object Panel1: TPanel
@@ -21,9 +23,9 @@ object frmMain: TfrmMain
     Height = 507
     Top = 50
     Width = 773
-    ActivePage = tbScript
+    ActivePage = TabSheet3
     Align = alClient
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 1
     object tbSobre: TTabSheet
       Caption = 'Sobre'
@@ -178,6 +180,74 @@ object frmMain: TfrmMain
         State = lsDisabled
         Blink = False
         AutoSize = False
+      end
+      object ledFIMCURSOB2: TAdvLed
+        Left = 632
+        Height = 25
+        Top = 304
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+      object Label38: TLabel
+        Left = 664
+        Height = 15
+        Top = 304
+        Width = 70
+        Caption = 'Fim Curso B2'
+        ParentColor = False
+      end
+      object Label39: TLabel
+        Left = 664
+        Height = 15
+        Top = 272
+        Width = 70
+        Caption = 'Fim Curso B1'
+        ParentColor = False
+      end
+      object ledFIMCURSOB1: TAdvLed
+        Left = 632
+        Height = 25
+        Top = 272
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+      object ledFIMCURSOC2: TAdvLed
+        Left = 633
+        Height = 25
+        Top = 368
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+      object ledFIMCURSOC1: TAdvLed
+        Left = 633
+        Height = 25
+        Top = 336
+        Width = 25
+        State = lsDisabled
+        Blink = False
+        AutoSize = False
+      end
+      object Label40: TLabel
+        Left = 665
+        Height = 15
+        Top = 336
+        Width = 71
+        Caption = 'Fim Curso C1'
+        ParentColor = False
+      end
+      object Label41: TLabel
+        Left = 665
+        Height = 15
+        Top = 368
+        Width = 71
+        Caption = 'Fim Curso C2'
+        ParentColor = False
       end
     end
     object tbSetup: TTabSheet

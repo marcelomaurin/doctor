@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, FileUtil, SynEdit, SynCompletion, SynHighlighterPas,
   SynMemo, TAChartExtentLink, TAGraph, TASeries, AdvLed, indGnouMeter,
   LedNumber, Sensors, uPSComponent, SdpoSerial, Forms, Controls, Graphics,
-  Dialogs, ExtCtrls, ComCtrls, StdCtrls, types;
+  Dialogs, ExtCtrls, ComCtrls, StdCtrls, types, registro;
 
 type
 
@@ -36,8 +36,16 @@ type
     Label35: TLabel;
     Label36: TLabel;
     Label37: TLabel;
+    Label38: TLabel;
+    Label39: TLabel;
+    Label40: TLabel;
+    Label41: TLabel;
     ledFIMCURSOA1: TAdvLed;
     ledFIMCURSOA2: TAdvLed;
+    ledFIMCURSOB2: TAdvLed;
+    ledFIMCURSOB1: TAdvLed;
+    ledFIMCURSOC2: TAdvLed;
+    ledFIMCURSOC1: TAdvLed;
     LEDNEIXOA: TLEDNumber;
     LOCAL_DEFMOD1: TEdit;
     edSrv: TEdit;
@@ -158,6 +166,8 @@ type
     procedure btSOUNDClick(Sender: TObject);
     procedure edConsoleChange(Sender: TObject);
     procedure edConsoleKeyPress(Sender: TObject; var Key: char);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure Label29Click(Sender: TObject);
     procedure SdpoSerial1RxData(Sender: TObject);
     procedure tbUSBContextPopup(Sender: TObject; MousePos: TPoint;
@@ -569,6 +579,20 @@ begin
     end;
 end;
 
+procedure TfrmMain.FormCreate(Sender: TObject);
+begin
+  frmRegistrar := TfrmRegistrar.create(self);
+  frmRegistrar.Identifica();
+
+
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+  frmRegistrar.Destroy;
+  frmRegistrar := nil;
+end;
+
 procedure TfrmMain.Label29Click(Sender: TObject);
 begin
 
@@ -687,18 +711,12 @@ begin
      posicaofim := pos('ON', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledFIMCURSOA1.State:= lsOn;
 
      end;
      posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledFIMCURSOA1.State:= lsOff;
      end;
    end;
@@ -708,21 +726,78 @@ begin
      posicaofim := pos('ON', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledFIMCURSOA2.State:= lsOn;
 
      end;
      posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledFIMCURSOA2.State:= lsOff;
      end;
    end;
+
+   posicao := pos('flgFIMB1=',Info);
+   if (posicao > 0) then
+   begin
+     posicaofim := pos('ON', Info);
+     if (posicaofim>0) then
+     begin
+          ledFIMCURSOB1.State:= lsOn;
+
+     end;
+     posicaofim := pos('OFF', Info);
+     if (posicaofim>0) then
+     begin
+          ledFIMCURSOB1.State:= lsOff;
+     end;
+   end;
+   posicao := pos('flgFIMB2=',Info);
+   if (posicao > 0) then
+   begin
+     posicaofim := pos('ON', Info);
+     if (posicaofim>0) then
+     begin
+          ledFIMCURSOB2.State:= lsOn;
+
+     end;
+     posicaofim := pos('OFF', Info);
+     if (posicaofim>0) then
+     begin
+          ledFIMCURSOB2.State:= lsOff;
+     end;
+   end;
+
+   posicao := pos('flgFIMC1=',Info);
+   if (posicao > 0) then
+   begin
+     posicaofim := pos('ON', Info);
+     if (posicaofim>0) then
+     begin
+          ledFIMCURSOC1.State:= lsOn;
+
+     end;
+     posicaofim := pos('OFF', Info);
+     if (posicaofim>0) then
+     begin
+          ledFIMCURSOC1.State:= lsOff;
+     end;
+   end;
+   posicao := pos('flgFIMC2=',Info);
+   if (posicao > 0) then
+   begin
+     posicaofim := pos('ON', Info);
+     if (posicaofim>0) then
+     begin
+          ledFIMCURSOC2.State:= lsOn;
+
+     end;
+     posicaofim := pos('OFF', Info);
+     if (posicaofim>0) then
+     begin
+          ledFIMCURSOC2.State:= lsOff;
+     end;
+   end;
+
    posicao := pos('POSSERVA=',Info);
    if (posicao > 0) then
    begin
