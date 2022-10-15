@@ -118,7 +118,7 @@ begin
        sleep(1000);
   end;
 
-  INFO :=  'GET /ws/register/iconfila.php?tipo=8 HTTP/1.0'+#13+#10+
+  INFO :=  'GET /ws/register/iconfila.php?tipo=9 HTTP/1.0'+#13+#10+
            'Connection: close'+#13+#10+
             #13+#10;
 

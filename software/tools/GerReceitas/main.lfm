@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 577
+  Left = 1909
   Height = 557
-  Top = 176
+  Top = -1150
   Width = 773
   Caption = 'Gerenciador de Receita'
   ClientHeight = 557
@@ -23,9 +23,9 @@ object frmMain: TfrmMain
     Height = 507
     Top = 50
     Width = 773
-    ActivePage = TabSheet3
+    ActivePage = tbUSB
     Align = alClient
-    TabIndex = 1
+    TabIndex = 4
     TabOrder = 1
     object tbSobre: TTabSheet
       Caption = 'Sobre'
@@ -1325,6 +1325,18 @@ object frmMain: TfrmMain
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
+      end
+      object BTBEEP2: TButton
+        Left = 368
+        Height = 25
+        Hint = 'Toca um aviso sonoro no equipamento'
+        Top = 225
+        Width = 84
+        Caption = 'Report'
+        OnClick = BTBEEP2Click
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 29
       end
     end
     object tbTermUSB: TTabSheet

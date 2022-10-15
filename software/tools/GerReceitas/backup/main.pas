@@ -16,6 +16,7 @@ type
 
   TfrmMain = class(TForm)
     BTBEEP1: TButton;
+    BTBEEP2: TButton;
     btCalibracao: TButton;
     btDEFMOD: TButton;
     Button1: TButton;
@@ -138,6 +139,7 @@ type
     Timer1: TTimer;
     procedure btAtivarClick(Sender: TObject);
     procedure BTBEEP1Click(Sender: TObject);
+    procedure BTBEEP2Click(Sender: TObject);
     procedure BTBEEPClick(Sender: TObject);
     procedure btCalibracaoClick(Sender: TObject);
     procedure btCarregarClick(Sender: TObject);
@@ -217,6 +219,18 @@ begin
     if SdpoSerial1.Active then
   begin
        SdpoSerial1.WriteData('ESC'+#10);
+  end
+  else
+  begin
+    ShowMessage('Ative a porta USB!');
+  end;
+end;
+
+procedure TfrmMain.BTBEEP2Click(Sender: TObject);
+begin
+  if SdpoSerial1.Active then
+  begin
+       SdpoSerial1.WriteData('REPORT'+#10);
   end
   else
   begin
@@ -589,6 +603,7 @@ end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
+  frmRegistrar.Destroy;
   frmRegistrar := nil;
 end;
 

@@ -112,7 +112,7 @@ double stepsPerRevolution = 2048;
 // Here's the new syntax when using SoftwareSerial (e.g. Arduino Uno) ----
 // If using hardware serial instead, comment out or remove these lines:
 
-#define MAXSPEED 17
+#define MAXSPEED 10
 
 /*Definicoes de variaveis*/
 bool flgBeep = false; //Aviso sonoro de temperatura
@@ -124,6 +124,17 @@ int tones[] = { 1915, 1700, 1519, 1432, 1275, 1136, 1014, 956};
 
 //Buffer
 char Buffer[40]; //Buffer de Teclado
+
+/*Estrutura de etiqueta*/
+typedef struct ETIQUETA {
+  char titulo[20];
+  char linha01[40];
+  char linha02[40];
+  char barra[20];
+} ETIQUETA;
+
+/*Variavel de etiqueta*/
+ETIQUETA etiqueta;
 
 
 /* **************************************************
@@ -207,6 +218,14 @@ void RetornaServos();
 long fLOCAL_DEFMOD(int modulo);
 void fDEFMOD(int modulo,char *MSG1);
 void gravaDEFMOD(int modulo, long valor);
+void ImprimeInvertido(char info[]);
+void ImprimeGrande(char info[]);
+void ImprimeMedio(char info[]);
+void ImprimePequeno(char info[]);
+void ImprimeBarra(char info[]);
+void ImprimeAvanco();
+void Report(); //Imprime relatorio
+
 
 SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
 Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
@@ -305,6 +324,8 @@ void Start_Printer()
   mySerial.begin(9600);  // Initialize SoftwareSerial
   //Serial1.begin(19200); // Use this instead if using hardware serial
   printer.begin();        // Init printer (same regardless of serial type)
+  //ImprimeAvanco();
+  //ImprimeInvertido(" Bem vindo ao Doctor");
 }
 
 
@@ -373,10 +394,16 @@ void Service_Start()
     IPAddress myIPAddress = Ethernet.localIP();
     Serial.print("IP:");
     Serial.println( Ethernet.localIP());
+    //ImprimeMedio("Rede Local:");
+    //ImprimeMedio(Ethernet.localIP());
+    char Info[80];
+    
     //sprintf(Info,"IP:%s.%s.%s.%s",myIPAddress[0],myIPAddress[1],myIPAddress[2],myIPAddress[3]);
     // Imprime(0,Info);
-    // sprintf(Info,"Port:23");
+    //printer.println(Info);
+    sprintf(Info,"Port:23");
     // Imprime(1,Info);
+    //ImprimeMedio(Info);
     //delay(2000);
     // start listening for clients
     delay(1000);
@@ -411,11 +438,12 @@ void setup() {
   Serial.println("Starting modules...");
   Speak_Start();  
   Beep(); 
+  Start_Printer();
   Start_FIMDECURSO();
   Start_Nextion();
   Start_Bluetooth();
   Start_Motor01();
-  Start_Printer();
+
   Start_RELES();
 
   Start_DHT22(); 
@@ -482,28 +510,94 @@ void Rele02(bool Value)
   }
 }
 
-
-
-void ImprimeEtiqueta() {
-   // Test inverse on & off
-  //printer.inverseOn();
+void ImprimeInvertido(char info[])
+{
+  printer.inverseOn();
   printer.setSize('M');        // Set type size, accepts 'S', 'M', 'L'
-  //printer.justify('C');
-  printer.println(F("   Etiqueta Doctor   "));
+  printer.justify('C');
+  printer.println(info);
   printer.inverseOff();
   printer.setSize('S');
-  printer.println(F("An.Solic: Cultura Bacteria."));
-  // Barcode examples:
-  // CODE39 is the most common alphanumeric barcode:
-  printer.printBarcode("00234", CODE39);
-  printer.setBarcodeHeight(100);
-  // Print UPC line on product barcodes:
-  //printer.printBarcode("00234", UPC_A);
-  printer.sleep();      // Tell printer to sleep
+  printer.inverseOff();
+}
 
-  printer.wake();       // MUST wake() before printing again, even if reset
+void ImprimeGrande(char info[])
+{
+  printer.setSize('L');
+  printer.println(info);
+  printer.setSize('S');
+}
+
+void ImprimeMedio(char info[])
+{
+
+  printer.setSize('M');
+  printer.println(info);
+  printer.setSize('S');
+}
+
+
+void ImprimePequeno(char info[])
+{
+
+  printer.setSize('S');
+  printer.println(info);
+  printer.setSize('S');
+}
+
+void ImprimeBarra(char info[])
+{
+
+  printer.setSize('S');
+  printer.printBarcode(info, CODE39);
+  printer.setBarcodeHeight(100);
+  printer.setSize('S');
+  printer.sleep();      // Tell printer to sleep 
+}
+
+void ImprimeAvanco()
+{
+  
+  printer.println(' ');
+  printer.println(' ');
+}
+
+void ImprimeReset()
+{
+  printer.wake(); // MUST wake() before printing again, even if reset  
   printer.setDefault(); // Restore printer to defaults
   printer.println(' ');  
+}
+
+
+void ImprimeEtiqueta() 
+{
+  // Test inverse on & off
+  ImprimeInvertido(etiqueta.titulo);  
+  ImprimeMedio(etiqueta.linha01);  
+  ImprimeBarra(etiqueta.barra);
+  ImprimeAvanco();
+}
+
+void ImprimeHello() 
+{
+  // Test inverse on & off
+  ImprimeInvertido(etiqueta.titulo);  
+  ImprimeMedio(etiqueta.linha01);  
+  ImprimeMedio(etiqueta.linha02);  
+  //ImprimeBarra(etiqueta.barra);
+}
+
+void Report()
+{
+  memset(&etiqueta,'\0',sizeof(ETIQUETA));
+  sprintf(etiqueta.titulo,"DOCTOR");
+  sprintf(etiqueta.linha01,"Linha 01");
+  sprintf(etiqueta.linha02,"Linha 02");
+  sprintf(etiqueta.barra,"12345");
+  ImprimeEtiqueta();
+  //ImprimeAvanco();
+  
 }
 
 void MovePassoA_Dir(int passo)
@@ -1201,12 +1295,13 @@ void NextionShow(String info)
 
 void NextionFieldText(String field,String value)
 {
-char strFF = 0xFF;  
+  char strFF = 0xFF;  
   String cmd;
   
   cmd = field+".txt=\""+value+"\""+String(strFF)+String(strFF)+String(strFF);
-  //Serial.print(cmd);  
-  //Serial2.print(cmd);  
+  Serial.print(cmd); 
+  Serial.print(":");    
+  Serial2.println(value);  
 }
 
 void NextionWAITESC()
@@ -1467,6 +1562,15 @@ void KeyCMD()
       resp = true;
     }
 
+    //void Report()
+    //MAN
+    if (strcmp( Buffer, "REPORT\n") == 0)
+    {
+      //Serial.println(Temperatura);
+      Report();
+      resp = true;
+    }
+
     //Load - Carrega arquivo no SD
     if (strstr( Buffer,"LOAD=") != 0)
     {
@@ -1625,8 +1729,8 @@ void KeyCMD()
       resp = true;
     }
 
-    //TEMPERATURA
-    if(strstr( Buffer, "TEMPERATURA\n")!= 0)
+    //SENSOR
+    if(strstr( Buffer, "SENSOR\n")!= 0)
     {
       MostraTemperatura();
       resp = true;
