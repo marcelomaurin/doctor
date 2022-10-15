@@ -1,4 +1,4 @@
-# doctor
+# Doctor
 
 ## Portuguese:
 Sistema Open Source e Open Hardware destinado a Automação de Analise Laboratorial.
