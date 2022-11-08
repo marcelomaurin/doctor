@@ -44,7 +44,7 @@ object frmMain: TfrmMain
         Height = 15
         Top = 88
         Width = 15
-        Caption = '0.1'
+        Caption = '0.2'
         ParentColor = False
       end
       object Label3: TLabel

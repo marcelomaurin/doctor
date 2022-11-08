@@ -968,7 +968,7 @@ begin
         if (edFirmware.Text <> lbVersao.Caption) then
         begin
             Showmessage('Versão Incorreta do Firmware');
-            //Application.Terminate;
+            //Application.Terminate;                    git sta
         end;
    end;
 
