@@ -19,8 +19,10 @@ type
     BTBEEP2: TButton;
     btCalibracao: TButton;
     btDEFMOD: TButton;
+    BTSHOW: TButton;
     Button1: TButton;
     btSOUND: TButton;
+    cbTelas: TComboBox;
     edDEFMOD_NRO: TEdit;
     edDEFMOD_VALOR: TEdit;
     indGTemp: TindGnouMeter;
@@ -28,7 +30,6 @@ type
     Label2: TLabel;
     Label23: TLabel;
     Label24: TLabel;
-    Label26: TLabel;
     Label27: TLabel;
     Label29: TLabel;
     Label30: TLabel;
@@ -160,6 +161,7 @@ type
     procedure btRele4OFFClick(Sender: TObject);
     procedure btRele5Click(Sender: TObject);
     procedure btRUNClick(Sender: TObject);
+    procedure BTSHOWClick(Sender: TObject);
     procedure btTempMinClick(Sender: TObject);
     procedure btUSBCarregarClick(Sender: TObject);
     procedure btGravarClick(Sender: TObject);
@@ -170,6 +172,7 @@ type
     procedure edConsoleKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure Label26Click(Sender: TObject);
     procedure Label29Click(Sender: TObject);
     procedure SdpoSerial1RxData(Sender: TObject);
     procedure tbUSBContextPopup(Sender: TObject; MousePos: TPoint;
@@ -349,7 +352,7 @@ end;
 
 procedure TfrmMain.BTMSGClick(Sender: TObject);
 begin
-   if SdpoSerial1.Active then
+  if SdpoSerial1.Active then
   begin
        SdpoSerial1.WriteData('MENSAGEM='+edMsg.TEXT+#10);
   end
@@ -452,6 +455,29 @@ begin
     ShowMessage('Ative a porta USB!');
   end;
 
+end;
+
+procedure TfrmMain.BTSHOWClick(Sender: TObject);
+begin
+  if SdpoSerial1.Active then
+  begin
+       if (cbTelas.ItemIndex<>0) then
+       begin
+       SdpoSerial1.WriteData('SHOW='+cbTelas.TEXT+#10);
+
+       end
+       else
+       begin
+           ShowMessage('Selecione a tela que deseja!');
+           cbTelas.SetFocus;
+
+       end;
+
+  end
+  else
+  begin
+    ShowMessage('Ative a porta USB!');
+  end;
 end;
 
 procedure TfrmMain.btTempMinClick(Sender: TObject);
@@ -605,6 +631,11 @@ procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   frmRegistrar.Destroy;
   frmRegistrar := nil;
+end;
+
+procedure TfrmMain.Label26Click(Sender: TObject);
+begin
+
 end;
 
 procedure TfrmMain.Label29Click(Sender: TObject);
@@ -947,8 +978,11 @@ begin
    begin
         strtemperatura := copy(Info,pos('=',Info)+1,length(Info)-(pos('=',Info)+3));
         DecimalSeparator := '.';
-        temperatura := strtofloat(strtemperatura);
-        indGTemp.Value:= temperatura;
+        if (pos(strtemperatura,'na') =0) then
+        begin
+             temperatura := strtofloat(strtemperatura);
+             indGTemp.Value:= temperatura;
+        end;
 
    end;
    //LOCAL_DEFMOD1=300
@@ -962,9 +996,13 @@ begin
    if (posicao>0) then
    begin
         strtemperatura := copy(Info,pos('=',Info)+1,length(Info)-(pos('=',Info)+3));
-        DecimalSeparator := '.';
-        temperatura := strtofloat(strtemperatura);
-        indGTemp1.Value:= temperatura;
+        if (pos(strtemperatura,'na') =0) then
+        begin
+          DecimalSeparator := '.';
+          temperatura := strtofloat(strtemperatura);
+          indGTemp1.Value:= temperatura;
+
+        end;
 
    end;
 

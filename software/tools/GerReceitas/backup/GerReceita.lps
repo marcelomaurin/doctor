@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="12"/>
     <BuildModes Active="Default"/>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="GerReceita.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -17,8 +17,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="337"/>
-        <CursorPos X="39" Y="342"/>
+        <TopLine Value="947"/>
+        <CursorPos X="19" Y="968"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -29,10 +29,10 @@
         <ComponentName Value="frmRegistrar"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="99"/>
         <CursorPos X="34" Y="102"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="30"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit2>
@@ -51,9 +51,11 @@
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
-        <TopLine Value="3237"/>
-        <CursorPos Y="3248"/>
-        <UsageCount Value="43"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="2945"/>
+        <CursorPos Y="2959"/>
+        <UsageCount Value="48"/>
+        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\components\Sdpo\SdpoSerial\sdposerial.pas"/>
@@ -71,133 +73,142 @@
       <Unit8>
         <Filename Value="C:\Users\marce\AppData\Local\lazarus\onlinepackagemanager\packages\lnet\lib\lnet.pp"/>
         <UnitName Value="lNet"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="1379"/>
         <CursorPos X="70" Y="1362"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="16"/>
         <Loaded Value="True"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="C:\Users\marce\AppData\Local\lazarus\onlinepackagemanager\packages\Sdpo\SdpoSerial\sdposerial.pas"/>
+        <UnitName Value="SdpoSerial"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="225"/>
+        <CursorPos Y="239"/>
+        <UsageCount Value="15"/>
+        <Loaded Value="True"/>
+      </Unit9>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="registro.pas"/>
-        <Caret Line="36" Column="25" TopLine="22"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="464" Column="35" TopLine="460"/>
       </Position1>
       <Position2>
-        <Filename Value="registro.pas"/>
-        <Caret Line="115" TopLine="101"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="641" Column="83" TopLine="625"/>
       </Position2>
       <Position3>
         <Filename Value="main.pas"/>
-        <Caret Line="583" TopLine="578"/>
+        <Caret Line="470" Column="98" TopLine="460"/>
       </Position3>
       <Position4>
         <Filename Value="main.pas"/>
-        <Caret Line="584" TopLine="578"/>
+        <Caret Line="469" Column="98" TopLine="459"/>
       </Position4>
       <Position5>
-        <Filename Value="registro.pas"/>
-        <Caret Line="115" TopLine="101"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="468" Column="98" TopLine="458"/>
       </Position5>
       <Position6>
-        <Filename Value="registro.pas"/>
-        <Caret Line="121" TopLine="101"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="461" Column="21" TopLine="455"/>
       </Position6>
       <Position7>
-        <Filename Value="registro.pas"/>
-        <Caret Line="123" TopLine="101"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="462" TopLine="455"/>
       </Position7>
       <Position8>
-        <Filename Value="registro.pas"/>
-        <Caret Line="121" TopLine="101"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="459" TopLine="454"/>
       </Position8>
       <Position9>
-        <Filename Value="registro.pas"/>
-        <Caret Line="126" TopLine="102"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="468" TopLine="454"/>
       </Position9>
       <Position10>
         <Filename Value="main.pas"/>
-        <Caret Line="587" TopLine="579"/>
+        <Caret Line="459" TopLine="454"/>
       </Position10>
       <Position11>
         <Filename Value="main.pas"/>
-        <Caret Line="592" TopLine="579"/>
+        <Caret Line="468" TopLine="454"/>
       </Position11>
       <Position12>
-        <Filename Value="main.pas"/>
-        <Caret Line="584" TopLine="579"/>
+        <Filename Value="C:\lazarus\lcl\include\control.inc"/>
+        <Caret Line="2959" TopLine="2945"/>
       </Position12>
       <Position13>
-        <Filename Value="registro.pas"/>
-        <Caret Line="118" Column="45" TopLine="102"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="472" Column="79" TopLine="454"/>
       </Position13>
       <Position14>
-        <Filename Value="registro.pas"/>
-        <Caret Line="97" Column="3" TopLine="90"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="358" Column="97" TopLine="351"/>
       </Position14>
       <Position15>
         <Filename Value="main.pas"/>
-        <Caret Line="584" TopLine="579"/>
+        <Caret Line="359" Column="97" TopLine="352"/>
       </Position15>
       <Position16>
         <Filename Value="main.pas"/>
-        <Caret Line="585" TopLine="579"/>
+        <Caret Line="363" Column="52" TopLine="353"/>
       </Position16>
       <Position17>
-        <Filename Value="registro.pas"/>
-        <Caret Line="115" TopLine="91"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="466" Column="35" TopLine="460"/>
       </Position17>
       <Position18>
-        <Filename Value="registro.pas"/>
-        <Caret Line="121" TopLine="102"/>
+        <Filename Value="C:\Users\marce\AppData\Local\lazarus\onlinepackagemanager\packages\Sdpo\SdpoSerial\sdposerial.pas"/>
+        <Caret Line="239" TopLine="225"/>
       </Position18>
       <Position19>
-        <Filename Value="registro.pas"/>
-        <Caret Line="123" TopLine="102"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="981" Column="38" TopLine="969"/>
       </Position19>
       <Position20>
-        <Filename Value="registro.pas"/>
-        <Caret Line="121" TopLine="102"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="984" Column="43" TopLine="969"/>
       </Position20>
       <Position21>
-        <Filename Value="registro.pas"/>
-        <Caret Line="126" TopLine="102"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="983" TopLine="969"/>
       </Position21>
       <Position22>
-        <Filename Value="registro.pas"/>
-        <Caret Line="121" Column="49" TopLine="102"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="1003" Column="11" TopLine="980"/>
       </Position22>
       <Position23>
         <Filename Value="main.pas"/>
-        <Caret Line="584" TopLine="579"/>
+        <Caret Line="999" TopLine="978"/>
       </Position23>
       <Position24>
-        <Filename Value="registro.pas"/>
-        <Caret Line="115" TopLine="102"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="979" TopLine="974"/>
       </Position24>
       <Position25>
         <Filename Value="main.pas"/>
-        <Caret Line="584" TopLine="579"/>
+        <Caret Line="999" TopLine="978"/>
       </Position25>
       <Position26>
         <Filename Value="main.pas"/>
-        <Caret Line="591" Column="71" TopLine="579"/>
+        <Caret Line="979" TopLine="974"/>
       </Position26>
       <Position27>
         <Filename Value="main.pas"/>
-        <Caret Line="592" Column="71" TopLine="580"/>
+        <Caret Line="805" Column="37" TopLine="798"/>
       </Position27>
       <Position28>
         <Filename Value="main.pas"/>
-        <Caret Line="243" Column="104" TopLine="234"/>
+        <Caret Line="406" Column="43" TopLine="404"/>
       </Position28>
       <Position29>
         <Filename Value="main.pas"/>
-        <Caret Line="238" Column="87" TopLine="226"/>
+        <Caret Line="875" Column="24" TopLine="855"/>
       </Position29>
       <Position30>
         <Filename Value="main.pas"/>
-        <Caret Line="357" Column="74" TopLine="337"/>
+        <Caret Line="876" Column="38" TopLine="856"/>
       </Position30>
     </JumpHistory>
     <RunParams>

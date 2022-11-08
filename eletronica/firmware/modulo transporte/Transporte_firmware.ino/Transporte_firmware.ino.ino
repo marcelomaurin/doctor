@@ -11,6 +11,15 @@
 #include "adalogo.h"
 #include "adaqrcode.h"
 
+//*************** Descricao do Produto *********************
+//Versao do produto 
+#define Versao  "0"  //Controle de Versao do Firmware
+#define Release "2" //Controle Revisao do Firmware
+
+#define MAXCICLO 90000
+#define MAXSPEED 10
+
+
 //Flags de Controle
 bool OperflgLeitura = false;
 byte flgEscape = 0; //Controla Escape
@@ -72,21 +81,19 @@ int FUNCPag = 0; //Controle de Pagina da Funcao
 int FUNCMAXPag = 2; //Tres Paginas para Funcoes
 //int OPERMAXPag = 2; //tres Paginas para Operacoes
 
-//*************** Descricao do Produto *********************
-//Versao do produto 
-char Versao = '0';  //Controle de Versao do Firmware
-char Release = '1'; //Controle Revisao do Firmware
+
+
 char Produto[20] = { "Doctor - Betha"};
 
-float contciclo = 0; //Contador de Ciclos de Repeticao
-const float maxciclo  = 9000;
+long long int contciclo = 0; //Contador de Ciclos de Repeticao
+
 
 //****************** SD Card ******************
 Sd2Card card;
 SdVolume volume;
 File root; //Pasta root
 File farquivo; //Arquivo de gravacao
-char ArquivoTrabalho[40]; //Arquivo de trabalho a ser carregado
+char ArquivoTrabalho[80]; //Arquivo de trabalho a ser carregado
 
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
@@ -102,7 +109,7 @@ EthernetServer server(23);
 EthernetClient client;
 EthernetClient Serverclient;
 EthernetServer serverport(23);
-
+char IP[40];
 
 
 
@@ -112,7 +119,7 @@ double stepsPerRevolution = 2048;
 // Here's the new syntax when using SoftwareSerial (e.g. Arduino Uno) ----
 // If using hardware serial instead, comment out or remove these lines:
 
-#define MAXSPEED 10
+
 
 /*Definicoes de variaveis*/
 bool flgBeep = false; //Aviso sonoro de temperatura
@@ -187,10 +194,10 @@ void KeyCMD();//Comando de entrada
 float Reset();
 void LstDir(File dir, int numTabs);
 void MAN();
-void LOAD(File root, char sMSG1[20]); //Carrega a aplicação para o SD
+void LOAD(File root, char *sMSG1); //Carrega a aplicação para o SD
 int LOADLoop(File root, char *Info);
 void LOADLeituras();
-void LOADLEARQUIVO(char Arquivo[]);
+void LOADLEARQUIVO(char *Arquivo);
 void LOADAnalisa(File * farquivo);
 void LOADKeyCMD(File * farquivo);
 void LOADRename(String filename);
@@ -203,8 +210,8 @@ void MOPERACAO();
 void FOPEImprime();
 void MCONFIG();
 void Le_DHT22();
-void NextionShow(String info);
-void NextionFieldText(String field,String value);
+void NextionShow(char* info1);
+void NextionFieldText(char *field,char *value);
 void NextionMensage(String info);
 void NextionMensageStop(String info);
 void RetConsole();
@@ -264,7 +271,7 @@ void Start_Serial()
 
 void Start_Bluetooth()
 {
-  Serial3.begin(9600);
+  Serial2.begin(9600);
   WellComeBluetooth();
 }
 
@@ -307,9 +314,12 @@ void Start_Nextion()
 {
   Serial.println("Ativando Nextion Display");
   // set the data rate for the SoftwareSerial port
-  Serial2.begin(9600);
+  Serial3.begin(9600);
   NextionShow("Splah"); //Chamando tela splash
-  NextionFieldText("t2",Versao+"."+Release);
+  char info[40];
+  memset(info,'\0',sizeof(info));
+  sprintf(info,"%s.%s",Versao,Release);
+  NextionFieldText("versao",info);
 
 }
 
@@ -362,6 +372,7 @@ void WellComeConsole()
   //Serial.print(f);
 
   Serial.println(" ");
+ 
 
 }
 
@@ -394,14 +405,18 @@ void Service_Start()
     IPAddress myIPAddress = Ethernet.localIP();
     Serial.print("IP:");
     Serial.println( Ethernet.localIP());
+    
     //ImprimeMedio("Rede Local:");
     //ImprimeMedio(Ethernet.localIP());
-    char Info[80];
-    
-    //sprintf(Info,"IP:%s.%s.%s.%s",myIPAddress[0],myIPAddress[1],myIPAddress[2],myIPAddress[3]);
+    char Info[40];
+    memset(Info,'\0',sizeof(Info));
+    memset(IP,'\0',sizeof(Info));
+   // sprintf(IP,"%s.%s.%s.%s",myIPAddress[0],myIPAddress[1],myIPAddress[2],myIPAddress[3]);
+    NextionFieldText("ip",IP);
     // Imprime(0,Info);
     //printer.println(Info);
     sprintf(Info,"Port:23");
+    Serial.println(Info);
     // Imprime(1,Info);
     //ImprimeMedio(Info);
     //delay(2000);
@@ -455,12 +470,13 @@ void setup() {
   //MovePasso01();
   //ImprimeEtiqueta();
   Le_DHT22();
-
+  Reset();  
   //Calibracao(); /*Calibração do equipamento*/
   WellComeConsole(); 
-  Reset();  
   NextionShow("Menu");
-  
+  delay(100);
+  NextionShow("Menu");
+ 
 
 }
 
@@ -789,26 +805,23 @@ void LOAD(File root, char *sMSG1)
   NextionShow("LOAD");
   //Copia arquivo
   memset(ArquivoTrabalho,'\0',sizeof(ArquivoTrabalho));
-  sprintf(ArquivoTrabalho,"%s",sMSG1);
-  Serial.print("ArquivoTrabalho:");
-  Serial.println(ArquivoTrabalho);
-  //Imprime(2, ArquivoTrabalho);
+  char * posend = strstr(sMSG1,'\n');
 
   //Realiza operação de Loop
-  LOADLoop(root, ArquivoTrabalho);
+  LOADLoop(root, sMSG1);
   NextionShow("Menu");
 
 }
 
-void LOADLEARQUIVO(char Arquivo[])
+void LOADLEARQUIVO(char *Arquivo)
 {
   File arquivo;
   Serial.println("Carregando APP..");
   NextionShow("LOAD");
   Serial.print("Arquivo=");
   Serial.println(Arquivo);
-  //arquivo = SD.open(Arquivo);
-  arquivo = SD.open("ARQUIVO.REC");
+  arquivo = SD.open(Arquivo);
+  //arquivo = SD.open("ARQUIVO.REC");
   Serial.println("Teste1");
   // if the file is available, read the file
   //if(arquivo)
@@ -854,7 +867,7 @@ int LOADLoop(File root, char *Info)
   {
     Serial.println("Erro SD");
     Serial.println("Nao pode abrir SD");
-    NextionShow("Nao pode abrir SD");
+    //NextionMessage("Nao pode abrir SD");
     //Imprime(1, "Erro SD");
     // Imprime(2, "Nao pode abrir SD");
     return -1;
@@ -889,9 +902,10 @@ void LOADLeituras()
   //Le_Temperatura();
   //Le_Teclado();
   Le_Serial();
+  Le_Serial3();
   //Le_Bluetooth();
   Chk_Beep();
-  Le_DHT22();
+  //Le_DHT22();
   Le_FimCurso(); /*Leitura de fim de curso*/
 }
 
@@ -1226,7 +1240,8 @@ void FOPELeituras()
 {
   //FOPELe_Teclado(); //Porque as funcoes do teclado mudam durante o programa
   Le_Serial(); //Le dados do Serial
-  Le_DHT22();
+  Le_Serial3();
+  //Le_DHT22();
   Le_FimCurso(); /*Leitura de fim de curso*/
   //Precisa implementar o tempo em ciclos para leitura
   //Le_Temperatura();
@@ -1286,22 +1301,35 @@ void Chk_Beep()
 }
 
 
-void NextionShow(String info)
+void NextionShow(char* info1)
 {
   char strFF = 0xFF;
-  Serial2.print("page "+info+String(strFF)+String(strFF)+String(strFF));  
+  char cmd[40];
+  char *pos;
+  Serial.print("Info:");
+  Serial.println(info1);
+  pos =strstr(info1,'\n');
+  
+  Serial.print("Info:");
+  Serial.println(info1);
+  memset(cmd,'\0',sizeof(cmd));
+
+  sprintf(cmd,"page %s%c%c%c",info1,strFF,strFF,strFF);  
+  Serial.println(cmd);
+  Serial3.print(cmd);  
   delay(100);  
 }
 
-void NextionFieldText(String field,String value)
+void NextionFieldText(char *field,char *value)
 {
   char strFF = 0xFF;  
-  String cmd;
-  
-  cmd = field+".txt=\""+value+"\""+String(strFF)+String(strFF)+String(strFF);
-  Serial.print(cmd); 
-  Serial.print(":");    
-  Serial2.println(value);  
+  //String cmd;
+  char cmd[40];
+  memset(cmd,'\0',sizeof(cmd));
+  sprintf(cmd,"%s.txt=\"%s\"%c%c%c",field,value,strFF,strFF,strFF);  
+  //cmd = field+".txt=\""+value+"\""+String(strFF)+String(strFF)+String(strFF);
+  Serial.println(cmd); 
+  Serial3.println(cmd);  
 }
 
 void NextionWAITESC()
@@ -1312,25 +1340,25 @@ void NextionWAITESC()
 void NextionMensage(String info)
 {
   char strFF = 0xFF;
-  Serial2.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
+  Serial3.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
   delay(100);
   String cmd;
   
   cmd = "MSGtxt.txt=\""+info+"\""+String(strFF)+String(strFF)+String(strFF);
-  Serial.print(cmd);  
-  Serial2.print(cmd);
+  Serial.println(cmd);  
+  Serial3.print(cmd);
 }
 
 void NextionMensageSTOP(String info)
 {
   char strFF = 0xFF;
-  Serial2.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
+  Serial3.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
   delay(100);
   String cmd;
   
   cmd = "MSGtxt.txt=\""+info+"\" "+String(strFF)+String(strFF)+String(strFF);
-  Serial.print(cmd);  
-  Serial2.print(cmd);
+  Serial.println(cmd);  
+  Serial3.print(cmd);
   NextionWAITESC();
 }
 
@@ -1340,6 +1368,7 @@ void NextionMensageSTOP(String info)
 float Reset()
 {
   Serial.println("RESET");
+  contciclo = 0;
   /*Inicializa Modulos*/
   LOCAL_DEFMOD1=0;
   LOCAL_DEFMOD2=0;
@@ -1575,7 +1604,10 @@ void KeyCMD()
     if (strstr( Buffer,"LOAD=") != 0)
     {
       char *MSG1;
+      char Filename[80];
+      memset(Filename,'\0',sizeof(Filename));
       MSG1 = strstr(Buffer,"=")+1;
+      memcpy(Filename,MSG1,strlen(MSG1));
       
       Serial.println("Iniciou Load");
       //strncpy(MSG1, BufferKeypad, 7);
@@ -1585,7 +1617,7 @@ void KeyCMD()
       Serial.println(MSG1);
       //root = card.open(MSG1);
       //root = SD.open("/");
-      LOAD(root, MSG1);
+      LOAD(root, Filename);
 
       resp = true;
     }
@@ -1627,6 +1659,31 @@ void KeyCMD()
     }
 
 
+    if (strstr( Buffer, "SHOW=") != 0)
+    {
+      char sMSG1[40];
+      char sMSG2[40];
+      Serial.println("Achou SHOW");
+      char *posequ = strstr( Buffer, "=");
+      char *posend = strstr( Buffer, "\n");
+      
+      Serial.print("POSEQU=");
+      Serial.println(posequ);
+      if(posequ != 0)
+      {
+        posequ ++;
+        
+        memset(sMSG1,'\0',sizeof(sMSG1));
+        
+        strncpy(sMSG1, posequ,(posend)-posequ);
+        Serial.print("sMSG1=");
+        Serial.println(sMSG1);
+        NextionShow(sMSG1);
+        
+        resp = true;
+      }
+    }
+
     if (strstr( Buffer, "MENSAGEM=") != 0)
     {
       char sMSG1[20];
@@ -1647,7 +1704,6 @@ void KeyCMD()
         resp = true;
       }
     }
-
     
     if (strstr( Buffer, "MSGSTOP=") != 0)
     {
@@ -1765,7 +1821,7 @@ void KeyCMD()
         {
           Serial.println("Teste4");
           memset(sMSG1,'\0',sizeof(sMSG1));
-          strncpy(sMSG1, posequ,int(poscr-posequ));
+          strncpy(sMSG1, posequ,int(poscr-posequ)-2);
         } else {
           Serial.println("Teste3");
           strcpy(sMSG1, posequ);  
@@ -1847,6 +1903,26 @@ void Le_Serial()
   }
 }
 
+//Le registro do Serial3
+void Le_Serial3()
+{
+  char key;
+  
+  while (Serial3.available() > 0)
+  {
+    
+    key = Serial3.read();
+
+    if (key != 0)
+    {
+      
+      Serial3.print(key);
+      //BufferKeypad += key;
+      sprintf(Buffer, "%s%c", Buffer, key);
+    }
+  }
+}
+
 void Le_DHT22()
 {
   
@@ -1875,11 +1951,16 @@ void Le_DHT22()
   dtostrf(t, 3, 2, temperatura);  // 8 char min total width, 6 after decimal
   //Serial.print("TEMPERATURA:");
   //Serial.println(temperatura);
-  NextionFieldText("temp",String(temperatura));
+  NextionFieldText("temp",temperatura);
   memset(temperatura,'\0',sizeof(temperatura));
   //sprintf(temperatura,"%f",t);
   dtostrf(h, 4, 2, temperatura);  // 8 char min total width, 6 after decimal
-  NextionFieldText("hum",String(temperatura));
+  Serial.print("Humidade:");
+  Serial.println(temperatura);
+  delay(100);
+  NextionFieldText("hum",temperatura);
+  delay(100);
+  NextionFieldText("hum",temperatura);
 }
 
 void Le_FimCurso()
@@ -1906,7 +1987,8 @@ void Leituras()
 {
   //Le_Teclado();
   Le_Serial();
-  Le_DHT22();
+  Le_Serial3();
+  //Le_DHT22();
   Le_FimCurso();
  
 
@@ -1928,14 +2010,18 @@ void RetConsole()
   Serial.println("$>");
 }
 
-void loop() {
+void loop() 
+{
   Leituras();
   Analisa();
-  //Modulo de contagem de ciclos
-  if (contciclo >= maxciclo)
+  contciclo = contciclo+1;
+  
+  if  (contciclo > MAXCICLO) //Modulo de contagem de ciclos
   {
+    Le_DHT22();
+    //MostraTemperatura
     contciclo = 0;
   }
-  contciclo++;
+  
   
 }

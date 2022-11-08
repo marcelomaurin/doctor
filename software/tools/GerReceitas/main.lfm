@@ -23,9 +23,9 @@ object frmMain: TfrmMain
     Height = 507
     Top = 50
     Width = 773
-    ActivePage = tbUSB
+    ActivePage = tbSobre
     Align = alClient
-    TabIndex = 4
+    TabIndex = 0
     TabOrder = 1
     object tbSobre: TTabSheet
       Caption = 'Sobre'
@@ -44,7 +44,7 @@ object frmMain: TfrmMain
         Height = 15
         Top = 88
         Width = 15
-        Caption = '0.1'
+        Caption = '0.2'
         ParentColor = False
       end
       object Label3: TLabel
@@ -1075,7 +1075,7 @@ object frmMain: TfrmMain
       object Label8: TLabel
         Left = 192
         Height = 15
-        Top = 72
+        Top = 48
         Width = 59
         Caption = 'Mensagem'
         ParentColor = False
@@ -1084,7 +1084,7 @@ object frmMain: TfrmMain
         Left = 195
         Height = 23
         Hint = 'Texto da mensagem que se deseja enviar'
-        Top = 89
+        Top = 65
         Width = 301
         MaxLength = 20
         ParentShowHint = False
@@ -1095,7 +1095,7 @@ object frmMain: TfrmMain
         Left = 507
         Height = 25
         Hint = 'Mensagem sem parada'
-        Top = 89
+        Top = 63
         Width = 75
         Caption = 'MSG'
         OnClick = BTMSGClick
@@ -1104,10 +1104,10 @@ object frmMain: TfrmMain
         TabOrder = 13
       end
       object BTMSGSTOP: TButton
-        Left = 590
+        Left = 592
         Height = 25
         Hint = 'Mensagem com parada'
-        Top = 89
+        Top = 63
         Width = 75
         Caption = 'MSGSTOP'
         OnClick = BTMSGSTOPClick
@@ -1224,9 +1224,9 @@ object frmMain: TfrmMain
         TabOrder = 23
       end
       object BTBEEP1: TButton
-        Left = 688
+        Left = 352
         Height = 25
-        Top = 87
+        Top = 5
         Width = 75
         Caption = 'ESC'
         OnClick = BTBEEP1Click
@@ -1319,7 +1319,7 @@ object frmMain: TfrmMain
       object Label30: TLabel
         Left = 192
         Height = 15
-        Top = 56
+        Top = 32
         Width = 150
         Caption = 'Comandos do Equipamento'
         Font.Style = [fsBold]
@@ -1337,6 +1337,47 @@ object frmMain: TfrmMain
         ParentShowHint = False
         ShowHint = True
         TabOrder = 29
+      end
+      object BTSHOW: TButton
+        Left = 432
+        Height = 25
+        Hint = 'Mensagem com parada'
+        Top = 104
+        Width = 75
+        Caption = 'SHOW'
+        OnClick = BTSHOWClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 30
+      end
+      object Label23: TLabel
+        Left = 192
+        Height = 15
+        Top = 88
+        Width = 25
+        Caption = 'Telas'
+        ParentColor = False
+      end
+      object cbTelas: TComboBox
+        Left = 197
+        Height = 23
+        Top = 104
+        Width = 219
+        ItemHeight = 15
+        Items.Strings = (
+          'Splah'
+          'Menu'
+          'Operacao'
+          'Setup'
+          'MSG'
+          'MSGSTOP'
+          'INFO'
+          'AMBIENTE'
+          'CALIB'
+          'LOAD'
+        )
+        TabOrder = 31
+        Text = 'cbTelas'
       end
     end
     object tbTermUSB: TTabSheet
@@ -2049,14 +2090,6 @@ object frmMain: TfrmMain
       ShowHint = True
     end
   end
-  object Label23: TLabel
-    Left = 664
-    Height = 15
-    Top = 240
-    Width = 71
-    Caption = 'Fim Curso A2'
-    ParentColor = False
-  end
   object Label2: TLabel
     Left = 664
     Height = 15
@@ -2064,16 +2097,6 @@ object frmMain: TfrmMain
     Width = 71
     Caption = 'Fim Curso A1'
     ParentColor = False
-  end
-  object Label26: TLabel
-    Left = 632
-    Height = 15
-    Top = 181
-    Width = 103
-    Caption = 'Status de sensores'
-    Font.Style = [fsBold]
-    ParentColor = False
-    ParentFont = False
   end
   object SdpoSerial1: TSdpoSerial
     Active = False
@@ -2119,8 +2142,8 @@ object frmMain: TfrmMain
     ExecCommandID = ecSynCompletionExecute
     Editor = SynEdit1
     ToggleReplaceWhole = False
-    Left = 680
-    Top = 176
+    Left = 672
+    Top = 208
   end
   object Timer1: TTimer
     Interval = 60000
