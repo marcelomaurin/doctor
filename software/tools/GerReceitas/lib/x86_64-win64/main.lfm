@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 1909
+  Left = 847
   Height = 557
-  Top = -1150
+  Top = 320
   Width = 773
   Caption = 'Gerenciador de Receita'
   ClientHeight = 557
@@ -23,9 +23,9 @@ object frmMain: TfrmMain
     Height = 507
     Top = 50
     Width = 773
-    ActivePage = tbSobre
+    ActivePage = tbUSB
     Align = alClient
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 1
     object tbSobre: TTabSheet
       Caption = 'Sobre'

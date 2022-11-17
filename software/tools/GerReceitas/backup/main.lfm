@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 1909
+  Left = 847
   Height = 557
-  Top = -1150
+  Top = 320
   Width = 773
   Caption = 'Gerenciador de Receita'
   ClientHeight = 557

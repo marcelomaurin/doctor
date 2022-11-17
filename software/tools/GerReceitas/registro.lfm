@@ -1,7 +1,7 @@
 object frmRegistrar: TfrmRegistrar
-  Left = 2037
+  Left = 797
   Height = 251
-  Top = -1007
+  Top = 154
   Width = 547
   BorderStyle = bsNone
   Caption = 'Registro'

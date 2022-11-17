@@ -558,7 +558,7 @@ var
    a: integer;
 
 begin
-   if SdpoSerial1.Active then
+  if SdpoSerial1.Active then
   begin
              arquivo := edFile.Text;
              //SynEdit1.Lines.LoadFromFile(arquivo);

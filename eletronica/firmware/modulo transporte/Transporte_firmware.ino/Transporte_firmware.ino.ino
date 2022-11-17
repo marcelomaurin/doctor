@@ -232,6 +232,7 @@ void ImprimePequeno(char info[]);
 void ImprimeBarra(char info[]);
 void ImprimeAvanco();
 void Report(); //Imprime relatorio
+void retirac(char *nome, char *nova, char tira);
 
 
 SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
@@ -783,7 +784,7 @@ void fDEFMOD(int modulo,char *MSG1)
 {
   char *ptr;
   long local = 0;
-  
+
   local = strtol(MSG1,&ptr,10);
   Serial.println("fDEFMOD");
   if (modulo==1) LOCAL_DEFMOD1 = local;
@@ -800,13 +801,11 @@ void fDEFMOD(int modulo,char *MSG1)
 //Carrega a aplicação para o SD
 void LOAD(File root, char *sMSG1)
 {
+ 
   //Imprime(1, "Carregando APP...");
   Serial.println("Carregando APP..");
   NextionShow("LOAD");
-  //Copia arquivo
-  memset(ArquivoTrabalho,'\0',sizeof(ArquivoTrabalho));
-  char * posend = strstr(sMSG1,'\n');
-
+ 
   //Realiza operação de Loop
   LOADLoop(root, sMSG1);
   NextionShow("Menu");
@@ -852,21 +851,38 @@ void LOADAnalisa(File * farquivo)
   //LOADKeyCMDBluetooth(); //Analisa o que esta na entrada do buffer do bluetooth
 }
 
+void retirac(char *nome, char *nova, char tira)
+{
+    int i=0;
+    while (*nome != '\0'){
+        if (*nome == tira)
+            nova [i] = '\0';
+        else
+            nova[i] = *nome;
+        ++i;
+        ++nome;
+    }
+    nova [i] = '\0';
+}
 
 int LOADLoop(File root, char *Info)
 {
+
   memset(Buffer,'\0',sizeof(Buffer)); /*Zera buffer*/
   Serial.println("Iniciando rotina LOADLoop");
   //Tenta carregar arquivo t para ser temporario
-  Serial.print("Criando arquivo:");
+  Serial.print("LOADLoop Info:");
   Serial.println(Info);
-  farquivo = SD.open("temp.out", FILE_WRITE);
+  
+  //farquivo = SD.open("temp.out", FILE_WRITE);
   //File farquivo = SD.open(String(Info), FILE_WRITE);
+  farquivo = SD.open(Info, FILE_WRITE);
   //Limpa os buffer
   if (!farquivo)
   {
     Serial.println("Erro SD");
-    Serial.println("Nao pode abrir SD");
+    Serial.print("Nao pode abrir SD:");
+    Serial.println(Info);
     //NextionMessage("Nao pode abrir SD");
     //Imprime(1, "Erro SD");
     // Imprime(2, "Nao pode abrir SD");
@@ -881,7 +897,7 @@ int LOADLoop(File root, char *Info)
     {
       LOADLeituras();
       //Realiza analise das informações encontradas
-      LOADAnalisa(&farquivo);
+      LOADAnalisa(&farquivo);      
       //arquivo.println("Leitura Potenciometro: ");
     }
     Serial.println("Finalizou bloco de gravação do arquivo");
@@ -890,8 +906,8 @@ int LOADLoop(File root, char *Info)
   Serial.println("Fechou arquivo ");
   //Apaga o Arquivo Temporario
   //LOADRename(Info);
-   LOADCOPYTEMP(Info);
-   LOADRemoveTemp();
+   //LOADCOPYTEMP(ArquivoFinal);
+   //LOADRemoveTemp();
   return 0;
 }
 
@@ -1607,16 +1623,21 @@ void KeyCMD()
       char Filename[80];
       memset(Filename,'\0',sizeof(Filename));
       MSG1 = strstr(Buffer,"=")+1;
-      memcpy(Filename,MSG1,strlen(MSG1));
+      char *fim = strchr(Buffer,'\n');
+      long posicao = strlen(Buffer);
+      if (fim !=0)  posicao = (fim-MSG1);
+      Serial.print("Posicao:");
+      Serial.println(posicao);
+      strncpy(Filename,MSG1,posicao);
+      
       
       Serial.println("Iniciou Load");
-      //strncpy(MSG1, BufferKeypad, 7);
-      //strncpy(MSG1, &Buffer[6], strlen(Buffer) - 6);
+      
       //Imprime(0, MSG1);
       Serial.print("Arquivo:");
-      Serial.println(MSG1);
+      Serial.println(Filename);
       //root = card.open(MSG1);
-      //root = SD.open("/");
+      root = SD.open("/");
       LOAD(root, Filename);
 
       resp = true;
