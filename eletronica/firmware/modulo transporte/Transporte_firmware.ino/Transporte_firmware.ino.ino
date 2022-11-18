@@ -130,7 +130,7 @@ byte names[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 int tones[] = { 1915, 1700, 1519, 1432, 1275, 1136, 1014, 956};
 
 //Buffer
-char Buffer[40]; //Buffer de Teclado
+char Buffer[100]; //Buffer de Teclado
 
 /*Estrutura de etiqueta*/
 typedef struct ETIQUETA {
@@ -194,6 +194,7 @@ void KeyCMD();//Comando de entrada
 float Reset();
 void LstDir(File dir, int numTabs);
 void MAN();
+void DeleteFile(File root, char *sMSG1); //Deleta arquivo do SD
 void LOAD(File root, char *sMSG1); //Carrega a aplicação para o SD
 int LOADLoop(File root, char *Info);
 void LOADLeituras();
@@ -812,6 +813,29 @@ void LOAD(File root, char *sMSG1)
 
 }
 
+//DeleteFile
+void DeleteFile(File root, char *sMSG1)
+{
+ 
+  //Imprime(1, "Carregando APP...");
+  Serial.println("DeleteFile..");
+  //NextionShow("LOAD");
+ 
+  //Realiza operação de Loop
+  //LOADLoop(root, sMSG1);
+  //NextionShow("Menu");
+  if (SD.exists(sMSG1)) 
+  {
+   SD.remove(sMSG1);
+   Serial.println("Alert! File Deleted!");
+  } else {
+    Serial.println("Alert! File not exist!");
+  }
+  
+
+}
+
+
 void LOADLEARQUIVO(char *Arquivo)
 {
   File arquivo;
@@ -1055,7 +1079,7 @@ void LOADKeyCMD(File * farquivo)
 
   //incluir busca /n
 
-  if (strstr (Buffer, "\n") == 0)
+  if (strchr(Buffer,'\n') == 0)
   {  
     //Serial.println("Sem fim de linha");    
   } else
@@ -1483,6 +1507,7 @@ void MAN()
   Serial.println("MOPERACAO - MODO CONFIG");
   Serial.println("RELE01 - ACIONAMENTO RELE01");
   Serial.println("RELE02 - ACIONAMENTO RELE02");
+  Serial.println("DELFILE - REMOVE ARQUIVO");
   Serial.println(" ");
 }
 
@@ -1525,25 +1550,23 @@ void KeyCMD()
   bool resp = false;
 
   //incluir busca /n
-  if (strchr (Buffer, '\n') != 0)
+  if (strchr(Buffer,'\n') != 0)
   {
     Serial.print("Comando:");
-    Serial.println(Buffer);
-
-  
+    Serial.println(Buffer);  
 
     //Inicio
-    if (strcmp( Buffer, "INICIO\n") == 0)
+    if (strcmp( Buffer, "BEGIN\n") == 0)
     {
-      Serial.println("Inicio");
+      Serial.println("BEGIN");
       Reset();
       resp = true;
     }
 
     //FIM
-    if (strcmp( Buffer, "FIM\n") == 0)
+    if (strcmp( Buffer, "END\n") == 0)
     {
-      Serial.println("Fim");
+      Serial.println("END");
       Reset();
       resp = true;
     }
@@ -1643,6 +1666,33 @@ void KeyCMD()
       resp = true;
     }
 
+    //DELETEFILE - Deleta arquivo do SD
+    if (strstr( Buffer,"DELFILE=") != 0)
+    {
+      char *MSG1;
+      char Filename[80];
+      memset(Filename,'\0',sizeof(Filename));
+      MSG1 = strstr(Buffer,"=")+1;
+      char *fim = strchr(Buffer,'\n');
+      long posicao = strlen(Buffer);
+      if (fim !=0)  posicao = (fim-MSG1);
+      Serial.print("Posicao:");
+      Serial.println(posicao);
+      strncpy(Filename,MSG1,posicao);
+      
+      
+      Serial.println("Iniciou DeleteFile");
+      
+      //Imprime(0, MSG1);
+      Serial.print("Arquivo:");
+      Serial.println(Filename);
+      //root = card.open(MSG1);
+      root = SD.open("/");
+      DeleteFile(root, Filename);
+
+      resp = true;
+    }
+
     //DEFMOD1=
     if (strstr( Buffer,"DEFMOD=") != 0)
     {
@@ -1680,6 +1730,7 @@ void KeyCMD()
     }
 
 
+
     if (strstr( Buffer, "SHOW=") != 0)
     {
       char sMSG1[40];
@@ -1700,6 +1751,42 @@ void KeyCMD()
         Serial.print("sMSG1=");
         Serial.println(sMSG1);
         NextionShow(sMSG1);
+        
+        resp = true;
+      }
+    }
+
+    //NextionFieldText
+    if (strstr( Buffer, "NTFLD:") != 0)
+    {
+      Serial.println("Achou NEXTFIELD");
+
+      /*Achando valores de parametros*/
+      char sFIELD[40];
+      memset(sFIELD,'\0',sizeof(sFIELD));
+      char sVALUE[40];
+      memset(sVALUE,'\0',sizeof(sFIELD));
+
+      char *posdois = strchr( Buffer, ':');
+      char *posequ = strchr( Buffer, '=');
+      char *posend = strchr( Buffer, '\n');
+      
+      Serial.print("POSEQU=");
+      Serial.println(posequ);
+      if(posequ != 0)
+      {
+        posequ ++;            
+        int tamanho = (posequ-posdois)-2;
+        strncpy(sFIELD, posdois+1,tamanho);
+        tamanho = (posdois-posend)-2;
+        strncpy(sVALUE, posequ,tamanho);
+        
+        Serial.print("sFIELD=");
+        Serial.println(sFIELD);
+        Serial.print("sVALUE=");
+        Serial.println(sVALUE);
+        //NextionShow(sMSG1);
+        NextionFieldText(sFIELD,sVALUE);
         
         resp = true;
       }

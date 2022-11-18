@@ -19,17 +19,22 @@ type
     BTBEEP2: TButton;
     btCalibracao: TButton;
     btDEFMOD: TButton;
+    btDelFile: TButton;
     BTSHOW: TButton;
+    btNextionField: TButton;
     Button1: TButton;
     btSOUND: TButton;
     cbTelas: TComboBox;
     edDEFMOD_NRO: TEdit;
     edDEFMOD_VALOR: TEdit;
+    edField: TEdit;
+    edValue: TEdit;
     indGTemp: TindGnouMeter;
     indGTemp1: TindGnouMeter;
     Label2: TLabel;
     Label23: TLabel;
     Label24: TLabel;
+    Label26: TLabel;
     Label27: TLabel;
     Label29: TLabel;
     Label30: TLabel;
@@ -42,6 +47,7 @@ type
     Label39: TLabel;
     Label40: TLabel;
     Label41: TLabel;
+    Label42: TLabel;
     ledFIMCURSOA1: TAdvLed;
     ledFIMCURSOA2: TAdvLed;
     ledFIMCURSOB2: TAdvLed;
@@ -146,12 +152,14 @@ type
     procedure btCarregarClick(Sender: TObject);
     procedure btClearClick(Sender: TObject);
     procedure btDEFMODClick(Sender: TObject);
+    procedure btDelFileClick(Sender: TObject);
     procedure btDesativarClick(Sender: TObject);
     procedure BTLSTDIRClick(Sender: TObject);
     procedure BTMANClick(Sender: TObject);
     procedure btMedirClick(Sender: TObject);
     procedure BTMSGClick(Sender: TObject);
     procedure BTMSGSTOPClick(Sender: TObject);
+    procedure btNextionFieldClick(Sender: TObject);
     procedure btNovoClick(Sender: TObject);
     procedure btRele2Click(Sender: TObject);
     procedure btRele2OFFClick(Sender: TObject);
@@ -297,6 +305,30 @@ begin
   end;
 end;
 
+procedure TfrmMain.btDelFileClick(Sender: TObject);
+var
+   a: integer;
+
+begin
+  if SdpoSerial1.Active then
+  begin
+    arquivo := cbFiles.Text;
+    if(pos(#13,arquivo)<>0) then
+    begin
+      arquivo := Copy(arquivo,1,pos(#13,arquivo)-1);
+    end;
+    //SynEdit1.Lines.LoadFromFile(arquivo);
+    flgErro := false;
+    //frmMain.Text := 'Gerenciador DOCTOR '+ arquivo;
+    SdpoSerial1.WriteData('DELFILE='+arquivo+#10);
+  end
+  else
+  begin
+    ShowMessage('Ative a porta USB!');
+  end;
+
+end;
+
 procedure TfrmMain.btDesativarClick(Sender: TObject);
 begin
   SdpoSerial1.Close;
@@ -367,6 +399,27 @@ begin
    if SdpoSerial1.Active then
   begin
         SdpoSerial1.WriteData('MSGSTOP='+edMsg.TEXT+#10);
+  end
+  else
+  begin
+    ShowMessage('Ative a porta USB!');
+  end;
+end;
+
+procedure TfrmMain.btNextionFieldClick(Sender: TObject);
+begin
+  if SdpoSerial1.Active then
+  begin
+       if (edField.text<>'') then
+       begin
+          //SdpoSerial1.WriteData('NTFLD:'+edField.TEXT+'='+edValue.text+#10);
+            SdpoSerial1.WriteData('NTFLD:'+edField.TEXT+'='+edValue.tex#10);
+       end
+       else
+       begin
+           ShowMessage('Selecione o field que deseja atribuir valor!');
+           edField.SetFocus;
+       end;
   end
   else
   begin
@@ -461,7 +514,7 @@ procedure TfrmMain.BTSHOWClick(Sender: TObject);
 begin
   if SdpoSerial1.Active then
   begin
-       if (cbTelas.ItemIndex<>0) then
+       if (cbTelas.ItemIndex<>-1) then
        begin
        SdpoSerial1.WriteData('SHOW='+cbTelas.TEXT+#10);
 
@@ -558,7 +611,7 @@ var
    a: integer;
 
 begin
-   if SdpoSerial1.Active then
+  if SdpoSerial1.Active then
   begin
              arquivo := edFile.Text;
              //SynEdit1.Lines.LoadFromFile(arquivo);
@@ -662,18 +715,13 @@ begin
              Info := Copy(Info,posicao+7,posicaofim-(posicao+6));
              ledTemp.Caption:= Info;
              Info2 := Copy(Info,1,length(info)-1);
-              //GetLocaleFormatSettings(GetThreadLocale, myFormatSettings);
-              myFormatSettings.DecimalSeparator := '.';
+             myFormatSettings.DecimalSeparator := '.';
              indGnouMeter1.Value:= StrToFloat(Info2,myFormatSettings);
              AnalogSensor1.Value:=StrToFloat(Info2,myFormatSettings);
              Tempo := (now()-tempostart)*24*60;
              Chart1LineSeries1.AddXY(Tempo, StrToFloat(Info2,myFormatSettings));
-             //Chart1LineSeries2.AddXY(now(), getTempIdeal());
-             //indGnouMeter1.Value:= StrToFloat(Info);
-
         end;
    end;
-   //FILENAME:
    posicao := pos('FILENAME:',Info);
    if (posicao <> 0) then
    begin
@@ -683,9 +731,7 @@ begin
           if  (pos('.REC',INFO)<>0) or (pos('.rec',INFO)<>0) then
           begin
              Info := Copy(Info,posicao+9,posicaofim-(posicao+9));
-
              cbFiles.Items.Append(Info);
-             //indGnouMeter1.Value:= StrToFloat(Info);
           end;
 
      end;
@@ -709,21 +755,14 @@ begin
      posicaofim := pos('ON', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledRele1.State:= lsOff;
 
      end;
      posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledRele1.State:= lsOn;
      end;
-
    end;
     //RELE2:
    posicao := pos('RELE2:',Info);
@@ -732,24 +771,26 @@ begin
      posicaofim := pos('ON', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledRele2.State:= lsOff;
-
      end;
      posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledRele2.State:= lsOn;
      end;
-
    end;
-
-
+   posicaofim := pos('Alert!', Info);
+   if (posicaofim>0) then
+   begin
+         posicaofim := pos(#10,Info);
+         if (posicaofim>0) then
+         begin
+          Info := Copy(Info,posicao+6,posicaofim-(posicao+6));
+          //SynEdit1.Lines.Append(Info);
+          //sleep(50);
+          ShowMessage(Info);
+         end;
+   end;
    posicao := pos('flgFIMA1=',Info);
    if (posicao > 0) then
    begin
@@ -757,7 +798,6 @@ begin
      if (posicaofim>0) then
      begin
           ledFIMCURSOA1.State:= lsOn;
-
      end;
      posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
@@ -850,17 +890,11 @@ begin
      if (posicaofim>0) then
      begin
           Info := Copy(Info,posicao+9,posicaofim-(posicao+9));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           LEDNEIXOA.Caption:= Info;
-
      end;
      posicaofim := pos('OFF', Info);
      if (posicaofim>0) then
      begin
-          //Info := Copy(Info,posicao+10,posicaofim-(posicao+10));
-          //cbFiles.Items.Append(Info);
-          //indGnouMeter1.Value:= StrToFloat(Info);
           ledFIMCURSOA2.State:= lsOn;
      end;
    end;
@@ -876,7 +910,6 @@ begin
    posicao := pos('Recebendo Firmware:', Info);
    if (posicao>0) then
    begin
-
           for a := 0 to SynEdit1.Lines.Count-1  do
           begin
             SdpoSerial1.WriteData( SynEdit1.Lines[a]+#10+#13);
@@ -904,8 +937,6 @@ begin
        Info2 := copy(Info,posicao,posicaofim-posicao);
        //linha := strtoint(Info2);
        ShowMessage('Erro na Linha:'+Info);
-
-
      end;
    end;
 
@@ -1001,12 +1032,8 @@ begin
           DecimalSeparator := '.';
           temperatura := strtofloat(strtemperatura);
           indGTemp1.Value:= temperatura;
-
         end;
-
    end;
-
-
 end;
 
 procedure TfrmMain.SdpoSerial1RxData(Sender: TObject);

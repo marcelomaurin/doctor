@@ -1,11 +1,11 @@
 object frmMain: TfrmMain
-  Left = 847
+  Left = 1978
   Height = 557
-  Top = 320
-  Width = 773
+  Top = -1013
+  Width = 792
   Caption = 'Gerenciador de Receita'
   ClientHeight = 557
-  ClientWidth = 773
+  ClientWidth = 792
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poMainFormCenter
@@ -14,7 +14,7 @@ object frmMain: TfrmMain
     Left = 0
     Height = 50
     Top = 0
-    Width = 773
+    Width = 792
     Align = alTop
     TabOrder = 0
   end
@@ -22,15 +22,15 @@ object frmMain: TfrmMain
     Left = 0
     Height = 507
     Top = 50
-    Width = 773
-    ActivePage = tbSobre
+    Width = 792
+    ActivePage = tbUSB
     Align = alClient
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 1
     object tbSobre: TTabSheet
       Caption = 'Sobre'
       ClientHeight = 479
-      ClientWidth = 765
+      ClientWidth = 784
       object Label1: TLabel
         Left = 129
         Height = 15
@@ -75,7 +75,7 @@ object frmMain: TfrmMain
     object TabSheet3: TTabSheet
       Caption = 'Info Equipamento'
       ClientHeight = 479
-      ClientWidth = 765
+      ClientWidth = 784
       object Label27: TLabel
         Left = 8
         Height = 15
@@ -253,7 +253,7 @@ object frmMain: TfrmMain
     object tbSetup: TTabSheet
       Caption = 'Setup'
       ClientHeight = 479
-      ClientWidth = 765
+      ClientWidth = 784
       object Label4: TLabel
         Left = 40
         Height = 15
@@ -337,12 +337,12 @@ object frmMain: TfrmMain
     object tbScript: TTabSheet
       Caption = 'Scripts'
       ClientHeight = 479
-      ClientWidth = 765
+      ClientWidth = 784
       inline SynEdit1: TSynEdit
         Left = 0
         Height = 405
         Top = 74
-        Width = 765
+        Width = 784
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -873,10 +873,10 @@ object frmMain: TfrmMain
         Left = 0
         Height = 74
         Top = 0
-        Width = 765
+        Width = 784
         Align = alTop
         ClientHeight = 74
-        ClientWidth = 765
+        ClientWidth = 784
         TabOrder = 1
         object btCarregar: TButton
           Left = 112
@@ -910,7 +910,7 @@ object frmMain: TfrmMain
     object tbUSB: TTabSheet
       Caption = 'USB'
       ClientHeight = 479
-      ClientWidth = 765
+      ClientWidth = 784
       OnContextPopup = tbUSBContextPopup
       object btAtivar: TButton
         Left = 160
@@ -977,7 +977,7 @@ object frmMain: TfrmMain
         Text = 'RECEITA.REC'
       end
       object btUSBCarregar: TButton
-        Left = 568
+        Left = 576
         Height = 25
         Hint = 'Carrega para aba de Script a receita em memória.'
         Top = 407
@@ -989,10 +989,10 @@ object frmMain: TfrmMain
         TabOrder = 4
       end
       object BTMAN: TButton
-        Left = 194
+        Left = 464
         Height = 25
         Hint = 'Solicita listagem de comandos'
-        Top = 160
+        Top = 192
         Width = 75
         Caption = 'MAN'
         OnClick = BTMANClick
@@ -1041,7 +1041,7 @@ object frmMain: TfrmMain
         Height = 25
         Hint = 'Carrega listagem de receitas contidas no SD do equipamento'
         Top = 407
-        Width = 72
+        Width = 75
         Caption = 'LSTDIR'
         OnClick = BTLSTDIRClick
         ParentShowHint = False
@@ -1081,7 +1081,7 @@ object frmMain: TfrmMain
         ParentColor = False
       end
       object edMsg: TEdit
-        Left = 195
+        Left = 192
         Height = 23
         Hint = 'Texto da mensagem que se deseja enviar'
         Top = 65
@@ -1124,7 +1124,7 @@ object frmMain: TfrmMain
         TabOrder = 15
       end
       object btClear: TButton
-        Left = 489
+        Left = 496
         Height = 25
         Hint = 'Limpa listagem atual de receitas'
         Top = 407
@@ -1134,7 +1134,7 @@ object frmMain: TfrmMain
         TabOrder = 16
       end
       object btRUN: TButton
-        Left = 648
+        Left = 664
         Height = 25
         Hint = 'Executa a receita apontada na listagem'
         Top = 407
@@ -1339,7 +1339,7 @@ object frmMain: TfrmMain
         TabOrder = 29
       end
       object BTSHOW: TButton
-        Left = 432
+        Left = 423
         Height = 25
         Hint = 'Mensagem com parada'
         Top = 104
@@ -1359,7 +1359,7 @@ object frmMain: TfrmMain
         ParentColor = False
       end
       object cbTelas: TComboBox
-        Left = 197
+        Left = 192
         Height = 23
         Top = 104
         Width = 219
@@ -1379,16 +1379,70 @@ object frmMain: TfrmMain
         TabOrder = 31
         Text = 'cbTelas'
       end
+      object btDelFile: TButton
+        Left = 412
+        Height = 25
+        Hint = 'Executa a receita apontada na listagem'
+        Top = 435
+        Width = 75
+        Caption = 'DELFILE'
+        OnClick = btDelFileClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 32
+      end
+      object Label26: TLabel
+        Left = 192
+        Height = 15
+        Top = 131
+        Width = 28
+        Caption = 'Field:'
+        ParentColor = False
+      end
+      object edField: TEdit
+        Left = 194
+        Height = 23
+        Top = 144
+        Width = 131
+        TabOrder = 33
+      end
+      object Label42: TLabel
+        Left = 344
+        Height = 15
+        Top = 131
+        Width = 31
+        Caption = 'Value:'
+        ParentColor = False
+      end
+      object edValue: TEdit
+        Left = 344
+        Height = 23
+        Top = 144
+        Width = 131
+        TabOrder = 34
+      end
+      object btNextionField: TButton
+        Left = 480
+        Height = 25
+        Hint = 'Mensagem com parada'
+        Top = 142
+        Width = 99
+        Caption = 'NextionField'
+        OnClick = btNextionFieldClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 35
+      end
     end
     object tbTermUSB: TTabSheet
       Caption = 'Terminal'
       ClientHeight = 479
-      ClientWidth = 765
+      ClientWidth = 784
       object edConsole: TEdit
         Left = 0
         Height = 23
         Top = 456
-        Width = 765
+        Width = 784
         Align = alBottom
         OnChange = edConsoleChange
         OnKeyPress = edConsoleKeyPress
@@ -1399,7 +1453,7 @@ object frmMain: TfrmMain
         Left = 0
         Height = 456
         Top = 0
-        Width = 765
+        Width = 784
         Align = alClient
         Font.Height = -13
         Font.Name = 'Courier New'
@@ -1887,7 +1941,7 @@ object frmMain: TfrmMain
     object TabSheet2: TTabSheet
       Caption = 'Parametros'
       ClientHeight = 479
-      ClientWidth = 765
+      ClientWidth = 784
       object Label32: TLabel
         Left = 24
         Height = 15
@@ -1914,7 +1968,7 @@ object frmMain: TfrmMain
     object TabSheet1: TTabSheet
       Caption = 'Painel'
       ClientHeight = 479
-      ClientWidth = 765
+      ClientWidth = 784
       ParentShowHint = False
       ShowHint = True
       object AnalogSensor1: TAnalogSensor
@@ -2148,7 +2202,7 @@ object frmMain: TfrmMain
   object Timer1: TTimer
     Interval = 60000
     OnTimer = Timer1Timer
-    Left = 404
+    Left = 536
     Top = 178
   end
 end
