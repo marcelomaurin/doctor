@@ -171,6 +171,14 @@ ETIQUETA etiqueta;
 #define pinRELE01 42
 #define pinRELE02 44
 
+/* Portas disponiveis para serial 
+Pinos 8 e 9
+Pinos 10 e 11
+Pinos 12 e 13
+Pinos 50 e 51
+Pinos 52 e 53
+/*
+
 
 
 //#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
