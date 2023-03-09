@@ -448,6 +448,12 @@ void Service_Start()
   }
 }
 
+void Start_TermRemoto()
+{
+  // Inicializa o servidor socket
+  server.begin();
+}
+
 /*Rotina que posiciona o equipamento no local correto*/
 void Calibracao()
 {
@@ -485,6 +491,8 @@ void setup() {
   Start_RELES();
 
   Start_DHT22(); 
+  
+  Start_TermRemoto();
 
   Start_SD();
   Service_Start();
@@ -683,6 +691,12 @@ void printQR(uint8_t size, uint8_t correction, const char* data) {
   printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o código QR
 }
 
+
+void Ident_TermRemoto()
+{
+  // Verifica se há um cliente conectado ao servidor
+  client = server.available();
+}
 
 void MovePassoA_Dir(int passo)
 {
@@ -2184,6 +2198,25 @@ void Le_FimCurso()
   }
 }
 
+void Captura_TermRemoto()
+{
+  // Verifica se o cliente está conectado
+  if (client.connected())
+  {
+    // Verifica se há dados disponíveis para leitura
+    if (client.available())
+    {
+      char c = client.read();
+      sprintf(Buffer, "%s%c", Buffer, c);
+    }
+  }
+  else
+  {
+    // Se o cliente desconectar, fecha a conexão
+    client.stop();
+  }
+}
+
 void Leituras()
 {
   //Le_Teclado();
@@ -2191,6 +2224,8 @@ void Leituras()
   Le_Serial3();
   //Le_DHT22();
   Le_FimCurso();
+  Ident_TermRemoto();
+  Captura_TermRemoto();
  
 
   Chk_Beep();
