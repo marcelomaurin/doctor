@@ -168,8 +168,11 @@ ETIQUETA etiqueta;
 #define pinFIMC1 30
 #define pinFIMC2 31
 
-#define pinRELE01 42
-#define pinRELE02 44
+#define pinSDA 20 // pino A4 no Arduino Mega
+#define pinSCL 21 // pino A5 no Arduino Mega
+
+const int pinSDA = 20; // pino A4 no Arduino Mega
+const int pinSCL = 21; // pino A5 no Arduino Mega
 
 /* Portas disponiveis para serial 
 Pinos 8 e 9
@@ -458,6 +461,10 @@ void Calibracao()
   
 }
 
+void Start_I2C() {
+  Wire.begin(pinSDA, pinSCL);
+}
+
 void setup() {
  
   Start_Serial();
@@ -476,6 +483,9 @@ void setup() {
 
   Start_SD();
   Service_Start();
+  
+  Start_I2C(); //Start de comunicação I2C
+  
 
   // Font options
   //MovePasso01();
@@ -491,7 +501,11 @@ void setup() {
 
 }
 
-
+void sendStringToI2C(int address, char* data) {
+  Wire.beginTransmission(address);
+  Wire.write(data);
+  Wire.endTransmission();
+}
 
 //Toca um som
 void Sound(char serByte)
