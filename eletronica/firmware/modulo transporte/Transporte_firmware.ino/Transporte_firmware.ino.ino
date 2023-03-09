@@ -619,6 +619,44 @@ void Report()
   
 }
 
+// Função para definir o modo de impressão (normal ou de teste)
+void setPrintMode(uint8_t mode) {
+  printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
+  if (mode == 1) {
+    printer.test();
+  } else {
+    printer.normal();
+  }
+}
+
+// Função para definir o tamanho do papel (largura e altura em pontos)
+void setPaperSize(uint8_t width, uint8_t height) {
+  printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
+  printer.setSize('M'); // Configurar o tamanho da fonte para médio
+  printer.feed(1); // Avançar uma linha
+  printer.writeBytes(27, 87, width, height, 0); // Enviar comando para definir o tamanho do papel
+}
+
+// Função para cortar o papel (parcial ou totalmente)
+void cutPaper(uint8_t mode) {
+  printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
+  if (mode == 1) {
+    printer.partialCut(); // Cortar parcialmente
+  } else {
+    printer.feed(3); // Avançar três linhas
+    printer.fullCut(); // Cortar completamente
+  }
+}
+
+// Função para imprimir um código QR (tamanho em pontos, nível de correção de erro, dados)
+void printQR(uint8_t size, uint8_t correction, const char* data) {
+  printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
+  printer.setSize('M'); // Configurar o tamanho da fonte para médio
+  printer.feed(1); // Avançar uma linha
+  printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o código QR
+}
+
+
 void MovePassoA_Dir(int passo)
 {
   
