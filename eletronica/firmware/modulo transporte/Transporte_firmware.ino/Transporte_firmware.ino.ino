@@ -218,6 +218,7 @@ void NextionMensageStop(String info);
 void RetConsole();
 void NextionWAITESC();
 void NextionMensageSTOP(String info);
+void showPageId() 
 void Rele01(bool Value);
 void Rele02(bool Value);
 void MovePassoA_Dir();
@@ -1337,6 +1338,33 @@ void Chk_Beep()
     Sound('c');
     //delay(500);
     //Imprime(2, "BEEP - ESC p/ Parar ");
+  }
+}
+
+/*Captura a pagina em que o nextion esta*/
+void showPageId() {
+  char pageId[10];
+  Serial3.print("sendme\n"); // Enviar o comando "sendme" para solicitar o ID da página atual
+  delay(10);
+  while (Serial3.available() > 0) { // Esperar até que haja dados disponíveis na serial
+    char c = Serial3.read();
+    if (c == 0xFF) { // Verificar se é um byte de início de mensagem
+      int i = 0;
+      while (Serial3.available() > 0 && i < sizeof(pageId) - 1) { // Ler o ID da página até o final da mensagem
+        c = Serial3.read();
+        if (c == 0xFF) { // Verificar se é um byte de início de mensagem (pode ocorrer dentro da mensagem)
+          i = 0;
+        } else if (c == '\n') { // Verificar se é o final da mensagem
+          pageId[i] = '\0'; // Adicionar terminador de string ao final do ID da página
+          break;
+        } else {
+          pageId[i] = c;
+          i++;
+        }
+      }
+      Serial.print("ID da pagina atual: ");
+      Serial.println(pageId);
+    }
   }
 }
 
