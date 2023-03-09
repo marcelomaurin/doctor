@@ -168,19 +168,24 @@ ETIQUETA etiqueta;
 #define pinFIMC1 30
 #define pinFIMC2 31
 
+
 #define pinSDA 20 // pino A4 no Arduino Mega
 #define pinSCL 21 // pino A5 no Arduino Mega
 
-const int pinSDA = 20; // pino A4 no Arduino Mega
-const int pinSCL = 21; // pino A5 no Arduino Mega
 
-/* Portas disponiveis para serial 
-Pinos 8 e 9
-Pinos 10 e 11
-Pinos 12 e 13
-Pinos 50 e 51
-Pinos 52 e 53
-/*
+#define pinSDA 20 //Pino SDA para I2C
+#define pinSCL 21 //Pino SCL para I2C
+
+#define pinLoc01 22 //Pino de localização
+#define pinLoc02 23 //Pino de localização
+#define pinLoc03 24 //Pino de localização
+#define pinLoc04 25 //Pino de localização
+#define pinLoc05 26 //Pino de localização
+#define pinLoc06 27 //Pino de localização
+#define pinLoc07 28 //Pino de localização
+#define pinLoc08 29 //Pino de localização
+
+
 
 
 
