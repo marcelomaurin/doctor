@@ -20,6 +20,7 @@ type
     btCalibracao: TButton;
     btDEFMOD: TButton;
     btDelFile: TButton;
+    btReset: TButton;
     BTSHOW: TButton;
     btNextionField: TButton;
     Button1: TButton;
@@ -155,6 +156,7 @@ type
     procedure btDelFileClick(Sender: TObject);
     procedure btDesativarClick(Sender: TObject);
     procedure BTLSTDIRClick(Sender: TObject);
+    procedure btResetClick(Sender: TObject);
     procedure BTMANClick(Sender: TObject);
     procedure btMedirClick(Sender: TObject);
     procedure BTMSGClick(Sender: TObject);
@@ -356,6 +358,18 @@ begin
   end;
 end;
 
+procedure TfrmMain.btResetClick(Sender: TObject);
+begin
+  if SdpoSerial1.Active then
+  begin
+       SdpoSerial1.WriteData('RESET'+#10);
+  end
+  else
+  begin
+    ShowMessage('Ative a porta USB!');
+  end;
+end;
+
 procedure TfrmMain.BTMANClick(Sender: TObject);
 begin
   if SdpoSerial1.Active then
@@ -413,7 +427,7 @@ begin
        if (edField.text<>'') then
        begin
           //SdpoSerial1.WriteData('NTFLD:'+edField.TEXT+'='+edValue.text+#10);
-            SdpoSerial1.WriteData('NTFLD:'+edField.TEXT+'='+edValue.tex#10);
+          SdpoSerial1.WriteData('NTFLD:'+edField.TEXT+'=123'+#10);
        end
        else
        begin

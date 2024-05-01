@@ -1417,9 +1417,13 @@ object frmMain: TfrmMain
       object edValue: TEdit
         Left = 344
         Height = 23
+        Hint = 'Valor do campo'
         Top = 144
         Width = 131
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 34
+        TextHint = 'Valor do campo'
       end
       object btNextionField: TButton
         Left = 480
@@ -1432,6 +1436,18 @@ object frmMain: TfrmMain
         ParentShowHint = False
         ShowHint = True
         TabOrder = 35
+      end
+      object btReset: TButton
+        Left = 552
+        Height = 25
+        Hint = 'Solicita o reset das variaveis de ambiente'
+        Top = 192
+        Width = 75
+        Caption = 'RESET'
+        OnClick = btResetClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 36
       end
     end
     object tbTermUSB: TTabSheet

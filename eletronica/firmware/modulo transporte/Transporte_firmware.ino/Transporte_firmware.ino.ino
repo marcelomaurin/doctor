@@ -17,7 +17,7 @@
 #define Release "2" //Controle Revisao do Firmware
 
 #define MAXCICLO 90000
-#define MAXSPEED 10
+#define MAXSPEED 12
 
 
 //Flags de Controle
@@ -130,7 +130,7 @@ byte names[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 int tones[] = { 1915, 1700, 1519, 1432, 1275, 1136, 1014, 956};
 
 //Buffer
-char Buffer[100]; //Buffer de Teclado
+char Buffer[500]; //Buffer de Teclado
 
 /*Estrutura de etiqueta*/
 typedef struct ETIQUETA {
@@ -449,6 +449,11 @@ void Calibracao()
   
 }
 
+void MovePasso01()
+{
+//  stepper.step(10);
+}
+
 void setup() {
  
   Start_Serial();
@@ -473,7 +478,7 @@ void setup() {
   //ImprimeEtiqueta();
   Le_DHT22();
   Reset();  
-  //Calibracao(); /*Calibração do equipamento*/
+  Calibracao(); /*Calibração do equipamento*/
   WellComeConsole(); 
   NextionShow("Menu");
   delay(100);
@@ -1407,6 +1412,7 @@ void NextionMensageSTOP(String info)
 //Reseta todas as entradas para o valor padrão
 float Reset()
 {
+  memset(Buffer,'\0',sizeof(Buffer));
   Serial.println("RESET");
   contciclo = 0;
   /*Inicializa Modulos*/
