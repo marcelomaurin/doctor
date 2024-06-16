@@ -168,8 +168,24 @@ ETIQUETA etiqueta;
 #define pinFIMC1 30
 #define pinFIMC2 31
 
-#define pinRELE01 42
-#define pinRELE02 44
+
+#define pinSDA 20 // pino A4 no Arduino Mega
+#define pinSCL 21 // pino A5 no Arduino Mega
+
+
+#define pinSDA 20 //Pino SDA para I2C
+#define pinSCL 21 //Pino SCL para I2C
+
+#define pinLoc01 22 //Pino de localização
+#define pinLoc02 23 //Pino de localização
+#define pinLoc03 24 //Pino de localização
+#define pinLoc04 25 //Pino de localização
+#define pinLoc05 26 //Pino de localização
+#define pinLoc06 27 //Pino de localização
+#define pinLoc07 28 //Pino de localização
+#define pinLoc08 29 //Pino de localização
+
+
 
 
 
@@ -218,6 +234,7 @@ void NextionMensageStop(String info);
 void RetConsole();
 void NextionWAITESC();
 void NextionMensageSTOP(String info);
+void showPageId() 
 void Rele01(bool Value);
 void Rele02(bool Value);
 void MovePassoA_Dir();
@@ -431,6 +448,12 @@ void Service_Start()
   }
 }
 
+void Start_TermRemoto()
+{
+  // Inicializa o servidor socket
+  server.begin();
+}
+
 /*Rotina que posiciona o equipamento no local correto*/
 void Calibracao()
 {
@@ -449,9 +472,14 @@ void Calibracao()
   
 }
 
+<<<<<<< HEAD
 void MovePasso01()
 {
 //  stepper.step(10);
+=======
+void Start_I2C() {
+  Wire.begin(pinSDA, pinSCL);
+>>>>>>> 2acac5fe594aa6e64e1df6cf2914afeaa9209a4c
 }
 
 void setup() {
@@ -469,9 +497,14 @@ void setup() {
   Start_RELES();
 
   Start_DHT22(); 
+  
+  Start_TermRemoto();
 
   Start_SD();
   Service_Start();
+  
+  Start_I2C(); //Start de comunicação I2C
+  
 
   // Font options
   //MovePasso01();
@@ -487,7 +520,11 @@ void setup() {
 
 }
 
-
+void sendStringToI2C(int address, char* data) {
+  Wire.beginTransmission(address);
+  Wire.write(data);
+  Wire.endTransmission();
+}
 
 //Toca um som
 void Sound(char serByte)
@@ -621,6 +658,50 @@ void Report()
   ImprimeEtiqueta();
   //ImprimeAvanco();
   
+}
+
+// Função para definir o modo de impressão (normal ou de teste)
+void setPrintMode(uint8_t mode) {
+  printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
+  if (mode == 1) {
+    printer.test();
+  } else {
+    printer.normal();
+  }
+}
+
+// Função para definir o tamanho do papel (largura e altura em pontos)
+void setPaperSize(uint8_t width, uint8_t height) {
+  printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
+  printer.setSize('M'); // Configurar o tamanho da fonte para médio
+  printer.feed(1); // Avançar uma linha
+  printer.writeBytes(27, 87, width, height, 0); // Enviar comando para definir o tamanho do papel
+}
+
+// Função para cortar o papel (parcial ou totalmente)
+void cutPaper(uint8_t mode) {
+  printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
+  if (mode == 1) {
+    printer.partialCut(); // Cortar parcialmente
+  } else {
+    printer.feed(3); // Avançar três linhas
+    printer.fullCut(); // Cortar completamente
+  }
+}
+
+// Função para imprimir um código QR (tamanho em pontos, nível de correção de erro, dados)
+void printQR(uint8_t size, uint8_t correction, const char* data) {
+  printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
+  printer.setSize('M'); // Configurar o tamanho da fonte para médio
+  printer.feed(1); // Avançar uma linha
+  printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o código QR
+}
+
+
+void Ident_TermRemoto()
+{
+  // Verifica se há um cliente conectado ao servidor
+  client = server.available();
 }
 
 void MovePassoA_Dir(int passo)
@@ -1342,6 +1423,33 @@ void Chk_Beep()
     Sound('c');
     //delay(500);
     //Imprime(2, "BEEP - ESC p/ Parar ");
+  }
+}
+
+/*Captura a pagina em que o nextion esta*/
+void showPageId() {
+  char pageId[10];
+  Serial3.print("sendme\n"); // Enviar o comando "sendme" para solicitar o ID da página atual
+  delay(10);
+  while (Serial3.available() > 0) { // Esperar até que haja dados disponíveis na serial
+    char c = Serial3.read();
+    if (c == 0xFF) { // Verificar se é um byte de início de mensagem
+      int i = 0;
+      while (Serial3.available() > 0 && i < sizeof(pageId) - 1) { // Ler o ID da página até o final da mensagem
+        c = Serial3.read();
+        if (c == 0xFF) { // Verificar se é um byte de início de mensagem (pode ocorrer dentro da mensagem)
+          i = 0;
+        } else if (c == '\n') { // Verificar se é o final da mensagem
+          pageId[i] = '\0'; // Adicionar terminador de string ao final do ID da página
+          break;
+        } else {
+          pageId[i] = c;
+          i++;
+        }
+      }
+      Serial.print("ID da pagina atual: ");
+      Serial.println(pageId);
+    }
   }
 }
 
@@ -2097,6 +2205,25 @@ void Le_FimCurso()
   }
 }
 
+void Captura_TermRemoto()
+{
+  // Verifica se o cliente está conectado
+  if (client.connected())
+  {
+    // Verifica se há dados disponíveis para leitura
+    if (client.available())
+    {
+      char c = client.read();
+      sprintf(Buffer, "%s%c", Buffer, c);
+    }
+  }
+  else
+  {
+    // Se o cliente desconectar, fecha a conexão
+    client.stop();
+  }
+}
+
 void Leituras()
 {
   //Le_Teclado();
@@ -2104,6 +2231,8 @@ void Leituras()
   Le_Serial3();
   //Le_DHT22();
   Le_FimCurso();
+  Ident_TermRemoto();
+  Captura_TermRemoto();
  
 
   Chk_Beep();
