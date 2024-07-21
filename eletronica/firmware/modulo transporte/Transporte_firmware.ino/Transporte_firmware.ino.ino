@@ -157,7 +157,7 @@ ETIQUETA etiqueta;
 #define IN3_01  36 //Motor Passo01
 #define IN4_01  37 //Motor Passo01
 
-#define speakerPin A13 //Speaker
+#define speakerPin 13 //Speaker
 #define DHT22Pin A9 //DHT22
 #define pinSD  4
 
@@ -167,6 +167,9 @@ ETIQUETA etiqueta;
 #define pinFIMB2 29
 #define pinFIMC1 30
 #define pinFIMC2 31
+
+#define pinRELE01 32
+#define pinRELE02 33
 
 
 #define pinSDA 20 // pino A4 no Arduino Mega
@@ -234,11 +237,11 @@ void NextionMensageStop(String info);
 void RetConsole();
 void NextionWAITESC();
 void NextionMensageSTOP(String info);
-void showPageId() 
+void showPageId(); 
 void Rele01(bool Value);
 void Rele02(bool Value);
 void MovePassoA_Dir();
-void MovePassoA_Esq();
+void MovePassoA_Esq(int passo);
 void RetornaServos();
 long fLOCAL_DEFMOD(int modulo);
 void fDEFMOD(int modulo,char *MSG1);
@@ -251,6 +254,7 @@ void ImprimeBarra(char info[]);
 void ImprimeAvanco();
 void Report(); //Imprime relatorio
 void retirac(char *nome, char *nova, char tira);
+void Le_FimCurso();
 
 
 SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
@@ -472,14 +476,14 @@ void Calibracao()
   
 }
 
-<<<<<<< HEAD
 void MovePasso01()
 {
 //  stepper.step(10);
-=======
-void Start_I2C() {
-  Wire.begin(pinSDA, pinSCL);
->>>>>>> 2acac5fe594aa6e64e1df6cf2914afeaa9209a4c
+}
+
+void Start_I2C() 
+{
+//  Wire.begin(pinSDA, pinSCL);
 }
 
 void setup() {
@@ -516,6 +520,9 @@ void setup() {
   NextionShow("Menu");
   delay(100);
   NextionShow("Menu");
+  Sound('a');
+  Sound('b');
+  Sound('c');
  
 
 }
@@ -675,17 +682,17 @@ void setPaperSize(uint8_t width, uint8_t height) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
   printer.setSize('M'); // Configurar o tamanho da fonte para médio
   printer.feed(1); // Avançar uma linha
-  printer.writeBytes(27, 87, width, height, 0); // Enviar comando para definir o tamanho do papel
+ // printer.writeBytes(27, 87, width, height, 0); // Enviar comando para definir o tamanho do papel
 }
 
 // Função para cortar o papel (parcial ou totalmente)
 void cutPaper(uint8_t mode) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
   if (mode == 1) {
-    printer.partialCut(); // Cortar parcialmente
+    //printer.partialCut(); // Cortar parcialmente
   } else {
     printer.feed(3); // Avançar três linhas
-    printer.fullCut(); // Cortar completamente
+   // printer.fullCut(); // Cortar completamente
   }
 }
 
@@ -694,7 +701,7 @@ void printQR(uint8_t size, uint8_t correction, const char* data) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
   printer.setSize('M'); // Configurar o tamanho da fonte para médio
   printer.feed(1); // Avançar uma linha
-  printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o código QR
+ // printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o código QR
 }
 
 
