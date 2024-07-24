@@ -148,9 +148,9 @@ ETIQUETA etiqueta;
  * Pinout 
  ****************************************************/
 #include "SoftwareSerial.h"
-#define TX_PIN 6 //Arduino transmit  YELLOW WIRE  labeled RX on printer
-#define RX_PIN 5 //Arduino receive   GREEN WIRE   labeled TX on printer
-#define GND_PIN 7 //Arduino receive   GREEN WIRE   labeled TX on printer
+//#define TX_PIN 6 //Arduino transmit  YELLOW WIRE  labeled RX on printer
+//#define RX_PIN 5 //Arduino receive   GREEN WIRE   labeled TX on printer
+//#define GND_PIN 7 //Arduino receive   GREEN WIRE   labeled TX on printer
 
 #define IN1_01  34 //Motor Passo01
 #define IN2_01  35 //Motor Passo01
@@ -257,14 +257,15 @@ void retirac(char *nome, char *nova, char tira);
 void Le_FimCurso();
 
 
-SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
-Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
+//SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
+//Adafruit_Thermal printer(&mySerial);     // Pass addr to printer constructor
+Adafruit_Thermal printer(&Serial3);     // Pass addr to printer constructor
 // Then see setup() function regarding serial & printer begin() calls.
 
 // Here's the syntax for hardware serial (e.g. Arduino Due) --------------
 // Un-comment the following line if using hardware serial:
 
-//Adafruit_Thermal printer(&Serial1);      // Or Serial2, Serial3, etc.
+//Adafruit_Thermal printer(&Serial1);      // Or Serial2, Serial1, etc.
 
 // -----------------------------------------------------------------------
 
@@ -337,7 +338,7 @@ void Start_Nextion()
 {
   Serial.println("Ativando Nextion Display");
   // set the data rate for the SoftwareSerial port
-  Serial3.begin(9600);
+  Serial1.begin(9600);
   NextionShow("Splah"); //Chamando tela splash
   char info[40];
   memset(info,'\0',sizeof(info));
@@ -354,7 +355,7 @@ void Start_Printer()
   //pinMode(GND_PIN, OUTPUT); digitalWrite(GND_PIN, LOW);
 
   // NOTE: SOME PRINTERS NEED 9600 BAUD instead of 19200, check test page.
-  mySerial.begin(9600);  // Initialize SoftwareSerial
+  Serial3.begin(9600);  // Initialize SoftwareSerial
   //Serial1.begin(19200); // Use this instead if using hardware serial
   printer.begin();        // Init printer (same regardless of serial type)
   //ImprimeAvanco();
@@ -1035,7 +1036,7 @@ void LOADLeituras()
   //Le_Temperatura();
   //Le_Teclado();
   Le_Serial();
-  Le_Serial3();
+  Le_Serial1();
   //Le_Bluetooth();
   Chk_Beep();
   //Le_DHT22();
@@ -1373,7 +1374,7 @@ void FOPELeituras()
 {
   //FOPELe_Teclado(); //Porque as funcoes do teclado mudam durante o programa
   Le_Serial(); //Le dados do Serial
-  Le_Serial3();
+  Le_Serial1();
   //Le_DHT22();
   Le_FimCurso(); /*Leitura de fim de curso*/
   //Precisa implementar o tempo em ciclos para leitura
@@ -1436,14 +1437,14 @@ void Chk_Beep()
 /*Captura a pagina em que o nextion esta*/
 void showPageId() {
   char pageId[10];
-  Serial3.print("sendme\n"); // Enviar o comando "sendme" para solicitar o ID da página atual
+  Serial1.print("sendme\n"); // Enviar o comando "sendme" para solicitar o ID da página atual
   delay(10);
-  while (Serial3.available() > 0) { // Esperar até que haja dados disponíveis na serial
-    char c = Serial3.read();
+  while (Serial1.available() > 0) { // Esperar até que haja dados disponíveis na serial
+    char c = Serial1.read();
     if (c == 0xFF) { // Verificar se é um byte de início de mensagem
       int i = 0;
-      while (Serial3.available() > 0 && i < sizeof(pageId) - 1) { // Ler o ID da página até o final da mensagem
-        c = Serial3.read();
+      while (Serial1.available() > 0 && i < sizeof(pageId) - 1) { // Ler o ID da página até o final da mensagem
+        c = Serial1.read();
         if (c == 0xFF) { // Verificar se é um byte de início de mensagem (pode ocorrer dentro da mensagem)
           i = 0;
         } else if (c == '\n') { // Verificar se é o final da mensagem
@@ -1476,7 +1477,7 @@ void NextionShow(char* info1)
 
   sprintf(cmd,"page %s%c%c%c",info1,strFF,strFF,strFF);  
   Serial.println(cmd);
-  Serial3.print(cmd);  
+  Serial1.print(cmd);  
   delay(100);  
 }
 
@@ -1489,7 +1490,7 @@ void NextionFieldText(char *field,char *value)
   sprintf(cmd,"%s.txt=\"%s\"%c%c%c",field,value,strFF,strFF,strFF);  
   //cmd = field+".txt=\""+value+"\""+String(strFF)+String(strFF)+String(strFF);
   Serial.println(cmd); 
-  Serial3.println(cmd);  
+  Serial1.println(cmd);  
 }
 
 void NextionWAITESC()
@@ -1500,25 +1501,25 @@ void NextionWAITESC()
 void NextionMensage(String info)
 {
   char strFF = 0xFF;
-  Serial3.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
+  Serial1.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
   delay(100);
   String cmd;
   
   cmd = "MSGtxt.txt=\""+info+"\""+String(strFF)+String(strFF)+String(strFF);
   Serial.println(cmd);  
-  Serial3.print(cmd);
+  Serial1.print(cmd);
 }
 
 void NextionMensageSTOP(String info)
 {
   char strFF = 0xFF;
-  Serial3.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
+  Serial1.print("page MSG"+String(strFF)+String(strFF)+String(strFF));  
   delay(100);
   String cmd;
   
   cmd = "MSGtxt.txt=\""+info+"\" "+String(strFF)+String(strFF)+String(strFF);
   Serial.println(cmd);  
-  Serial3.print(cmd);
+  Serial1.print(cmd);
   NextionWAITESC();
 }
 
@@ -2132,20 +2133,20 @@ void Le_Serial()
   }
 }
 
-//Le registro do Serial3
-void Le_Serial3()
+//Le registro do Serial1
+void Le_Serial1()
 {
   char key;
   
-  while (Serial3.available() > 0)
+  while (Serial1.available() > 0)
   {
     
-    key = Serial3.read();
+    key = Serial1.read();
 
     if (key != 0)
     {
       
-      Serial3.print(key);
+      Serial1.print(key);
       //BufferKeypad += key;
       sprintf(Buffer, "%s%c", Buffer, key);
     }
@@ -2235,7 +2236,7 @@ void Leituras()
 {
   //Le_Teclado();
   Le_Serial();
-  Le_Serial3();
+  Le_Serial1();
   //Le_DHT22();
   Le_FimCurso();
   Ident_TermRemoto();
