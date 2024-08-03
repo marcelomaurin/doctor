@@ -1,0 +1,101 @@
+object frmPesqPacientes: TfrmPesqPacientes
+  Left = 555
+  Height = 485
+  Top = 263
+  Width = 660
+  Caption = 'Pesquisa de Pacientes'
+  ClientHeight = 485
+  ClientWidth = 660
+  OnCreate = FormCreate
+  ParentBiDiMode = False
+  LCLVersion = '2.2.0.4'
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 660
+    Align = alTop
+    ClientHeight = 50
+    ClientWidth = 660
+    TabOrder = 0
+    object btSair: TButton
+      Left = 560
+      Height = 39
+      Top = 5
+      Width = 91
+      Caption = '&Sair'
+      OnClick = btSairClick
+      TabOrder = 0
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 262
+    Top = 223
+    Width = 660
+    Align = alBottom
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ClientHeight = 262
+    ClientWidth = 660
+    TabOrder = 1
+    object DBGrid1: TDBGrid
+      Left = 1
+      Height = 260
+      Top = 1
+      Width = 658
+      Align = alClient
+      Color = clWindow
+      Columns = <>
+      TabOrder = 0
+      OnDblClick = DBGrid1DblClick
+    end
+  end
+  object Panel3: TPanel
+    Left = 0
+    Height = 173
+    Top = 50
+    Width = 660
+    Align = alClient
+    ClientHeight = 173
+    ClientWidth = 660
+    TabOrder = 2
+    object Label1: TLabel
+      Left = 11
+      Height = 15
+      Top = 10
+      Width = 46
+      Caption = 'Pesquisa'
+    end
+    object Label2: TLabel
+      Left = 55
+      Height = 15
+      Top = 33
+      Width = 36
+      Caption = 'Nome:'
+    end
+    object edPesqNome: TEdit
+      Left = 96
+      Height = 23
+      Top = 33
+      Width = 288
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      TextHint = 'Pesquisa de Nome de Paciente '
+    end
+    object Button1: TButton
+      Left = 560
+      Height = 41
+      Top = 120
+      Width = 88
+      Caption = '&Pesquisar'
+      OnClick = Button1Click
+      TabOrder = 1
+    end
+  end
+  object dsCliente: TDataSource
+    DataSet = dmbanco.zqryCliente
+    Left = 56
+    Top = 158
+  end
+end

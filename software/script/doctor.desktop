@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=/home/mmm/doctor.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[pt_BR]=Doctor
+Name=Doctor
+Comment[pt_BR]=Executa Doctor ao iniciar a sessão
+Comment=Executa Doctor ao iniciar a sessão

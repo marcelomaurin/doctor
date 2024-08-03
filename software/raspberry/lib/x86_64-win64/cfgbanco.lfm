@@ -1,0 +1,9 @@
+object frmcfgBanco: TfrmcfgBanco
+  Left = 294
+  Height = 377
+  Top = 168
+  Width = 491
+  Caption = 'Config Banco'
+  OnShow = FormShow
+  LCLVersion = '2.2.6.0'
+end

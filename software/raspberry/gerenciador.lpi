@@ -26,6 +26,18 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="lnetvisual"/>
+      </Item>
+      <Item>
+        <PackageName Value="FCL"/>
+      </Item>
+      <Item>
+        <PackageName Value="LazSerialPort"/>
+      </Item>
+      <Item>
+        <PackageName Value="zcomponent"/>
+      </Item>
+      <Item>
         <PackageName Value="lnetbase"/>
       </Item>
       <Item>
@@ -44,6 +56,7 @@
         <Filename Value="main.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmmain"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
@@ -60,6 +73,117 @@
       <Unit>
         <Filename Value="funcoes.pas"/>
         <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="config.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmconfig"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="banco.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="dmbanco"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+      </Unit>
+      <Unit>
+        <Filename Value="cfgspeak.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmcfgspeak"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="cfgbanco.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmcfgBanco"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="cfgBanco"/>
+      </Unit>
+      <Unit>
+        <Filename Value="bloqueio.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmBloqueio"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="opamostragem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmOpAmostragem"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="OpAmostragem"/>
+      </Unit>
+      <Unit>
+        <Filename Value="imp.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="imp_elgini9.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="imp_ELGINI9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="imp_generico.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="imp_qr203.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="cfgimp.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmcfgImp"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="cfgImp"/>
+      </Unit>
+      <Unit>
+        <Filename Value="etiquetar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmEtiquetar"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Etiquetar"/>
+      </Unit>
+      <Unit>
+        <Filename Value="pesqpacientes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmPesqPacientes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PesqPacientes"/>
+      </Unit>
+      <Unit>
+        <Filename Value="pesqtipoexames.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmPesqTipoExames"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PesqTipoExames"/>
+      </Unit>
+      <Unit>
+        <Filename Value="chatgpt.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="toolsouvir.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmToolsOuvir"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ToolsOuvir"/>
+      </Unit>
+      <Unit>
+        <Filename Value="toolsver.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmToolsver"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -94,6 +218,9 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
+      </Item>
+      <Item>
+        <Name Value="EReadError"/>
       </Item>
     </Exceptions>
   </Debugging>
