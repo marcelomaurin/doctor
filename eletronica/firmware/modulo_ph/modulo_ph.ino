@@ -1,7 +1,7 @@
 /* Arduino Nano required */
 
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+
 #include "max6675.h"
 #include <EEPROM.h>
 #include <SimpleDHT.h>
@@ -32,7 +32,6 @@ MAX6675 sensor(CLK, CS, SO);
 SimpleDHT22 dht22(PINDHT22);
 
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 float valor_calibracao = 21.34; // Fator de calibração
 
@@ -68,19 +67,9 @@ void WellCome()
   Serial.print("Versão do Firmware:");
   Serial.println(VERSAO);
   Serial.println("Iniciando carga do software");
-  lcd.clear();
-  lcd.setCursor(0, 0);          // Posiciona o cursor na posição
-  lcd.print("FATEC RPreto");      // Escreve no monitor serial
-  lcd.setCursor(0, 1);          // Posiciona o cursor na posição
-  lcd.print("Leitor de PH");   // Escreve no monitor serial
+ 
 }
 
-void Start_LCD() {
-  lcd.init();                   // Inicializa o display
-  lcd.begin(16, 2);             // Inicializa todos os caracteres
-  lcd.backlight();              // Inicializa o backlight
-
-}
 
 // Função para armazenar um valor float na EEPROM e atribuí-lo à variável valor_calibracao
 void Start_EEPROM() {
@@ -99,13 +88,13 @@ void Start_Ambiente() {
 
 void setup() {
   Start_Serial();
-  Start_LCD();
+
   WellCome();
   Start_Ambiente();
   Start_PH();  
   Start_DHT();
   delay(2000);
-  lcd.clear(); // Limpa o conteúdo do display
+
   Serial.println("Inicializacao finalizada.");
 }
 
@@ -174,16 +163,7 @@ void Le_PH() {
     Serial.println(valor_pH);
 }
 
-void Display() {
-  lcd.setCursor(0, 0);            // Posiciona o cursor no display
-  lcd.print("Valor pH: ");        // Escreve no display
-  lcd.setCursor(11, 0);           // Posiciona o cursor no display
-  lcd.print(valor_pH, 1);         // Escreve o pH com uma casa decimal
-  lcd.setCursor(0, 1);            // Posiciona o cursor no display
-  lcd.print("Temp: ");            // Escreve no display
-  lcd.setCursor(11, 1);           // Posiciona o cursor no display
-  lcd.print(Temperatura, 1);      // Escreve o pH com uma casa decimal
-}
+
 
 void Le_Serial() {
   static String inputString = "";         // String para armazenar os dados de entrada
@@ -212,7 +192,7 @@ void loop() {
   Le_DHT();
   Le_Temperatura();
   Le_Serial();
-  Display();
+ 
 
   // Aguarda para próxima leitura
   delay(2500);
