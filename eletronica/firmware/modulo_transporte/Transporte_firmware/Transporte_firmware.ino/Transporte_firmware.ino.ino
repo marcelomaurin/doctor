@@ -8,8 +8,8 @@
 #include <string.h>
 #include "DHT.h"
 #include "Adafruit_Thermal.h"
-#include "adalogo.h"
-#include "adaqrcode.h"
+//#include "adalogo.h"
+//#include "adaqrcode.h"
 
 //*************** Descricao do Produto *********************
 //Versao do produto 
@@ -470,13 +470,14 @@ void Start_I2C()
 void setup() {
  
   Start_Serial();
+  Start_Nextion();
   
   Serial.println("Starting modules...");
   Speak_Start();  
   Beep(); 
   Start_Printer();
   Start_FIMDECURSO();
-  Start_Nextion();
+ 
 
   Start_Motor01();
 
@@ -2172,15 +2173,16 @@ void Le_DHT22()
   //Serial.print("TEMPERATURA:");
   //Serial.println(temperatura);
   NextionFieldText("temp",temperatura);
-  memset(temperatura,'\0',sizeof(temperatura));
-  //sprintf(temperatura,"%f",t);
-  dtostrf(h, 4, 2, temperatura);  // 8 char min total width, 6 after decimal
-  Serial.print("Humidade:");
-  Serial.println(temperatura);
-  delay(100);
-  NextionFieldText("hum",temperatura);
-  delay(100);
-  NextionFieldText("hum",temperatura);
+  
+  //sprintf(temperatura,"%f",h);
+  char humidade[10];
+  memset(humidade,'\0',sizeof(humidade));
+  dtostrf(h, 3, 2, humidade);  // 8 char min total width, 6 after decimal
+  //Serial.print("Humidade:");
+  //Serial.println(temperatura);
+  //delay(100);
+  NextionFieldText("hum",humidade);
+  
 }
 
 void Le_FimCurso()

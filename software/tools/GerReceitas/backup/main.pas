@@ -431,8 +431,8 @@ begin
        end
        else
        begin
-           ShowMessage('Selecione o field que deseja atribuir valor!');
-           edField.SetFocus;
+          ShowMessage('Selecione o field que deseja atribuir valor!');
+          edField.SetFocus;
        end;
   end
   else

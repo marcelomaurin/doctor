@@ -530,7 +530,7 @@ begin
   begin
        if (cbTelas.ItemIndex<>-1) then
        begin
-       SdpoSerial1.WriteData('SHOW='+cbTelas.TEXT+#10);
+       SdpoSerial1.WriteData('SHOW='+inttostr(cbTelas.ItemIndex)+#10);
 
        end
        else
