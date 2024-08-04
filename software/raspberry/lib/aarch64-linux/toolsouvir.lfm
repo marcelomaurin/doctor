@@ -78,8 +78,8 @@ object frmToolsOuvir: TfrmToolsOuvir
     Height = 32
     Top = 96
     Width = 520
+    ReadOnly = True
     TabOrder = 4
-    Text = 'edTexto'
   end
   object LTCPComponent1: TLTCPComponent
     Host = '192.168.0.6'

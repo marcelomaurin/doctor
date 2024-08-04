@@ -126,6 +126,7 @@ begin
   //edTexto.Text := lowercase(info);
   if(info<>'-1') then
   begin
+    frmToolsfalar.Falar('Encontrei uma resposta');
     frmmain.RecebeuAssociacao(info );
   end;
 

@@ -20,12 +20,17 @@ type
     edidExame: TEdit;
     Image1: TImage;
     Image2: TImage;
+    Image5: TImage;
     Label1: TLabel;
     Label2: TLabel;
+    Label5: TLabel;
     lbNome: TLabel;
     lbExameNome: TLabel;
     procedure btPesquisarPaciente1Click(Sender: TObject);
     procedure btPesquisarPacienteClick(Sender: TObject);
+    procedure Image2Click(Sender: TObject);
+    procedure Image5Click(Sender: TObject);
+    procedure Image5DblClick(Sender: TObject);
     procedure mage2Click(Sender: TObject);
     procedure Image2DblClick(Sender: TObject);
   private
@@ -58,6 +63,30 @@ begin
 
 end;
 
+procedure TfrmEtiquetar.Image2Click(Sender: TObject);
+begin
+  if (FSetMain.Duploclick = 0) then
+  begin
+    ImprimirEtiqueta();
+  end;
+end;
+
+procedure TfrmEtiquetar.Image5Click(Sender: TObject);
+begin
+  if (FSetMain.Duploclick = 0) then
+  begin
+    close();
+  end;
+end;
+
+procedure TfrmEtiquetar.Image5DblClick(Sender: TObject);
+begin
+  if (FSetMain.Duploclick <> 0) then
+  begin
+    close();
+  end;
+end;
+
 procedure TfrmEtiquetar.mage2Click(Sender: TObject);
 begin
 
@@ -65,7 +94,11 @@ end;
 
 procedure TfrmEtiquetar.Image2DblClick(Sender: TObject);
 begin
-  ImprimirEtiqueta();
+  if (FSetMain.Duploclick <> 0) then
+  begin
+    ImprimirEtiqueta();
+
+  end;
 end;
 
 procedure TfrmEtiquetar.ImprimirEtiqueta;

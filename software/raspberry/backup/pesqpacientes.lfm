@@ -1,14 +1,14 @@
 object frmPesqPacientes: TfrmPesqPacientes
-  Left = 555
+  Left = 283
   Height = 485
-  Top = 263
+  Top = 110
   Width = 660
   Caption = 'Pesquisa de Pacientes'
   ClientHeight = 485
   ClientWidth = 660
   OnCreate = FormCreate
   ParentBiDiMode = False
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.6.0'
   object Panel1: TPanel
     Left = 0
     Height = 50
@@ -23,59 +23,62 @@ object frmPesqPacientes: TfrmPesqPacientes
       Height = 39
       Top = 5
       Width = 91
-      Caption = '&Sair'
+      Caption = '&Voltar'
       OnClick = btSairClick
       TabOrder = 0
     end
   end
   object Panel2: TPanel
     Left = 0
-    Height = 262
-    Top = 223
+    Height = 309
+    Top = 176
     Width = 660
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
-    ClientHeight = 262
+    ClientHeight = 309
     ClientWidth = 660
     TabOrder = 1
     object DBGrid1: TDBGrid
       Left = 1
-      Height = 260
+      Height = 307
       Top = 1
       Width = 658
       Align = alClient
       Color = clWindow
       Columns = <>
+      DataSource = dsCliente
       TabOrder = 0
       OnDblClick = DBGrid1DblClick
     end
   end
   object Panel3: TPanel
     Left = 0
-    Height = 173
+    Height = 126
     Top = 50
     Width = 660
     Align = alClient
-    ClientHeight = 173
+    ClientHeight = 126
     ClientWidth = 660
     TabOrder = 2
     object Label1: TLabel
       Left = 11
-      Height = 15
+      Height = 22
       Top = 10
-      Width = 46
+      Width = 65
       Caption = 'Pesquisa'
+      ParentColor = False
     end
     object Label2: TLabel
-      Left = 55
-      Height = 15
-      Top = 33
-      Width = 36
+      Left = 48
+      Height = 22
+      Top = 32
+      Width = 45
       Caption = 'Nome:'
+      ParentColor = False
     end
     object edPesqNome: TEdit
       Left = 96
-      Height = 23
+      Height = 32
       Top = 33
       Width = 288
       ParentShowHint = False
@@ -84,9 +87,9 @@ object frmPesqPacientes: TfrmPesqPacientes
       TextHint = 'Pesquisa de Nome de Paciente '
     end
     object Button1: TButton
-      Left = 560
+      Left = 536
       Height = 41
-      Top = 120
+      Top = 33
       Width = 88
       Caption = '&Pesquisar'
       OnClick = Button1Click
@@ -95,7 +98,7 @@ object frmPesqPacientes: TfrmPesqPacientes
   end
   object dsCliente: TDataSource
     DataSet = dmbanco.zqryCliente
-    Left = 56
-    Top = 158
+    Left = 24
+    Top = 96
   end
 end

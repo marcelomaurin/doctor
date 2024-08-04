@@ -39,6 +39,7 @@ type
         FDllPostPath : string;
         FComPrinter : string;
         FDuploclick : integer;
+        FCOMArduino : string;
 
         FRunScript : string;    //Script de Compilação
         FDebugScript : string;  //Script de Debug
@@ -113,6 +114,7 @@ type
         property IPFALAR : String read FIPFALAR write FIPFALAR;
         property ComPrinter : String read FComPrinter write FComPrinter;
         property Duploclick : integer read FDuploclick write FDuploclick;
+        property COMArduino : String read FCOMArduino write FCOMArduino;
   end;
 
   var
@@ -159,6 +161,7 @@ begin
     end;
     FCHATGPT:=''; //CHATGPT TOKEN
     FToolsFalar := false;
+    FCOMArduino:= '/dev/ttyACM0';
     {$ifdef Darwin}
      FComPrinter := '/dev/ttyS0'
     {$ENDIF}
@@ -354,6 +357,10 @@ begin
     begin
       FComPrinter := RetiraInfo(arquivo.Strings[posicao]);
     end;
+    if  BuscaChave(arquivo,'COMARDUINO:',posicao) then
+    begin
+          FComArduino := RetiraInfo(arquivo.Strings[posicao]);
+    end;
     if  BuscaChave(arquivo,'DUPLOCLICK:',posicao) then
     begin
       FDuploclick := strtoint(RetiraInfo(arquivo.Strings[posicao]));
@@ -452,6 +459,7 @@ begin
   arquivo.Append('TOOLSFALAR:'+iif(FToolsFalar,'1','0'));
   arquivo.Append('IPFALAR:'+FIPFALAR);
   arquivo.Append('COMPRINTER:'+FComPrinter);
+  arquivo.Append('COMARDUINO:'+FCOMArduino);
   arquivo.Append('DUPLOCLICK:'+inttostr(FDuploclick));
   arquivo.SaveToFile(fpath+filename);
 end;

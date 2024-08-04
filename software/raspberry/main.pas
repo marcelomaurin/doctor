@@ -43,6 +43,7 @@ type
     procedure ChamaConfiguracao();
     procedure ChamaAmostragem();
 
+
   public
     chavepessoa : string;
     nomepessoa : string;
@@ -173,7 +174,9 @@ begin
     frmToolsOuvir := TfrmToolsOuvir.create(self);
     Application.ProcessMessages;
     frmToolsfalar.Show;
+    frmToolsfalar.WindowState := wsMinimized;
     frmToolsOuvir.Show;
+    //frmToolsOuvir.WindowState := wsMinimized;
     Application.ProcessMessages;
 
     frmToolsfalar.edIP.text :=  Fsetmain.IPFALAR;
@@ -240,9 +243,10 @@ begin
   Application.ProcessMessages;
   frmOpAmostragem.showmodal();
   frmOpAmostragem.free();
-  frmToolsfalar.Falar('Voltou a Tela Principal');
-  Application.ProcessMessages;
+  //frmToolsfalar.Falar('Voltou a Tela Principal');
+  //Application.ProcessMessages;
 end;
+
 
 procedure Tfrmmain.BloqueioAcesso;
 begin

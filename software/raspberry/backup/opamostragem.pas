@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  toolsfalar, banco, Etiquetar;
+  toolsfalar, banco, Etiquetar, setmain;
 
 type
 
@@ -14,9 +14,13 @@ type
 
   TfrmOpAmostragem = class(TForm)
     Image1: TImage;
+    Image5: TImage;
     Label1: TLabel;
+    Label5: TLabel;
     procedure Image1Click(Sender: TObject);
     procedure Image1DblClick(Sender: TObject);
+    procedure Image5Click(Sender: TObject);
+    procedure Image5DblClick(Sender: TObject);
   private
     procedure OperacaoEtiquetar();
   public
@@ -43,10 +47,27 @@ end;
 
 procedure TfrmOpAmostragem.Image1DblClick(Sender: TObject);
 begin
-    if(FSetMain.Duploclick<>0) then
+  if(FSetMain.Duploclick<>0) then
   begin
    OperacaoEtiquetar();
 
+  end;
+end;
+
+procedure TfrmOpAmostragem.Image5Click(Sender: TObject);
+begin
+  if(FSetMain.Duploclick=0) then
+  begin
+   close();
+  end;
+
+end;
+
+procedure TfrmOpAmostragem.Image5DblClick(Sender: TObject);
+begin
+  if(FSetMain.Duploclick<>0) then
+  begin
+   close();
   end;
 end;
 

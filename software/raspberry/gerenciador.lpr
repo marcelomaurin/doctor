@@ -13,7 +13,7 @@ uses
   Forms, main, setmain, toolsfalar, funcoes, lnetbase, lnetvisual,
   LazSerialPort, zcomponent, config, banco, cfgspeak, cfgBanco, bloqueio,
   OpAmostragem, imp, imp_ELGINI9, imp_generico, imp_qr203, cfgImp, Etiquetar,
-  PesqPacientes, PesqTipoExames, chatgpt, ToolsOuvir, toolsver
+  PesqPacientes, PesqTipoExames, chatgpt, ToolsOuvir, toolsver, cfgarduino
   { you can add units after this };
 
 {$R *.res}

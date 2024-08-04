@@ -185,6 +185,13 @@
         <ComponentName Value="frmToolsver"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
+      <Unit>
+        <Filename Value="cfgarduino.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmcfgarduino"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

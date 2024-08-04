@@ -5,8 +5,8 @@ unit cfgImp;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, banco, imp,
-  setmain;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
+  banco, imp, setmain, funcoes;
 
 type
 
@@ -16,10 +16,14 @@ type
     Button1: TButton;
     ckDuploClick: TCheckBox;
     edComPrinter: TEdit;
+    Image5: TImage;
     Label1: TLabel;
+    Label5: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure Image5Click(Sender: TObject);
+    procedure Image5DblClick(Sender: TObject);
   private
 
   public
@@ -52,6 +56,22 @@ end;
 procedure TfrmcfgImp.FormShow(Sender: TObject);
 begin
 
+end;
+
+procedure TfrmcfgImp.Image5Click(Sender: TObject);
+begin
+  if (FSetMain.Duploclick = 0) then
+  begin
+    close();
+  end;
+end;
+
+procedure TfrmcfgImp.Image5DblClick(Sender: TObject);
+begin
+  if (FSetMain.Duploclick = 0) then
+  begin
+    close();
+  end;
 end;
 
 end.
