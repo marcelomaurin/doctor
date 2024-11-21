@@ -1,0 +1,8 @@
+object frmcfgBanco: TfrmcfgBanco
+  Left = 580
+  Height = 448
+  Top = 240
+  Width = 372
+  Caption = 'Config Banco'
+  LCLVersion = '2.2.0.4'
+end

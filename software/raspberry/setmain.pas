@@ -37,6 +37,8 @@ type
         FDllPath : string;
         FDllMyPath : string;
         FDllPostPath : string;
+        FComPrinter : string;
+        FDuploclick : integer;
 
         FRunScript : string;    //Script de Compilação
         FDebugScript : string;  //Script de Debug
@@ -109,6 +111,8 @@ type
         property SchemaPost: String read FSchemaPost write FSchemaPost;
         property ToolsFalar : Boolean read FToolsFalar write SetToolsFalar;
         property IPFALAR : String read FIPFALAR write FIPFALAR;
+        property ComPrinter : String read FComPrinter write FComPrinter;
+        property Duploclick : integer read FDuploclick write FDuploclick;
   end;
 
   var
@@ -134,6 +138,7 @@ begin
     FFixar :=false;
     FStay := false;
     FIPFALAR := '127.0.0.1';
+    FDuploclick := 1; //Ativo como padrão
 
     FDllPath:= ExtractFilePath(ApplicationName);
     FDllMyPath:= ExtractFilePath(ApplicationName);
@@ -154,6 +159,15 @@ begin
     end;
     FCHATGPT:=''; //CHATGPT TOKEN
     FToolsFalar := false;
+    {$ifdef Darwin}
+     FComPrinter := '/dev/ttyS0'
+    {$ENDIF}
+    {$IFDEF LINUX}
+    FComPrinter := '/dev/ttyS0'
+    {$ENDIF}
+    {$IFDEF WINDOWS}
+    FComPrinter := 'COM1'
+    {$ENDIF}
 
 end;
 
@@ -336,6 +350,15 @@ begin
       FIPFALAR := RetiraInfo(arquivo.Strings[posicao]);
     end;
 
+    if  BuscaChave(arquivo,'COMPRINTER:',posicao) then
+    begin
+      FComPrinter := RetiraInfo(arquivo.Strings[posicao]);
+    end;
+    if  BuscaChave(arquivo,'DUPLOCLICK:',posicao) then
+    begin
+      FDuploclick := strtoint(RetiraInfo(arquivo.Strings[posicao]));
+    end;
+
 
 end;
 
@@ -428,6 +451,8 @@ begin
   arquivo.Append('SCHEMAPOST:'+FSchemaPost);
   arquivo.Append('TOOLSFALAR:'+iif(FToolsFalar,'1','0'));
   arquivo.Append('IPFALAR:'+FIPFALAR);
+  arquivo.Append('COMPRINTER:'+FComPrinter);
+  arquivo.Append('DUPLOCLICK:'+inttostr(FDuploclick));
   arquivo.SaveToFile(fpath+filename);
 end;
 

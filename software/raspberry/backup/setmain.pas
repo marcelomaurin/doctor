@@ -37,6 +37,7 @@ type
         FDllPath : string;
         FDllMyPath : string;
         FDllPostPath : string;
+        FComPrinter : string;
 
         FRunScript : string;    //Script de Compilação
         FDebugScript : string;  //Script de Debug
@@ -55,6 +56,8 @@ type
         FPasswordPost : String;
         FSchemaPost: String;
         FToolsFalar : Boolean;
+
+        FIPFalar : String;
 
 
         //filename : String;
@@ -106,6 +109,8 @@ type
         property PasswordPost : String read FPasswordPost write FPasswordPost;
         property SchemaPost: String read FSchemaPost write FSchemaPost;
         property ToolsFalar : Boolean read FToolsFalar write SetToolsFalar;
+        property IPFALAR : String read FIPFALAR write FIPFALAR;
+        property ComPrinter : String read FComPrinter write FComPrinter;
   end;
 
   var
@@ -130,6 +135,7 @@ begin
     FPosY := 100;
     FFixar :=false;
     FStay := false;
+    FIPFALAR := '127.0.0.1';
 
     FDllPath:= ExtractFilePath(ApplicationName);
     FDllMyPath:= ExtractFilePath(ApplicationName);
@@ -150,6 +156,15 @@ begin
     end;
     FCHATGPT:=''; //CHATGPT TOKEN
     FToolsFalar := false;
+    {$ifdef Darwin}
+     FComPrinter := '/dev/ttyS0'
+    {$ENDIF}
+    {$IFDEF LINUX}
+    FComPrinter := '/dev/ttyS0'
+    {$ENDIF}
+    {$IFDEF WINDOWS}
+    FComPrinter := 'COM1'
+    {$ENDIF}
 
 end;
 
@@ -327,6 +342,16 @@ begin
     begin
       FTOOLSFALAR := iif(RetiraInfo(arquivo.Strings[posicao])='0',false,true);
     end;
+    if  BuscaChave(arquivo,'IPFALAR:',posicao) then
+    begin
+      FIPFALAR := RetiraInfo(arquivo.Strings[posicao]);
+    end;
+
+    if  BuscaChave(arquivo,'COMPRINTER:',posicao) then
+    begin
+      FComPrinter := RetiraInfo(arquivo.Strings[posicao]);
+    end;
+
 
 end;
 
@@ -418,6 +443,8 @@ begin
   arquivo.Append('PASSWORDPOST:'+FPasswordPOST);
   arquivo.Append('SCHEMAPOST:'+FSchemaPost);
   arquivo.Append('TOOLSFALAR:'+iif(FToolsFalar,'1','0'));
+  arquivo.Append('IPFALAR:'+FIPFALAR);
+  arquivo.Append('COMPRINTER:'+FComPrinter);
   arquivo.SaveToFile(fpath+filename);
 end;
 
