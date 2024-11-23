@@ -17,10 +17,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="-1"/>
         <TopLine Value="423"/>
-        <CursorPos X="11" Y="437"/>
+        <CursorPos X="23" Y="431"/>
         <UsageCount Value="207"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="registro.pas"/>

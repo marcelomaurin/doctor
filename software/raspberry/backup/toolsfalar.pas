@@ -63,8 +63,11 @@ end;
 
 procedure TfrmToolsfalar.btFalarClick(Sender: TObject);
 begin
-  Fsetmain.IPFALAR := edIP.text ;
-  Fsetmain.SalvaContexto(false);
+  if(Fsetmain.IPFALAR <> edIP.text) then
+  begin
+    Fsetmain.IPFALAR := edIP.text ;
+    Fsetmain.SalvaContexto(false);
+  end;
   Falar();
 end;
 
