@@ -1,10 +1,10 @@
 #include <Stepper.h> 
-#include <Ethernet.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
 #include <SoftwareSerial.h>
-#include "NextionHandler.h"  // Inclusão do header para o Nextion
+
+//#include "NextionHandler.h"  // Inclusï¿½o do header para o Nextion
 #include <stdio.h>
 #include <string.h>
 #include "DHT.h"
@@ -15,10 +15,15 @@
 //*************** Descricao do Produto *********************
 //Versao do produto 
 #define Versao  "0"  //Controle de Versao do Firmware
-#define Release "2" //Controle Revisao do Firmware
+#define Release "4" //Controle Revisao do Firmware
+char Produto[20] = { "Doctor - Betha"};
 
 #define MAXCICLO 90000
-#define MAXSPEED 12
+#define MAXSPEED 64
+#define MOVPASSOS 32 //Nro de passos por vez
+
+//http://www.aranacorp.com/en/control-a-stepper-motor-with-arduino/
+double stepsPerRevolution = 128;
 
 
 //Flags de Controle
@@ -30,10 +35,7 @@ byte flgTempo = 0; //Controle de Tempo e Temperatura
 //Buffer do Teclado
 char customKey;
 
-//Ethernet flags
-bool flgRServer = false; //Controle de retorno Server
-bool flgRClient = false; //Controle de retorno do cliente
-bool flgEthernetErro = true; //Verifica se houve erro de start
+
 
 float h ;
 float t; 
@@ -45,7 +47,8 @@ int passoB;
 int passoC;
 
 /*Posicao de servos*/
-long int posSERVA;
+long int posSERVA = 0;
+long int posFIMSERVA = 0;
 long int posSERVB;
 long int posSERVC;
 
@@ -84,7 +87,7 @@ int FUNCMAXPag = 2; //Tres Paginas para Funcoes
 
 
 
-char Produto[20] = { "Doctor - Betha"};
+
 
 long long int contciclo = 0; //Contador de Ciclos de Repeticao
 
@@ -96,26 +99,9 @@ File root; //Pasta root
 File farquivo; //Arquivo de gravacao
 char ArquivoTrabalho[80]; //Arquivo de trabalho a ser carregado
 
-// Enter a MAC address and IP address for your controller below.
-// The IP address will be dependent on your local network:
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
-
-IPAddress ip(192, 168, 1, 177);
-IPAddress gateway(192, 168, 1, 1);
-IPAddress subnet(255, 255, 0, 0);
-
-EthernetServer server(23);
-
-
-EthernetClient client;
-EthernetClient Serverclient;
-EthernetServer serverport(23);
-char IP[40];
 
 
 
-//http://www.aranacorp.com/en/control-a-stepper-motor-with-arduino/
-double stepsPerRevolution = 2048;
 
 // Here's the new syntax when using SoftwareSerial (e.g. Arduino Uno) ----
 // If using hardware serial instead, comment out or remove these lines:
@@ -153,41 +139,43 @@ ETIQUETA etiqueta;
 //#define RX_PIN 5 //Arduino receive   GREEN WIRE   labeled TX on printer
 //#define GND_PIN 7 //Arduino receive   GREEN WIRE   labeled TX on printer
 
-#define IN1_01  34 //Motor Passo01
-#define IN2_01  35 //Motor Passo01
-#define IN3_01  36 //Motor Passo01
-#define IN4_01  37 //Motor Passo01
 
 #define speakerPin 13 //Speaker
 #define DHT22Pin A9 //DHT22
 #define pinSD  53
 
-#define pinFIMA1 26 /*Fim de curso*/
-#define pinFIMA2 27
-#define pinFIMB1 28
-#define pinFIMB2 29
+
+#define pinFIMA1 22 /*Fim de curso*/
+#define pinFIMA2 23
+#define pinFIMB1 24
+#define pinFIMB2 25
+
+#define IN1_01  26 //Motor Passo01
+#define IN2_01  27 //Motor Passo01
+#define IN3_01  28 //Motor Passo01
+#define IN4_01  29 //Motor Passo01
+
+
+
 #define pinFIMC1 30
 #define pinFIMC2 31
+
 
 #define pinRELE01 32
 #define pinRELE02 33
 
 
-#define pinSDA 20 // pino A4 no Arduino Mega
-#define pinSCL 21 // pino A5 no Arduino Mega
-
-
 #define pinSDA 20 //Pino SDA para I2C
 #define pinSCL 21 //Pino SCL para I2C
 
-#define pinLoc01 22 //Pino de localização
-#define pinLoc02 23 //Pino de localização
-#define pinLoc03 24 //Pino de localização
-#define pinLoc04 25 //Pino de localização
-#define pinLoc05 26 //Pino de localização
-#define pinLoc06 27 //Pino de localização
-#define pinLoc07 28 //Pino de localização
-#define pinLoc08 29 //Pino de localização
+#define pinLoc01 22 //Pino de localizaï¿½ï¿½o
+#define pinLoc02 23 //Pino de localizaï¿½ï¿½o
+#define pinLoc03 24 //Pino de localizaï¿½ï¿½o
+#define pinLoc04 25 //Pino de localizaï¿½ï¿½o
+#define pinLoc05 26 //Pino de localizaï¿½ï¿½o
+#define pinLoc06 27 //Pino de localizaï¿½ï¿½o
+#define pinLoc07 28 //Pino de localizaï¿½ï¿½o
+#define pinLoc08 29 //Pino de localizaï¿½ï¿½o
 
 
 
@@ -215,7 +203,7 @@ float Reset();
 void LstDir(File dir, int numTabs);
 void MAN();
 void DeleteFile(File root, char *sMSG1); //Deleta arquivo do SD
-void LOAD(File root, char *sMSG1); //Carrega a aplicação para o SD
+void LOAD(File root, char *sMSG1); //Carrega a aplicaï¿½ï¿½o para o SD
 int LOADLoop(File root, char *Info);
 void LOADLeituras();
 void LOADLEARQUIVO(char *Arquivo);
@@ -322,7 +310,7 @@ void Start_SD()
   SD.begin(pinSD);
   if (!card.init(SPI_HALF_SPEED, pinSD)) {
     Serial.println("initialization failed");
-    NextionMensage("initialization failed");
+    //NextionMensage("initialization failed");
     return;
   }
   else
@@ -336,11 +324,11 @@ void Start_Nextion()
   Serial.println("Ativando Nextion Display");
   // set the data rate for the SoftwareSerial port
   Serial1.begin(9600);
-  NextionShow("Splah"); //Chamando tela splash
+  //NextionShow("Splah"); //Chamando tela splash
   char info[40];
   memset(info,'\0',sizeof(info));
   sprintf(info,"%s.%s",Versao,Release);
-  NextionFieldText("versao",info);
+  //NextionFieldText("versao",info);
 
 }
 
@@ -381,79 +369,36 @@ void WellComeConsole()
 
 }
 
-//Inicia o Servidor
-void Service_Start()
-{
-  //CLS();
- // Imprime(2, "Ethernet");
- // Imprime(3, "Detectando IP...");
 
-  Serial.println("Ethernet start");
-  Serial.println("Detectando IP...");
-  if (Ethernet.begin(mac) == 0)
-  {
-    delay(1000);
-    Serial.println("Ethernet Erro:");
-    Serial.println("Nao detectou IP");
-    //Imprime(2, "Ethernet Erro:");
-    //Imprime(3, "Nao detectou IP");
-    
-    // initialize the ethernet device not using DHCP:
-    //Ethernet.begin(mac, ip, gateway, subnet);
-    Ethernet.begin(mac, ip);
-    flgEthernetErro = true;
-  }
-  else
-  {
-    //CLS();
-    delay(1000);
-    IPAddress myIPAddress = Ethernet.localIP();
-    Serial.print("IP:");
-    Serial.println( Ethernet.localIP());
-    
-    //ImprimeMedio("Rede Local:");
-    //ImprimeMedio(Ethernet.localIP());
-    char Info[40];
-    memset(Info,'\0',sizeof(Info));
-    memset(IP,'\0',sizeof(Info));
-   // sprintf(IP,"%s.%s.%s.%s",myIPAddress[0],myIPAddress[1],myIPAddress[2],myIPAddress[3]);
-    NextionFieldText("ip",IP);
-    // Imprime(0,Info);
-    //printer.println(Info);
-    sprintf(Info,"Port:23");
-    Serial.println(Info);
-    // Imprime(1,Info);
-    //ImprimeMedio(Info);
-    //delay(2000);
-    // start listening for clients
-    delay(1000);
-    Serial.println("Inicializando Serviço Porta 23 ...");
-    serverport.begin();
-    Serial.println("Servico Iniciado.");
-    flgEthernetErro = false; //Ativa Ethernet
-  }
-}
 
-void Start_TermRemoto()
-{
-  // Inicializa o servidor socket
-  server.begin();
-}
 
 /*Rotina que posiciona o equipamento no local correto*/
 void Calibracao()
 {
-  Serial.println("Iniciando Calibração");
-  NextionShow("CALIB"); //Chamando tela calibração
+  Serial.println("Iniciando Calibraï¿½ï¿½o");
+  //NextionShow("CALIB"); //Chamando tela calibraï¿½ï¿½o
 
-  Serial.println("Calibração Eixo X");
+  Serial.println("Retornando carro");
   
   while (!flgFIMA1 )
   {
-      MovePassoA_Esq(3);
+      MovePassoA_Esq(MOVPASSOS);
       Le_FimCurso();
   }
-  Serial.println("Fim de calibração");
+  Serial.println("Avancando carro");
+  while (!flgFIMA2 )
+  {
+      MovePassoA_Dir(MOVPASSOS);
+      Le_FimCurso();
+  }
+  
+  Serial.println("Retornando carro");
+  while (!flgFIMA1 )
+  {
+      MovePassoA_Esq(1);
+      Le_FimCurso();
+  }
+  Serial.println("Fim de calibracao");
   
   
 }
@@ -472,7 +417,8 @@ void setup() {
  
   Start_Serial();
   Start_Nextion();
-  
+  NextionShow("Splah");
+  delay(100);
   Serial.println("Starting modules...");
   Speak_Start();  
   Beep(); 
@@ -486,28 +432,31 @@ void setup() {
 
   Start_DHT22(); 
   
-  Start_TermRemoto();
+  
 
   Start_SD();
-  Service_Start();
   
-  Start_I2C(); //Start de comunicação I2C
+  
+  Start_I2C(); //Start de comunicaï¿½ï¿½o I2C
   
 
   // Font options
   //MovePasso01();
   //ImprimeEtiqueta();
   Le_DHT22();
-  Reset();  
-  Calibracao(); /*Calibração do equipamento*/
-  WellComeConsole(); 
-  NextionShow("Menu");
+  Reset();
+  NextionShow("CALIB");  
+  delay(100);
+  Calibracao(); /*Calibraï¿½ï¿½o do equipamento*/
+  
+  
   delay(100);
   NextionShow("Menu");
+  //ImprimeStart();
   Sound('a');
   Sound('b');
   Sound('c');
- 
+  WellComeConsole(); 
 
 }
 
@@ -620,6 +569,17 @@ void ImprimeReset()
   printer.println(' ');  
 }
 
+void ImprimeStart() 
+{
+  // Test inverse on & off
+ ImprimeInvertido('DOCTOR');  
+ char info[40];
+ memset(info,'\0',sizeof(info));
+ sprintf(info,"%s.%s",Versao,Release);
+ ImprimeMedio(info);  
+  //ImprimeBarra(etiqueta.barra);
+  ImprimeAvanco();
+}
 
 void ImprimeEtiqueta() 
 {
@@ -651,7 +611,7 @@ void Report()
   
 }
 
-// Função para definir o modo de impressão (normal ou de teste)
+// Funï¿½ï¿½o para definir o modo de impressï¿½o (normal ou de teste)
 void setPrintMode(uint8_t mode) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
   if (mode == 1) {
@@ -661,39 +621,34 @@ void setPrintMode(uint8_t mode) {
   }
 }
 
-// Função para definir o tamanho do papel (largura e altura em pontos)
+// Funï¿½ï¿½o para definir o tamanho do papel (largura e altura em pontos)
 void setPaperSize(uint8_t width, uint8_t height) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
-  printer.setSize('M'); // Configurar o tamanho da fonte para médio
-  printer.feed(1); // Avançar uma linha
+  printer.setSize('M'); // Configurar o tamanho da fonte para mï¿½dio
+  printer.feed(1); // Avanï¿½ar uma linha
  // printer.writeBytes(27, 87, width, height, 0); // Enviar comando para definir o tamanho do papel
 }
 
-// Função para cortar o papel (parcial ou totalmente)
+// Funï¿½ï¿½o para cortar o papel (parcial ou totalmente)
 void cutPaper(uint8_t mode) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
   if (mode == 1) {
     //printer.partialCut(); // Cortar parcialmente
   } else {
-    printer.feed(3); // Avançar três linhas
+    printer.feed(3); // Avanï¿½ar trï¿½s linhas
    // printer.fullCut(); // Cortar completamente
   }
 }
 
-// Função para imprimir um código QR (tamanho em pontos, nível de correção de erro, dados)
+// Funï¿½ï¿½o para imprimir um cï¿½digo QR (tamanho em pontos, nï¿½vel de correï¿½ï¿½o de erro, dados)
 void printQR(uint8_t size, uint8_t correction, const char* data) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
-  printer.setSize('M'); // Configurar o tamanho da fonte para médio
-  printer.feed(1); // Avançar uma linha
- // printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o código QR
+  printer.setSize('M'); // Configurar o tamanho da fonte para mï¿½dio
+  printer.feed(1); // Avanï¿½ar uma linha
+ // printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o cï¿½digo QR
 }
 
 
-void Ident_TermRemoto()
-{
-  // Verifica se há um cliente conectado ao servidor
-  client = server.available();
-}
 
 void MovePassoA_Dir(int passo)
 {
@@ -704,7 +659,7 @@ void MovePassoA_Dir(int passo)
     posSERVA = posSERVA+ passo;
     Serial.print("POSSERVA=");  
     Serial.println(posSERVA);
-    //delay(1000); 
+    //delay(100); 
 }
 
 void MovePassoA_Esq(int passo)
@@ -715,7 +670,7 @@ void MovePassoA_Esq(int passo)
   posSERVA = posSERVA- passo;
   Serial.print("POSSERVA=");  
   Serial.println(posSERVA);
-  //delay(1000); 
+  //delay(100); 
 }
 
 void RetornaServos()
@@ -763,7 +718,7 @@ int analise_DEFMOD(int modulo, char linha[])
   } 
 }
 
-/*Carrega configuração do modulo local*/
+/*Carrega configuraï¿½ï¿½o do modulo local*/
 long int fLOCAL_DEFMOD(int modulo)
 {
   File arquivo;
@@ -876,17 +831,17 @@ void fDEFMOD(int modulo,char *MSG1)
   Serial.println(local);
 }
 
-//Carrega a aplicação para o SD
+//Carrega a aplicaï¿½ï¿½o para o SD
 void LOAD(File root, char *sMSG1)
 {
  
   //Imprime(1, "Carregando APP...");
   Serial.println("Carregando APP..");
-  NextionShow("LOAD");
+  //NextionShow("LOAD");
  
-  //Realiza operação de Loop
+  //Realiza operaï¿½ï¿½o de Loop
   LOADLoop(root, sMSG1);
-  NextionShow("Menu");
+  //NextionShow("Menu");
 
 }
 
@@ -898,7 +853,7 @@ void DeleteFile(File root, char *sMSG1)
   Serial.println("DeleteFile..");
   //NextionShow("LOAD");
  
-  //Realiza operação de Loop
+  //Realiza operaï¿½ï¿½o de Loop
   //LOADLoop(root, sMSG1);
   //NextionShow("Menu");
   if (SD.exists(sMSG1)) 
@@ -917,7 +872,7 @@ void LOADLEARQUIVO(char *Arquivo)
 {
   File arquivo;
   Serial.println("Carregando APP..");
-  NextionShow("LOAD");
+  //NextionShow("LOAD");
   Serial.print("Arquivo=");
   Serial.println(Arquivo);
   arquivo = SD.open(Arquivo);
@@ -993,17 +948,17 @@ int LOADLoop(File root, char *Info)
   }
   else
   {
-    Serial.println("Iniciou bloco de gravação do arquivo");
+    Serial.println("Iniciou bloco de gravaï¿½ï¿½o do arquivo");
     flgEscape = false; //Sai quando verdadeiro
     //Loop
     while (!flgEscape)
     {
       LOADLeituras();
-      //Realiza analise das informações encontradas
+      //Realiza analise das informaï¿½ï¿½es encontradas
       LOADAnalisa(&farquivo);      
       //arquivo.println("Leitura Potenciometro: ");
     }
-    Serial.println("Finalizou bloco de gravação do arquivo");
+    Serial.println("Finalizou bloco de gravaï¿½ï¿½o do arquivo");
   }
   farquivo.close();
   Serial.println("Fechou arquivo ");
@@ -1429,18 +1384,18 @@ void Chk_Beep()
 /*Captura a pagina em que o nextion esta*/
 void showPageId() {
   char pageId[10];
-  Serial1.print("sendme\n"); // Enviar o comando "sendme" para solicitar o ID da página atual
+  Serial1.print("sendme\n"); // Enviar o comando "sendme" para solicitar o ID da pï¿½gina atual
   delay(10);
-  while (Serial1.available() > 0) { // Esperar até que haja dados disponíveis na serial
+  while (Serial1.available() > 0) { // Esperar atï¿½ que haja dados disponï¿½veis na serial
     char c = Serial1.read();
-    if (c == 0xFF) { // Verificar se é um byte de início de mensagem
+    if (c == 0xFF) { // Verificar se ï¿½ um byte de inï¿½cio de mensagem
       int i = 0;
-      while (Serial1.available() > 0 && i < sizeof(pageId) - 1) { // Ler o ID da página até o final da mensagem
+      while (Serial1.available() > 0 && i < sizeof(pageId) - 1) { // Ler o ID da pï¿½gina atï¿½ o final da mensagem
         c = Serial1.read();
-        if (c == 0xFF) { // Verificar se é um byte de início de mensagem (pode ocorrer dentro da mensagem)
+        if (c == 0xFF) { // Verificar se ï¿½ um byte de inï¿½cio de mensagem (pode ocorrer dentro da mensagem)
           i = 0;
-        } else if (c == '\n') { // Verificar se é o final da mensagem
-          pageId[i] = '\0'; // Adicionar terminador de string ao final do ID da página
+        } else if (c == '\n') { // Verificar se ï¿½ o final da mensagem
+          pageId[i] = '\0'; // Adicionar terminador de string ao final do ID da pï¿½gina
           break;
         } else {
           pageId[i] = c;
@@ -1453,7 +1408,7 @@ void showPageId() {
   }
 }
 
-/*
+
 void NextionShow(char* info1)
 {
   char strFF = 0xFF;
@@ -1514,10 +1469,10 @@ void NextionMensageSTOP(String info)
   Serial1.print(cmd);
   NextionWAITESC();
 }
-*/
 
 
-//Reseta todas as entradas para o valor padrão
+
+//Reseta todas as entradas para o valor padrï¿½o
 float Reset()
 {
   memset(Buffer,'\0',sizeof(Buffer));
@@ -1530,7 +1485,7 @@ float Reset()
   LOCAL_DEFMOD4=0;
   Serial.println('Reset rodou');
   flgBeep = false;
-  /* incluir sub comandos de inicialização*/
+  /* incluir sub comandos de inicializaï¿½ï¿½o*/
   passoA = 10;
   passoB = 10;
   passoC = 10;
@@ -1640,7 +1595,7 @@ float Run(String Arquivo)
   while (dataFile.available())
   {
     Info = dataFile.read();
-    //Adicionando informação ao Info
+    //Adicionando informaï¿½ï¿½o ao Info
     sprintf(Linha, "%s%c", Linha, Info);
 
     //Verifica se o ultimo foi enter ai analisa a linha
@@ -1864,7 +1819,7 @@ void KeyCMD()
         strncpy(sMSG1, posequ,(posend)-posequ);
         Serial.print("sMSG1=");
         Serial.println(sMSG1);
-        NextionShow(sMSG1);
+        //NextionShow(sMSG1);
         
         resp = true;
       }
@@ -1900,7 +1855,7 @@ void KeyCMD()
         Serial.print("sVALUE=");
         Serial.println(sVALUE);
         //NextionShow(sMSG1);
-        NextionFieldText(sFIELD,sVALUE);
+        //NextionFieldText(sFIELD,sVALUE);
         
         resp = true;
       }
@@ -1910,21 +1865,29 @@ void KeyCMD()
     {
       char sMSG1[20];
       char sMSG2[20];
+      char posequ[20];
+      memset(posequ,'\0',sizeof(posequ));
       Serial.println("Achou MENSAGEM");
-      char *posequ = strstr( Buffer, "=");
-      Serial.print("POSEQU=");
-      Serial.println(posequ);
-      if(posequ != 0)
-      {
-        posequ ++;
-        memset(sMSG1,'\0',sizeof(sMSG1));
-        strcpy(sMSG1, posequ);
+      // Encontrar o caractere '=' em Buffer
+      char *posicao = strstr(Buffer, "=");
+      if (posicao != NULL) {
+        // Copiar a partir de '=' para posequ
+        strcpy(posequ, posicao);
+        Serial.println("Valor copiado para posequ:");
+        Serial.println(posequ);
         Serial.print("sMSG1=");
         Serial.println(posequ);
-        NextionMensage(String(posequ));
-        
+        //NextionMensage(String(posequ));
+        NextionShow('MSG');
+        delay(100);
+        NextionFieldText('MSGtxt',posequ);
         resp = true;
-      }
+      } else {
+        // Caso nÃ£o encontre '='
+        posequ[0] = '\0'; // Inicializa como string vazia
+        Serial.println("Caractere '=' nÃ£o encontrado no Buffer.");
+        resp = false;
+      } 
     }
     
     if (strstr( Buffer, "MSGSTOP=") != 0)
@@ -1942,7 +1905,7 @@ void KeyCMD()
         strcpy(sMSG1, posequ);
         Serial.print("sMSG1=");
         Serial.println(posequ);
-        NextionMensageSTOP(String(posequ));
+        //NextionMensageSTOP(String(posequ));
         
         resp = true;
       }
@@ -2158,16 +2121,16 @@ void Le_Serial1() {
         // Armazena os bytes lidos no buffer
         buffer[index++] = key;
 
-        // Verifica se recebemos a sequência completa (3 bytes iniciais + ID da página + 3 bytes finais)
+        // Verifica se recebemos a sequï¿½ncia completa (3 bytes iniciais + ID da pï¿½gina + 3 bytes finais)
         if (index >= 7) {
-            // Verifica se a mensagem corresponde à mudança de página
+            // Verifica se a mensagem corresponde ï¿½ mudanï¿½a de pï¿½gina
             if (buffer[0] == 0x00 && buffer[1] == 0x00 && buffer[2] != 0xFF) {
-                // Extraímos o ID da página (4º byte)
+                // Extraï¿½mos o ID da pï¿½gina (4ï¿½ byte)
                 int pageId = buffer[2];
                 Serial.print("Tela mudada para ID: ");
                 Serial.println(pageId);
 
-                // Se você quiser exibir o nome da tela, pode associar o ID da página ao nome
+                // Se vocï¿½ quiser exibir o nome da tela, pode associar o ID da pï¿½gina ao nome
                 switch (pageId) {
                     case 0:
                         Serial.println("Tela: Home");
@@ -2175,14 +2138,14 @@ void Le_Serial1() {
                     case 1:
                         Serial.println("Tela: Configuracoes");
                         break;
-                    // Adicione outros casos para suas telas conforme necessário
+                    // Adicione outros casos para suas telas conforme necessï¿½rio
                     default:
                         Serial.println("Tela: Desconhecida");
                         break;
                 }
             }
 
-            // Reinicia o índice do buffer para capturar a próxima mensagem
+            // Reinicia o ï¿½ndice do buffer para capturar a prï¿½xima mensagem
             index = 0;
         }
     }
@@ -2217,7 +2180,7 @@ void Le_DHT22()
   dtostrf(t, 3, 2, temperatura);  // 8 char min total width, 6 after decimal
   //Serial.print("TEMPERATURA:");
   //Serial.println(temperatura);
-  NextionFieldText("temp",temperatura);
+  //NextionFieldText("temp",temperatura);
   
   //sprintf(temperatura,"%f",h);
   char humidade[10];
@@ -2226,7 +2189,7 @@ void Le_DHT22()
   //Serial.print("Humidade:");
   //Serial.println(temperatura);
   //delay(100);
-  NextionFieldText("hum",humidade);
+  //NextionFieldText("hum",humidade);
   
 }
 
@@ -2241,34 +2204,19 @@ void Le_FimCurso()
   if(lastflgFIMA1!=flgFIMA1)
   {
      Serial.print("flgFIMA1=");  Serial.println(flgFIMA1==HIGH?"ON":"OFF");
+     posSERVA = 0;
      lastflgFIMA1 = flgFIMA1;
   }
   if(lastflgFIMA2!=flgFIMA2)
   {
     Serial.print("flgFIMA2=");  Serial.println(flgFIMA2==HIGH?"ON":"OFF");
+    posFIMSERVA = posSERVA;
     lastflgFIMA2 = flgFIMA2;
   }
 }
 
 
-void Captura_TermRemoto()
-{
-  // Verifica se o cliente está conectado
-  if (client.connected())
-  {
-    // Verifica se há dados disponíveis para leitura
-    if (client.available())
-    {
-      char c = client.read();
-      sprintf(Buffer, "%s%c", Buffer, c);
-    }
-  }
-  else
-  {
-    // Se o cliente desconectar, fecha a conexão
-    client.stop();
-  }
-}
+
 
 void Leituras()
 {
@@ -2278,11 +2226,8 @@ void Leituras()
   
   //Le_DHT22();
   Le_FimCurso();
-  Ident_TermRemoto();
-  Captura_TermRemoto();
- 
-
   Chk_Beep();
+  //Serial.print('.');
 }
 
 void MostraTemperatura()
