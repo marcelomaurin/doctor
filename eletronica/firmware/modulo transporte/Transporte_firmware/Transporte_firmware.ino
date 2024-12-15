@@ -9,18 +9,82 @@
 #include <string.h>
 #include "DHT.h"
 #include "Adafruit_Thermal.h"
+#include <Servo.h>
+
 //#include "adalogo.h"
 //#include "adaqrcode.h"
 
 //*************** Descricao do Produto *********************
 //Versao do produto 
 #define Versao  "0"  //Controle de Versao do Firmware
-#define Release "4" //Controle Revisao do Firmware
+#define Release "5" //Controle Revisao do Firmware
 char Produto[20] = { "Doctor - Betha"};
 
 #define MAXCICLO 90000
 #define MAXSPEED 64
-#define MOVPASSOS 32 //Nro de passos por vez
+#define MOVPASSOS 50//Nro de passos por vez
+
+// Definições
+#define ANGULO_MAXIMO 5 // Máximo de graus a mover por vez
+#define DELAY_TEMPO 50  // Tempo em milissegundos entre cada incremento
+
+// Instâncias dos servos
+Servo ServoBraco01;
+Servo ServoBraco02;
+Servo ServoBraco03;
+Servo ServoBraco04;
+
+// Variáveis globais para posições
+int posBracoAtual[4] = {90, 90, 90, 90}; // Posições atuais dos servos
+int posBracoDestino[4] = {90, 90, 90, 90}; // Posições finais desejadas
+
+/* **************************************************
+ * Pinout 
+ ****************************************************/
+#include "SoftwareSerial.h"
+#define Br01_PIN 7 //Braco robotico servo 01
+#define Br02_PIN 6  //Braco robotico servo 02
+#define Br03_PIN 5  //Braco robotico servo 03
+#define Br04_PIN 4  //Braco robotico servo 04
+
+#define speakerPin 13 //Speaker
+#define DHT22Pin A9 //DHT22
+#define pinSD  53
+
+
+#define pinFIMA1 22 /*Fim de curso*/
+#define pinFIMA2 23
+#define pinFIMB1 24
+#define pinFIMB2 25
+
+#define IN1_01  27 //Motor Passo01 27
+#define IN2_01  26 //Motor Passo01 26
+#define IN3_01  29 //Motor Passo01 29
+#define IN4_01  28 //Motor Passo01 28
+
+
+
+#define pinFIMC1 30
+#define pinFIMC2 31
+
+
+#define pinRELE01 32
+#define pinRELE02 33
+
+
+#define pinSDA 20 //Pino SDA para I2C
+#define pinSCL 21 //Pino SCL para I2C
+
+#define pinLoc01 22 //Pino de localiza��o
+#define pinLoc02 23 //Pino de localiza��o
+#define pinLoc03 24 //Pino de localiza��o
+#define pinLoc04 25 //Pino de localiza��o
+#define pinLoc05 26 //Pino de localiza��o
+#define pinLoc06 27 //Pino de localiza��o
+#define pinLoc07 28 //Pino de localiza��o
+#define pinLoc08 29 //Pino de localiza��o
+
+
 
 //http://www.aranacorp.com/en/control-a-stepper-motor-with-arduino/
 double stepsPerRevolution = 128;
@@ -35,7 +99,8 @@ byte flgTempo = 0; //Controle de Tempo e Temperatura
 //Buffer do Teclado
 char customKey;
 
-
+// Variáveis globais para posições
+int posBraco[4] = {0, 0, 0, 0}; // Posições iniciais dos servos
 
 float h ;
 float t; 
@@ -131,53 +196,6 @@ typedef struct ETIQUETA {
 ETIQUETA etiqueta;
 
 
-/* **************************************************
- * Pinout 
- ****************************************************/
-#include "SoftwareSerial.h"
-//#define TX_PIN 6 //Arduino transmit  YELLOW WIRE  labeled RX on printer
-//#define RX_PIN 5 //Arduino receive   GREEN WIRE   labeled TX on printer
-//#define GND_PIN 7 //Arduino receive   GREEN WIRE   labeled TX on printer
-
-
-#define speakerPin 13 //Speaker
-#define DHT22Pin A9 //DHT22
-#define pinSD  53
-
-
-#define pinFIMA1 22 /*Fim de curso*/
-#define pinFIMA2 23
-#define pinFIMB1 24
-#define pinFIMB2 25
-
-#define IN1_01  26 //Motor Passo01
-#define IN2_01  27 //Motor Passo01
-#define IN3_01  28 //Motor Passo01
-#define IN4_01  29 //Motor Passo01
-
-
-
-#define pinFIMC1 30
-#define pinFIMC2 31
-
-
-#define pinRELE01 32
-#define pinRELE02 33
-
-
-#define pinSDA 20 //Pino SDA para I2C
-#define pinSCL 21 //Pino SCL para I2C
-
-#define pinLoc01 22 //Pino de localiza��o
-#define pinLoc02 23 //Pino de localiza��o
-#define pinLoc03 24 //Pino de localiza��o
-#define pinLoc04 25 //Pino de localiza��o
-#define pinLoc05 26 //Pino de localiza��o
-#define pinLoc06 27 //Pino de localiza��o
-#define pinLoc07 28 //Pino de localiza��o
-#define pinLoc08 29 //Pino de localiza��o
-
-
 
 
 
@@ -193,6 +211,11 @@ Stepper Passo01(stepsPerRevolution, IN1_01, IN3_01, IN2_01, IN4_01);  // Pin inv
 
 /*Funcoes predefinidas*/
 
+void Retorna_Servos();
+void Move_Servo(int eixo, int posicao);
+void Carrega_Movimento(int eixo, int posicao);
+void Move_Servo_Completo(int eixo, int posicao);
+void Move_Servo_Incremental() ;
 void ImprimeEtiqueta();
 void Beep();
 void Sound(char serByte);
@@ -230,9 +253,11 @@ void RetConsole();
 void showPageId(); 
 void Rele01(bool Value);
 void Rele02(bool Value);
+
 void MovePassoA_Dir();
 void MovePassoA_Esq(int passo);
-void RetornaServos();
+void PosicaoCentral();
+void RetornaCarro();
 long fLOCAL_DEFMOD(int modulo);
 void fDEFMOD(int modulo,char *MSG1);
 void gravaDEFMOD(int modulo, long valor);
@@ -259,6 +284,25 @@ Adafruit_Thermal printer(&Serial3);     // Pass addr to printer constructor
 
 // -----------------------------------------------------------------------
 
+
+// Função para inicializar os servos
+void Start_Servos() {
+  Serial.println("Inicializando servos...");
+  ServoBraco01.attach(Br01_PIN);
+  ServoBraco02.attach(Br02_PIN);
+  ServoBraco03.attach(Br03_PIN);
+  ServoBraco04.attach(Br04_PIN);
+
+  // Configura os servos para a posição inicial
+  ServoBraco01.write(posBraco[0]);
+  ServoBraco02.write(posBraco[1]);
+  ServoBraco03.write(posBraco[2]);
+  ServoBraco04.write(posBraco[3]);
+
+  Serial.println("Servos inicializados nas posições padrão.");
+  Retorna_Servos();
+}
+
 void Start_FIMDECURSO()
 {
   Serial.println("configurando Fim de curso");
@@ -281,6 +325,7 @@ void Start_RELES()
 void Start_Serial()
 {
   Serial.begin(9600); 
+  Serial3.begin(9600); // Inicializa a Serial3 para comunicação
 }
 
 
@@ -369,8 +414,171 @@ void WellComeConsole()
 
 }
 
+// Função para calibrar os servos
+void Calibra_Servos() {
+  Serial.println("Calibrando servos...");
+  PosicaoCentral();
+ 
+  Move_Servo_Completo(2, 170);
+  delay(1000);
+  Move_Servo_Completo(2, 1);
+  Move_Servo_Completo(1, 1);
+  delay(1000);
+  Move_Servo_Completo(1, 100);
+  delay(1000);
+  Move_Servo_Completo(1, 1);
+  Move_Servo_Completo(3, 160);
+  delay(1000);
+  Move_Servo_Completo(3, 1);
+  Move_Servo_Completo(4, 50);
+  delay(1000);
+  Move_Servo_Completo(4, 169);
+  RetornaCarro();
+  Serial.println("Servos calibrados.");
+}
+
+// Função para retornar todos os servos à posição inicial
+void Retorna_Servos() {
+  Serial.println("Retornando todos os servos para a posição inicial...");
+  
+  
+  Move_Servo_Completo(2, 1);
+  Move_Servo_Completo(3, 1);
+  
+  Move_Servo_Completo(4, 169);
+
+  Move_Servo_Completo(1, 1);
+  
+  Serial.println("Todos os servos retornaram à posição inicial.");
+}
+
+// Função para carregar o movimento para os servos
+void Carrega_Movimento(int eixo, int posicao) {
+  if (eixo < 1 || eixo > 4) {
+    Serial.println("Eixo inválido! Use valores entre 1 e 4.");
+    return;
+  }
+  posicao = constrain(posicao, 0, 180); // Limita a posição entre 0 e 180 graus
+  posBracoDestino[eixo - 1] = posicao; // Define o destino para o eixo
+  Serial.print("Movimento carregado para o Servo ");
+  Serial.print(eixo);
+  Serial.print(": posição desejada -> ");
+  Serial.println(posicao);
+}
 
 
+// Função para mover qualquer servo
+void Move_Servo(int eixo, int posicao)
+{
+  posicao = constrain(posicao, 0, 180); // Limita a posição entre 0 e 180 graus
+
+  switch (eixo) {
+    case 1:
+      ServoBraco01.write(posicao);
+      posBraco[0] = posicao;
+      Serial.print("Servo 01 movido para a posição: ");
+      Serial.println(posicao);
+      break;
+    case 2:
+      ServoBraco02.write(posicao);
+      posBraco[1] = posicao;
+      Serial.print("Servo 02 movido para a posição: ");
+      Serial.println(posicao);
+      break;
+    case 3:
+      ServoBraco03.write(posicao);
+      posBraco[2] = posicao;
+      Serial.print("Servo 03 movido para a posição: ");
+      Serial.println(posicao);
+      break;
+    case 4:
+      ServoBraco04.write(posicao);
+      posBraco[3] = posicao;
+      Serial.print("Servo 04 movido para a posição: ");
+      Serial.println(posicao);
+      break;
+    default:
+      Serial.println("Eixo inválido! Use valores entre 1 e 4.");
+      break;
+  }
+}
+
+
+// Move o servo diretamente até a posição final, em incrementos de ANGULO_MAXIMO
+void Move_Servo_Completo(int eixo, int posicao) {
+  posicao = constrain(posicao, 0, 180); // Limita a posição entre 0 e 180 graus
+  posBracoDestino[eixo - 1] = posicao; // Atualiza a posição desejada
+
+  while (posBracoAtual[eixo - 1] != posBracoDestino[eixo - 1]) {
+    int direcao = (posBracoDestino[eixo - 1] > posBracoAtual[eixo - 1]) ? 1 : -1;
+    posBracoAtual[eixo - 1] += direcao * min(ANGULO_MAXIMO, abs(posBracoDestino[eixo - 1] - posBracoAtual[eixo - 1]));
+    switch (eixo) {
+      case 1:
+        ServoBraco01.write(posBracoAtual[0]);
+        break;
+      case 2:
+        ServoBraco02.write(posBracoAtual[1]);
+        break;
+      case 3:
+        ServoBraco03.write(posBracoAtual[2]);
+        break;
+      case 4:
+        ServoBraco04.write(posBracoAtual[3]);
+        break;
+    }
+    Serial.print("Servo ");
+    Serial.print(eixo);
+    Serial.print(" movido para posição: ");
+    Serial.println(posBracoAtual[eixo - 1]);
+
+    delay(DELAY_TEMPO); // Aguarda entre os incrementos
+  }
+
+  Serial.print("Servo ");
+  Serial.print(eixo);
+  Serial.print(" chegou na posição final: ");
+  Serial.println(posicao);
+}
+
+// Move todos os servos em uma única etapa incremental
+void Move_Servo_Incremental() 
+{
+  bool movimentoRestante = false;
+
+  for (int eixo = 0; eixo < 4; eixo++) {
+    if (posBracoAtual[eixo] != posBracoDestino[eixo]) {
+      int direcao = (posBracoDestino[eixo] > posBracoAtual[eixo]) ? 1 : -1;
+      posBracoAtual[eixo] += direcao * min(ANGULO_MAXIMO, abs(posBracoDestino[eixo] - posBracoAtual[eixo]));
+      
+      switch (eixo + 1) {
+        case 1:
+          ServoBraco01.write(posBracoAtual[0]);
+          break;
+        case 2:
+          ServoBraco02.write(posBracoAtual[1]);
+          break;
+        case 3:
+          ServoBraco03.write(posBracoAtual[2]);
+          break;
+        case 4:
+          ServoBraco04.write(posBracoAtual[3]);
+          break;
+      }
+      Serial.print("Servo ");
+      Serial.print(eixo + 1);
+      Serial.print(" movido para posição: ");
+      Serial.println(posBracoAtual[eixo]);
+      
+      movimentoRestante = true; // Ainda há movimento para ser concluído
+    }
+  }
+
+  //if (!movimentoRestante) {
+    //Serial.println("Todos os servos alcançaram suas posições finais.");
+  //}
+
+  delay(DELAY_TEMPO); // Aguarda entre os incrementos
+}
 
 /*Rotina que posiciona o equipamento no local correto*/
 void Calibracao()
@@ -400,8 +608,24 @@ void Calibracao()
   }
   Serial.println("Fim de calibracao");
   
+}
+
+
+void PosicaoCentral()
+{
+  Serial.println("Indo para Posicao Central");
+  MovePassoA_Esq(MOVPASSOS);
+  //Le_FimCurso();
+
+  Serial.println("Move posicao Central carro");
+  RetornaCarro();
+ 
+  MovePassoA_Dir((int)posFIMSERVA / 2);
+  //Le_FimCurso();
   
 }
+
+
 
 void MovePasso01()
 {
@@ -448,7 +672,8 @@ void setup() {
   NextionShow("CALIB");  
   delay(100);
   Calibracao(); /*Calibra��o do equipamento*/
-  
+  Start_Servos();
+  Calibra_Servos();
   
   delay(100);
   NextionShow("Menu");
@@ -673,9 +898,9 @@ void MovePassoA_Esq(int passo)
   //delay(100); 
 }
 
-void RetornaServos()
+void RetornaCarro()
 {
-  
+  Le_FimCurso();
   while(!flgFIMA1)
   {      
     MovePassoA_Esq(passoA);
@@ -1490,7 +1715,7 @@ float Reset()
   passoB = 10;
   passoC = 10;
 
-  RetornaServos();
+  RetornaCarro();
 
   /*Posicao de servo motores*/
   posSERVA = 0;
@@ -1570,6 +1795,9 @@ void MAN()
   Serial.println("LSTDIR - LISTA DIRETORIO");
   Serial.println("LOAD - CARREGA ARQUIVO");
   Serial.println("RUN - RODA SCRIPT");
+  Serial.println("SENDMSG=DEV,MSG - Envia uma mensagem para uma Serial:");
+  Serial.println("   DEV: Dispositivo (1 = Serial3)");
+  Serial.println("   MSG: Mensagem a ser enviada, termina antes do '\\n'");  
   Serial.println("MENSAGEM - Mostra mensagem");
   Serial.println("RESET - RESETA O AMBIENTE");
   Serial.println("MOPERACAO - MODO OPERACIONAL");
@@ -1577,6 +1805,9 @@ void MAN()
   Serial.println("RELE01 - ACIONAMENTO RELE01");
   Serial.println("RELE02 - ACIONAMENTO RELE02");
   Serial.println("DELFILE - REMOVE ARQUIVO");
+  Serial.println("MOVESERVO=NRO_SERVO,ANGULO - Move um servo para o ângulo especificado");
+  Serial.println("MOVEDIR=NRO_PASSOS - Move o motor de passo para a direita");
+  Serial.println("MOVEESQ=NRO_PASSOS - Move o motor de passo para a esquerda");
   Serial.println(" ");
 }
 
@@ -1706,6 +1937,59 @@ void KeyCMD()
       //Serial.println(Temperatura);
       Report();
       resp = true;
+    }
+
+    // MOVEDIR=NRO_PASSOS
+    if (strstr(Buffer, "MOVEDIR=") != NULL)
+    {
+      char *paramStart = strstr(Buffer, "=");
+      if (paramStart != NULL)
+      {
+        paramStart++; // Avança para depois do '='
+        int passos = atoi(paramStart);
+        MovePassoA_Dir(passos);
+        resp = true;
+        Serial.print("Comando MOVEDIR executado: ");
+        Serial.print(passos);
+        Serial.println(" passos para a direita.");
+      }
+    }
+
+    // MOVEESQ=NRO_PASSOS
+    if (strstr(Buffer, "MOVEESQ=") != NULL)
+    {
+      char *paramStart = strstr(Buffer, "=");
+      if (paramStart != NULL)
+      {
+        paramStart++; // Avança para depois do '='
+        int passos = atoi(paramStart);
+        MovePassoA_Esq(passos);
+        resp = true;
+        Serial.print("Comando MOVEESQ executado: ");
+        Serial.print(passos);
+        Serial.println(" passos para a esquerda.");
+      }
+    }
+
+
+    // Comando MOVESERVO
+    if (strstr(Buffer, "MOVESERVO") != NULL) 
+    {
+      char *paramStart = strstr(Buffer, "=");
+      if (paramStart != NULL) {
+        paramStart++; // Avança para depois do '='
+        int servo, angle;
+        if (sscanf(paramStart, "%d,%d", &servo, &angle) == 2) {
+          Carrega_Movimento(servo, angle);
+          resp = true;
+          Serial.print("Comando MOVESERVO executado: Servo ");
+          Serial.print(servo);
+          Serial.print(", Ângulo ");
+          Serial.println(angle);
+        } else {
+          Serial.println("Erro: parâmetros inválidos para MOVESERVO. Use MOVESERVO=NRO_SERVO,ANGULO");
+        }
+      }
     }
 
     //Load - Carrega arquivo no SD
@@ -1858,6 +2142,37 @@ void KeyCMD()
         //NextionFieldText(sFIELD,sVALUE);
         
         resp = true;
+      }
+    }
+
+    // Implementação do comando SENDMSG
+    if (strstr(Buffer, "SENDMSG=") != NULL) 
+    {
+      char *paramStart = strstr(Buffer, "=");
+      if (paramStart != NULL) 
+      {
+          paramStart++; // Avança para depois do '='
+          char dev[10];
+          char mensagem[200];
+          memset(dev, 0, sizeof(dev));
+          memset(mensagem, 0, sizeof(mensagem));
+
+          // Analisa os parâmetros DEV e MSG
+          if (sscanf(paramStart, "%[^,],%[^\n]", dev, mensagem) == 2) 
+          {
+              int dispositivo = atoi(dev);
+
+              if (dispositivo == 1) {
+                  EnviaParaSerial3(mensagem);
+                  resp = true;
+              } else 
+              {
+                  Serial.println("Dispositivo inválido ou não implementado!");
+              }
+          } else 
+          {
+              Serial.println("Formato do comando inválido. Use SENDMSG=DEV,MSG");
+          }
       }
     }
 
@@ -2152,6 +2467,28 @@ void Le_Serial1() {
 }
 
 
+// Função para enviar mensagem para Serial3
+void EnviaParaSerial3(const char* mensagem) {
+    Serial3.print(mensagem);
+    Serial3.print("\n");
+    Serial.print("Mensagem enviada para Serial3: ");
+    Serial.println(mensagem);
+}
+
+
+void Le_Serial3() {
+    char key;
+    while (Serial3.available() > 0) {
+        key = Serial3.read();
+
+        if (key != 0) {
+            Serial.print(key);  // Imprime na Serial padrão para debug
+            sprintf(Buffer, "%s%c", Buffer, key);
+        }
+    }
+}
+
+
 void Le_DHT22()
 {
   
@@ -2218,11 +2555,14 @@ void Le_FimCurso()
 
 
 
+
+
 void Leituras()
 {
   //Le_Teclado();
   Le_Serial();
   Le_Serial1();
+  Le_Serial3();
   
   //Le_DHT22();
   Le_FimCurso();
@@ -2248,6 +2588,7 @@ void RetConsole()
 void loop() 
 {
   Leituras();
+  Move_Servo_Incremental(); // Executa movimentos incrementais para todos os servos
   Analisa();
   contciclo = contciclo+1;
   
