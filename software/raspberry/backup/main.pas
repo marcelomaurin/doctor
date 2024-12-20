@@ -150,7 +150,6 @@ begin
   if(FSetMain.Duploclick<>0) then
   begin
     BloqueioAcesso();
-
   end;
 
 end;

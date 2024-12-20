@@ -1,18 +1,19 @@
 object frmOpAmostragem: TfrmOpAmostragem
   Left = 44
   Height = 589
-  Top = 251
+  Top = 65
   Width = 195
   Caption = 'Operações de Amostragem'
   ClientHeight = 589
   ClientWidth = 195
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.6.0'
   object Image1: TImage
     Left = 48
     Height = 90
     Top = 24
     Width = 90
     OnClick = Image1Click
+    OnDblClick = Image1DblClick
     Picture.Data = {
       07544269746D617036710200424D36710200000000003600000028000000C800
       0000C80000000100200000000000007102006400000064000000000000000000
@@ -5022,9 +5023,10 @@ object frmOpAmostragem: TfrmOpAmostragem
   end
   object Label1: TLabel
     Left = 40
-    Height = 15
+    Height = 22
     Top = 119
-    Width = 95
+    Width = 127
     Caption = 'Etiquetar Amostra'
+    ParentColor = False
   end
 end

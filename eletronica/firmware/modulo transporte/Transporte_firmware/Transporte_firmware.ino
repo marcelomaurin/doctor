@@ -292,13 +292,13 @@ void Start_Servos() {
   ServoBraco02.attach(Br02_PIN);
   ServoBraco03.attach(Br03_PIN);
   ServoBraco04.attach(Br04_PIN);
-
+/*
   // Configura os servos para a posição inicial
   ServoBraco01.write(posBraco[0]);
   ServoBraco02.write(posBraco[1]);
   ServoBraco03.write(posBraco[2]);
   ServoBraco04.write(posBraco[3]);
-
+*/
   Serial.println("Servos inicializados nas posições padrão.");
   Retorna_Servos();
 }
@@ -325,7 +325,9 @@ void Start_RELES()
 void Start_Serial()
 {
   Serial.begin(9600); 
-  Serial3.begin(9600); // Inicializa a Serial3 para comunicação
+  
+  Serial2.begin(9600); // Inicializa a Serial2 para comunicação
+  Serial2.println('MAN');
 }
 
 
@@ -419,7 +421,7 @@ void Calibra_Servos() {
   Serial.println("Calibrando servos...");
   PosicaoCentral();
  
-  Move_Servo_Completo(2, 170);
+  Move_Servo_Completo(2, 150);
   delay(1000);
   Move_Servo_Completo(2, 1);
   Move_Servo_Completo(1, 1);
@@ -427,7 +429,7 @@ void Calibra_Servos() {
   Move_Servo_Completo(1, 100);
   delay(1000);
   Move_Servo_Completo(1, 1);
-  Move_Servo_Completo(3, 160);
+  Move_Servo_Completo(3, 140);
   delay(1000);
   Move_Servo_Completo(3, 1);
   Move_Servo_Completo(4, 50);
@@ -1796,7 +1798,7 @@ void MAN()
   Serial.println("LOAD - CARREGA ARQUIVO");
   Serial.println("RUN - RODA SCRIPT");
   Serial.println("SENDMSG=DEV,MSG - Envia uma mensagem para uma Serial:");
-  Serial.println("   DEV: Dispositivo (1 = Serial3)");
+  Serial.println("   DEV: Dispositivo (1 = Serial2)");
   Serial.println("   MSG: Mensagem a ser enviada, termina antes do '\\n'");  
   Serial.println("MENSAGEM - Mostra mensagem");
   Serial.println("RESET - RESETA O AMBIENTE");
@@ -2163,7 +2165,7 @@ void KeyCMD()
               int dispositivo = atoi(dev);
 
               if (dispositivo == 1) {
-                  EnviaParaSerial3(mensagem);
+                  EnviaParaSerial2(mensagem);
                   resp = true;
               } else 
               {
@@ -2403,27 +2405,7 @@ void Le_Serial()
   }
 }
 
-/*
-//Le registro do Serial1
-void Le_Serial1()
-{
-  char key;
-  
-  while (Serial1.available() > 0)
-  {
-    
-    key = Serial1.read();
 
-    if (key != 0)
-    {
-      
-      Serial1.print(key);
-      //BufferKeypad += key;
-      sprintf(Buffer, "%s%c", Buffer, key);
-    }
-  }
-}
-*/
 
 void Le_Serial1() {
     char key;
@@ -2467,19 +2449,23 @@ void Le_Serial1() {
 }
 
 
-// Função para enviar mensagem para Serial3
-void EnviaParaSerial3(const char* mensagem) {
-    Serial3.print(mensagem);
-    Serial3.print("\n");
-    Serial.print("Mensagem enviada para Serial3: ");
+
+
+// Função para enviar mensagem para Serial2
+void EnviaParaSerial2(const char* mensagem) {
+    Serial2.print(mensagem);
+    Serial2.print("\n");
+    Serial.print("Mensagem enviada para Serial2: ");
     Serial.println(mensagem);
 }
 
 
-void Le_Serial3() {
+
+
+void Le_Serial2() {
     char key;
-    while (Serial3.available() > 0) {
-        key = Serial3.read();
+    while (Serial2.available() > 0) {
+        key = Serial2.read();
 
         if (key != 0) {
             Serial.print(key);  // Imprime na Serial padrão para debug
@@ -2562,7 +2548,7 @@ void Leituras()
   //Le_Teclado();
   Le_Serial();
   Le_Serial1();
-  Le_Serial3();
+  Le_Serial2();
   
   //Le_DHT22();
   Le_FimCurso();

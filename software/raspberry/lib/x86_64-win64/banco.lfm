@@ -18,7 +18,7 @@ object dmbanco: Tdmbanco
     User = 'mmm'
     Password = '226468'
     Protocol = 'mysql'
-    LibraryLocation = '/usr/lib/aarch64-linux-gnu/libmariadb.so.3'
+    LibraryLocation = '/usr/lib/aarch64-linux-gnu/libmariadb.so'
     Left = 48
     Top = 40
   end

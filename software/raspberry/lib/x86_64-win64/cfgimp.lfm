@@ -8,18 +8,19 @@ object frmcfgImp: TfrmcfgImp
   ClientWidth = 361
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.6.0'
   object Label1: TLabel
     Left = 33
-    Height = 15
+    Height = 22
     Top = 15
-    Width = 63
+    Width = 83
     Caption = 'Port Printer:'
+    ParentColor = False
   end
   object edComPrinter: TEdit
     Left = 33
-    Height = 23
-    Top = 32
+    Height = 32
+    Top = 40
     Width = 135
     TabOrder = 0
     Text = 'COM1'
@@ -32,5 +33,13 @@ object frmcfgImp: TfrmcfgImp
     Caption = '&Salvar'
     OnClick = Button1Click
     TabOrder = 1
+  end
+  object ckDuploClick: TCheckBox
+    Left = 31
+    Height = 26
+    Top = 84
+    Width = 108
+    Caption = 'Duplo Click'
+    TabOrder = 2
   end
 end
