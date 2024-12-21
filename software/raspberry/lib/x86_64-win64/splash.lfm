@@ -1,25 +1,25 @@
 object frmsplash: Tfrmsplash
   Left = 606
-  Height = 425
+  Height = 211
   Top = 322
-  Width = 651
+  Width = 359
   BorderStyle = bsNone
   Caption = 'frmsplash'
-  ClientHeight = 425
-  ClientWidth = 651
+  ClientHeight = 211
+  ClientWidth = 359
   Color = clBlack
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '3.4.0.0'
-  WindowState = wsFullScreen
   object GifAnim1: TGifAnim
-    Left = 80
-    Height = 323
-    Top = 144
-    Width = 524
+    Left = 8
+    Height = 192
+    Top = 8
+    Width = 344
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoSize = False
     Animate = False
+    Color = clBlack
     FileName = 'D:\projetos\maurinsoft\doctor\imgs\abertura.gif'
     OnStopAnim = GifAnim1StopAnim
   end
