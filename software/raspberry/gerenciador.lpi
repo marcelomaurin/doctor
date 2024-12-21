@@ -26,6 +26,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="pkg_gifanim"/>
+      </Item>
+      <Item>
         <PackageName Value="SdpoJoystickLaz"/>
       </Item>
       <Item>
@@ -196,6 +199,12 @@
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmbrobotico"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="splash.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmsplash"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>

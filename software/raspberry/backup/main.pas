@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   setmain, Toolsfalar, config, banco, bloqueio, OpAmostragem, imp, LazSerial,
-  ToolsOuvir, Etiquetar;
+  ToolsOuvir, Etiquetar, splash;
 
 type
 
@@ -68,8 +68,10 @@ implementation
 
 procedure Tfrmmain.FormCreate(Sender: TObject);
 begin
-
+  frmsplash := tfrmsplash.create(self);
+  frmsplash.showmodal();
   Setup();
+  frmsplash.
 end;
 
 procedure Tfrmmain.FormDestroy(Sender: TObject);
