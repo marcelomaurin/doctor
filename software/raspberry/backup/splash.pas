@@ -34,6 +34,7 @@ implementation
 
 procedure Tfrmsplash.FormShow(Sender: TObject);
 begin
+
   GifAnim1.Animate:= true;
   Timer1.Enabled:= true;
 end;

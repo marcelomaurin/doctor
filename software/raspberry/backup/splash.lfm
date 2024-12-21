@@ -13,13 +13,13 @@ object frmsplash: Tfrmsplash
   LCLVersion = '3.4.0.0'
   object GifAnim1: TGifAnim
     Left = 8
-    Height = 192
+    Height = 180
     Top = 8
-    Width = 344
+    Width = 320
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoSize = False
     Animate = False
-    Color = clSilver
+    Color = clBlack
     FileName = 'D:\projetos\maurinsoft\doctor\imgs\abertura.gif'
     OnStopAnim = GifAnim1StopAnim
   end

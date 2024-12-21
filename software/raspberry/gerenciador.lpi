@@ -205,6 +205,7 @@
         <Filename Value="splash.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmsplash"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>

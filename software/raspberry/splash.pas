@@ -34,6 +34,12 @@ implementation
 
 procedure Tfrmsplash.FormShow(Sender: TObject);
 begin
+  {$IFDEF LINUX}
+  GifAnim1.FileName := '/home/mmm/projetos/maurinsoft/doctor/imgs/abertura.gif';
+  {$ENDIF}
+  {$IFDEF WINDOWS}
+  GifAnim1.FileName := 'D:\projetos\maurinsoft\doctor\imgs\abertura.gif';
+  {$ENDIF}
   GifAnim1.Animate:= true;
   Timer1.Enabled:= true;
 end;
