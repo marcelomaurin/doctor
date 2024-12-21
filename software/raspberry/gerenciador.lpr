@@ -23,7 +23,6 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(Tfrmmain, frmmain);
-  Application.CreateForm(Tfrmsplash, frmsplash);
   Application.Run;
 end.
 
