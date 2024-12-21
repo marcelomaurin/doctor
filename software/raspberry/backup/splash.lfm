@@ -10,7 +10,7 @@ object frmsplash: Tfrmsplash
   Color = clBlack
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '2.2.6.0'
   object GifAnim1: TGifAnim
     Left = 8
     Height = 180

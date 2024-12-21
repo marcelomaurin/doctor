@@ -53,6 +53,7 @@ end;
 
 procedure Tfrmsplash.Timer1Timer(Sender: TObject);
 begin
+  Timer1.Enabled:= false;
   close;
 end;
 

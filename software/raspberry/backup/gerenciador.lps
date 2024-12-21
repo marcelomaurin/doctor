@@ -265,8 +265,8 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="22"/>
-        <CursorPos Y="37"/>
+        <TopLine Value="45"/>
+        <CursorPos X="24" Y="56"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -310,7 +310,7 @@
       </Unit>
       <Unit>
         <Filename Value="main.lfm"/>
-        <EditorIndex Value="16"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="47835"/>
         <CursorPos X="19" Y="47854"/>
         <UsageCount Value="11"/>
@@ -348,66 +348,41 @@
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\control.inc"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="2290"/>
         <CursorPos Y="2305"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\buttoncontrol.inc"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="6"/>
         <CursorPos Y="22"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\buttons.inc"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="154"/>
         <CursorPos Y="170"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\wincontrol.inc"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="5416"/>
         <CursorPos X="24" Y="5443"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="5" Y="5"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="d:\lazarus\lcl\include\control.inc"/>
-        <Caret Line="2978" TopLine="2961"/>
-      </Position>
-      <Position>
-        <Filename Value="d:\lazarus\lcl\include\buttoncontrol.inc"/>
-        <Caret Line="56" TopLine="40"/>
-      </Position>
-      <Position>
-        <Filename Value="d:\lazarus\lcl\include\buttons.inc"/>
-        <Caret Line="170" TopLine="154"/>
-      </Position>
-      <Position>
-        <Filename Value="d:\lazarus\lcl\include\buttoncontrol.inc"/>
-        <Caret Line="22" TopLine="6"/>
-      </Position>
-      <Position>
-        <Filename Value="d:\lazarus\lcl\include\control.inc"/>
-        <Caret Line="2305" TopLine="2290"/>
-      </Position>
+    <JumpHistory HistoryIndex="24">
       <Position>
         <Filename Value="brobotico.pas"/>
         <Caret Line="159" Column="30" TopLine="142"/>
