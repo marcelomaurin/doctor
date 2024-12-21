@@ -8,7 +8,7 @@ object frmmain: Tfrmmain
   ClientWidth = 164
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '2.2.6.0'
   object Image1: TImage
     Left = 28
     Height = 83
@@ -4076,9 +4076,9 @@ object frmmain: Tfrmmain
   end
   object Label1: TLabel
     Left = 40
-    Height = 15
+    Height = 22
     Top = 88
-    Width = 72
+    Width = 95
     Caption = 'Configuração'
     ParentColor = False
   end
@@ -8149,9 +8149,9 @@ object frmmain: Tfrmmain
   end
   object Label2: TLabel
     Left = 40
-    Height = 15
+    Height = 22
     Top = 208
-    Width = 69
+    Width = 91
     Caption = 'Amostragem'
     ParentColor = False
   end
@@ -15045,25 +15045,25 @@ object frmmain: Tfrmmain
   end
   object Label3: TLabel
     Left = 57
-    Height = 15
+    Height = 22
     Top = 344
-    Width = 38
+    Width = 52
     Caption = 'Análise'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 56
-    Height = 15
+    Height = 22
     Top = 472
-    Width = 52
+    Width = 72
     Caption = 'Relatorios'
     ParentColor = False
   end
   object Label5: TLabel
     Left = 72
-    Height = 15
+    Height = 22
     Top = 616
-    Width = 19
+    Width = 28
     Caption = 'Sair'
     ParentColor = False
   end
@@ -47849,28 +47849,5 @@ object frmmain: Tfrmmain
       00FF
     }
     Stretch = True
-  end
-  object LazSerial1: TLazSerial
-    Active = False
-    BaudRate = br__9600
-    DataBits = db8bits
-    Parity = pNone
-    FlowControl = fcNone
-    StopBits = sbOne
-    SynSer.Tag = 0
-    SynSer.Handle = -1
-    SynSer.RaiseExcept = False
-    SynSer.TestDSR = False
-    SynSer.TestCTS = False
-    SynSer.MaxLineLength = 0
-    SynSer.DeadlockTimeout = 30000
-    SynSer.LinuxLock = False
-    SynSer.ConvertLineEnd = False
-    SynSer.AtTimeout = 1000
-    SynSer.InterPacketTimeout = True
-    Device = 'COM1'
-    RcvLineCRLF = False
-    Left = 19
-    Top = 338
   end
 end

@@ -38,6 +38,8 @@ type
         FDllMyPath : string;
         FDllPostPath : string;
         FComPrinter : string;
+        FDuploclick : integer;
+        FSerialPort : String;   //Porta
 
         FRunScript : string;    //Script de Compilação
         FDebugScript : string;  //Script de Debug
@@ -111,6 +113,8 @@ type
         property ToolsFalar : Boolean read FToolsFalar write SetToolsFalar;
         property IPFALAR : String read FIPFALAR write FIPFALAR;
         property ComPrinter : String read FComPrinter write FComPrinter;
+        property Duploclick : integer read FDuploclick write FDuploclick;
+        property SerialPort: String read FSerialPort write FSerialPort;
   end;
 
   var
@@ -136,6 +140,7 @@ begin
     FFixar :=false;
     FStay := false;
     FIPFALAR := '127.0.0.1';
+    FDuploclick := 1; //Ativo como padrão
 
     FDllPath:= ExtractFilePath(ApplicationName);
     FDllMyPath:= ExtractFilePath(ApplicationName);
@@ -157,13 +162,16 @@ begin
     FCHATGPT:=''; //CHATGPT TOKEN
     FToolsFalar := false;
     {$ifdef Darwin}
-     FComPrinter := '/dev/ttyS0'
+     FComPrinter := '/dev/ttyS0';
+     FSerialPort := '/dev/ttyUSB0'
     {$ENDIF}
     {$IFDEF LINUX}
-    FComPrinter := '/dev/ttyS0'
+    FComPrinter := '/dev/ttyS0';
+    FSerialPort := '/dev/ttyUSB0'
     {$ENDIF}
     {$IFDEF WINDOWS}
-    FComPrinter := 'COM1'
+    FComPrinter := 'COM1';
+    FSerialPort := 'COM6'
     {$ENDIF}
 
 end;
@@ -351,7 +359,14 @@ begin
     begin
       FComPrinter := RetiraInfo(arquivo.Strings[posicao]);
     end;
-
+    if  BuscaChave(arquivo,'DUPLOCLICK:',posicao) then
+    begin
+      FDuploclick := strtoint(RetiraInfo(arquivo.Strings[posicao]));
+    end;
+    if  BuscaChave(arquivo,'SERIALPORT:',posicao) then
+    begin
+      FSerialPort := RetiraInfo(arquivo.Strings[posicao]);
+    end;
 
 end;
 
@@ -445,6 +460,8 @@ begin
   arquivo.Append('TOOLSFALAR:'+iif(FToolsFalar,'1','0'));
   arquivo.Append('IPFALAR:'+FIPFALAR);
   arquivo.Append('COMPRINTER:'+FComPrinter);
+  arquivo.Append('SERIALPORT:'+FComPrinter);
+  arquivo.Append('DUPLOCLICK:'+inttostr(FDuploclick));
   arquivo.SaveToFile(fpath+filename);
 end;
 

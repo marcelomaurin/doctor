@@ -27,7 +27,9 @@ type
     procedure Image2Click(Sender: TObject);
     procedure Image2MouseEnter(Sender: TObject);
     procedure Image3Click(Sender: TObject);
+    procedure Image3MouseEnter(Sender: TObject);
     procedure Image4Click(Sender: TObject);
+    procedure Image4MouseEnter(Sender: TObject);
   private
 
   public
@@ -81,12 +83,24 @@ begin
   frmcfgImp.free;
 end;
 
+procedure Tfrmconfig.Image3MouseEnter(Sender: TObject);
+begin
+  frmToolsfalar.Falar('Configurações de Impressora');
+  Application.ProcessMessages;
+end;
+
 procedure Tfrmconfig.Image4Click(Sender: TObject);
 begin
   frmbrobotico := Tfrmbrobotico.create(self);
   frmbrobotico.showmodal;
 
-  frmcfgImp.free;
+  frmbrobotico.free;
+end;
+
+procedure Tfrmconfig.Image4MouseEnter(Sender: TObject);
+begin
+  frmToolsfalar.Falar('Configurações de Braço ro');
+  Application.ProcessMessages;
 end;
 
 end.

@@ -24,7 +24,6 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    LazSerial1: TLazSerial;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Image1Click(Sender: TObject);
@@ -71,7 +70,7 @@ begin
   frmsplash := tfrmsplash.create(self);
   frmsplash.showmodal();
   Setup();
-  frmsplash.
+  frmsplash.free;
 end;
 
 procedure Tfrmmain.FormDestroy(Sender: TObject);

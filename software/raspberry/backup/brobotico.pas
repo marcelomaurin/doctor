@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, SdpoSerial, synaser;
+  ComCtrls, ExtCtrls, SdpoSerial, synaser, setmain;
 
 type
 
@@ -63,6 +63,7 @@ type
     procedure btGirarClick(Sender: TObject);
     procedure btGarraClick(Sender: TObject);
     procedure Edit1KeyPress(Sender: TObject; var Key: char);
+    procedure edPortaKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SdpoSerial1BlockSerialStatus(Sender: TObject;
@@ -151,6 +152,8 @@ procedure Tfrmbrobotico.Button13Click(Sender: TObject);
 begin
   SdpoSerial1.close;
   SdpoSerial1.Device :=  edPorta.text;
+  fsetmain.SerialPort :=  edPorta.text;
+  FSetMain.SalvaContexto(false);
   SdpoSerial1.Open;
   PageControl1.PageIndex := 0;
   Application.ProcessMessages;
@@ -186,7 +189,7 @@ end;
 
 procedure Tfrmbrobotico.btBracoClick(Sender: TObject);
 begin
-  setservo(2, 44);
+  setservo(2, tbposicao.Position);
 end;
 
 procedure Tfrmbrobotico.btPunhoClick(Sender: TObject);
@@ -196,12 +199,12 @@ end;
 
 procedure Tfrmbrobotico.btGirarClick(Sender: TObject);
 begin
-  setservo(1, 214);
+  setservo(1, tbposicao.Position);
 end;
 
 procedure Tfrmbrobotico.btGarraClick(Sender: TObject);
 begin
-  setservo(4, 60);
+  setservo(4, tbposicao.Position);
 end;
 
 procedure Tfrmbrobotico.Edit1KeyPress(Sender: TObject; var Key: char);
@@ -248,10 +251,19 @@ begin
   end;
 end;
 
+procedure Tfrmbrobotico.edPortaKeyPress(Sender: TObject; var Key: char);
+begin
+   if(key = #13) then
+   begin
+       FSetMain.SerialPort := edPorta.text;
+   end;
+end;
+
 procedure Tfrmbrobotico.FormCreate(Sender: TObject);
 begin
   operador := 1;
-  PageControl1.ActivePage := TabSheet2;
+  edPorta.text := FSetMain.SerialPort ;
+  PageControl1.ActivePage := TabSheet3;
 
 
 end;
