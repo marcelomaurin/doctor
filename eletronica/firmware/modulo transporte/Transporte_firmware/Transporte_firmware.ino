@@ -1810,6 +1810,7 @@ void MAN()
   Serial.println("MOVESERVO=NRO_SERVO,ANGULO - Move um servo para o ângulo especificado");
   Serial.println("MOVEDIR=NRO_PASSOS - Move o motor de passo para a direita");
   Serial.println("MOVEESQ=NRO_PASSOS - Move o motor de passo para a esquerda");
+  Serial.println("POSFIMSERVA - Informa Posicao final do carro ");
   Serial.println(" ");
 }
 
@@ -2305,6 +2306,15 @@ void KeyCMD()
       resp = true;
     }
 
+    //POSFIMSERVA - FIM de curso posicao
+    if (strcmp( Buffer, "POSFIMSERVA\n") == 0)
+    {
+      Serial.print("POSFIMSERVA=");
+      Serial.println(posFIMSERVA);
+      resp = true;
+    }
+   
+
     //BeepMsg
     if (strstr( Buffer, "READ=") != 0)
     {
@@ -2453,8 +2463,7 @@ void Le_Serial1() {
 
 // Função para enviar mensagem para Serial2
 void EnviaParaSerial2(const char* mensagem) {
-    Serial2.print(mensagem);
-    Serial2.print("\n");
+    Serial2.println(mensagem);
     Serial.print("Mensagem enviada para Serial2: ");
     Serial.println(mensagem);
 }
@@ -2534,6 +2543,8 @@ void Le_FimCurso()
   {
     Serial.print("flgFIMA2=");  Serial.println(flgFIMA2==HIGH?"ON":"OFF");
     posFIMSERVA = posSERVA;
+    Serial.print("POSFIMSERVA=");
+    Serial.println(posFIMSERVA);
     lastflgFIMA2 = flgFIMA2;
   }
 }

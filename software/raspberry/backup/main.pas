@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   setmain, Toolsfalar, config, banco, bloqueio, OpAmostragem, imp, LazSerial,
-  ToolsOuvir, Etiquetar, splash;
+  ToolsOuvir, Etiquetar, splash, brobotico;
 
 type
 
@@ -24,6 +24,8 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    LazSerial1: TLazSerial;
+    LazSerial2: TLazSerial;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Image1Click(Sender: TObject);
@@ -37,6 +39,8 @@ type
     procedure Image5Click(Sender: TObject);
     procedure Image5DblClick(Sender: TObject);
     procedure Image5MouseEnter(Sender: TObject);
+    procedure LazSerial2RxData(Sender: TObject);
+    procedure SdpoSerial1RxData(Sender: TObject);
   private
     procedure Setup();
     procedure ChamaConfiguracao();
@@ -159,6 +163,41 @@ procedure Tfrmmain.Image5MouseEnter(Sender: TObject);
 begin
   frmToolsfalar.Falar('Bloqueio de acesso');
   Application.ProcessMessages;
+end;
+
+procedure Tfrmmain.LazSerial2RxData(Sender: TObject);
+var
+  info, info2 : string;
+  posicao : integer;
+  posicaofinal : integer;
+begin
+  posicaofinal := 0;
+  if LazSerial2.DataAvailable then
+  begin
+    info := LazSerial2.ReadData;
+    posicao := pos('POSFIMSERVA=',info);
+    if(posicao <> 0) then
+    begin
+      info2:= copy(info,posicao+12,pos(#13,copy(info, posicao+13,Length(info))));
+      posicaofinal := strtoint(info2);
+
+    end;
+    if(frmbrobotico<> nil) then
+    begin
+         frmbrobotico.meconsole.Append(info);
+         if(posicaofinal<>0) then
+         begin
+              frmbrobotico.tbMov.Max:= posicaofinal;
+         end;
+    end;
+    sleep(300);
+  end;
+
+end;
+
+procedure Tfrmmain.SdpoSerial1RxData(Sender: TObject);
+begin
+
 end;
 
 procedure Tfrmmain.Setup;

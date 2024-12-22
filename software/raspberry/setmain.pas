@@ -459,7 +459,7 @@ begin
   arquivo.Append('TOOLSFALAR:'+iif(FToolsFalar,'1','0'));
   arquivo.Append('IPFALAR:'+FIPFALAR);
   arquivo.Append('COMPRINTER:'+FComPrinter);
-  arquivo.Append('SERIALPORT:'+FComPrinter);
+  arquivo.Append('SERIALPORT:'+FSerialPort);
   arquivo.Append('DUPLOCLICK:'+inttostr(FDuploclick));
   arquivo.SaveToFile(fpath+filename);
 end;

@@ -2,10 +2,10 @@ object frmmain: Tfrmmain
   Left = 30
   Height = 643
   Top = 11
-  Width = 164
+  Width = 162
   Caption = 'Tela Principal'
   ClientHeight = 643
-  ClientWidth = 164
+  ClientWidth = 162
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '2.2.6.0'
@@ -47849,5 +47849,54 @@ object frmmain: Tfrmmain
       00FF
     }
     Stretch = True
+  end
+  object LazSerial1: TLazSerial
+    Active = False
+    BaudRate = br__9600
+    DataBits = db8bits
+    Parity = pNone
+    FlowControl = fcNone
+    StopBits = sbOne
+    SynSer.Tag = 0
+    SynSer.Handle = -1
+    SynSer.RaiseExcept = False
+    SynSer.TestDSR = False
+    SynSer.TestCTS = False
+    SynSer.MaxLineLength = 0
+    SynSer.DeadlockTimeout = 30000
+    SynSer.LinuxLock = False
+    SynSer.ConvertLineEnd = False
+    SynSer.AtTimeout = 1000
+    SynSer.InterPacketTimeout = True
+    SynSer.NonBlock = False
+    Device = 'COM1'
+    RcvLineCRLF = False
+    Left = 56
+    Top = 328
+  end
+  object LazSerial2: TLazSerial
+    Active = False
+    BaudRate = br__9600
+    DataBits = db8bits
+    Parity = pNone
+    FlowControl = fcNone
+    StopBits = sbOne
+    SynSer.Tag = 0
+    SynSer.Handle = -1
+    SynSer.RaiseExcept = False
+    SynSer.TestDSR = False
+    SynSer.TestCTS = False
+    SynSer.MaxLineLength = 0
+    SynSer.DeadlockTimeout = 30000
+    SynSer.LinuxLock = False
+    SynSer.ConvertLineEnd = False
+    SynSer.AtTimeout = 1000
+    SynSer.InterPacketTimeout = True
+    SynSer.NonBlock = False
+    Device = '/dev/ttyS0'
+    RcvLineCRLF = False
+    OnRxData = LazSerial2RxData
+    Left = 40
+    Top = 208
   end
 end

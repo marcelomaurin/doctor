@@ -17,10 +17,12 @@ type
     Image2: TImage;
     Image3: TImage;
     Image4: TImage;
+    Image5: TImage;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure Image1MouseEnter(Sender: TObject);
@@ -30,6 +32,7 @@ type
     procedure Image3MouseEnter(Sender: TObject);
     procedure Image4Click(Sender: TObject);
     procedure Image4MouseEnter(Sender: TObject);
+    procedure Image5MouseEnter(Sender: TObject);
   private
 
   public
@@ -99,7 +102,13 @@ end;
 
 procedure Tfrmconfig.Image4MouseEnter(Sender: TObject);
 begin
-  frmToolsfalar.Falar('Configurações de Braço ro');
+  frmToolsfalar.Falar('Configurações de Braço robótico');
+  Application.ProcessMessages;
+end;
+
+procedure Tfrmconfig.Image5MouseEnter(Sender: TObject);
+begin
+  frmToolsfalar.Falar('Configurações de Receitas');
   Application.ProcessMessages;
 end;
 

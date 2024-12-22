@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, SdpoSerial, synaser, setmain;
+  ComCtrls, ExtCtrls, synaser, setmain, LazSerial;
 
 type
 
@@ -37,7 +37,6 @@ type
     OpenDialog1: TOpenDialog;
     PageControl1: TPageControl;
     SaveDialog1: TSaveDialog;
-    SdpoSerial1: TSdpoSerial;
     Shape1: TShape;
     Shape2: TShape;
     Shape3: TShape;
@@ -93,6 +92,8 @@ implementation
 
 { Tfrmbrobotico }
 
+uses main;
+
 //Define o operador correto
 procedure Tfrmbrobotico.setservo( ope : integer; referencia : integer);
 begin
@@ -108,7 +109,7 @@ begin
 
   Posicao:= posicao -forca;
   if (posicao < 0) then posicao := 0;
-  SdpoSerial1.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13);
+  frmmain.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
@@ -117,7 +118,7 @@ procedure Tfrmbrobotico.moveleft(forca : integer);
 begin
   Posicao:= trunc(posicao +forca);
   if (posicao > 255) then posicao := 255;
-  SdpoSerial1.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
+  frmmain.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
@@ -125,7 +126,7 @@ end;
 
 procedure Tfrmbrobotico.btTestarClick(Sender: TObject);
 begin
-  SdpoSerial1.WriteData('RETORNAR'+#13+#10);
+  frmmain.LazSerial2.WriteData('RETORNAR'+#13+#10);
 
 end;
 
@@ -154,11 +155,11 @@ end;
 
 procedure Tfrmbrobotico.Button13Click(Sender: TObject);
 begin
-  SdpoSerial1.close;
-  SdpoSerial1.Device :=  edPorta.text;
+  frmmain.LazSerial2.close;
+  frmmain.LazSerial2.Device :=  edPorta.text;
   fsetmain.SerialPort :=  edPorta.text;
   FSetMain.SalvaContexto(false);
-  SdpoSerial1.Open;
+  frmmain.LazSerial2.Open;
   PageControl1.PageIndex := 0;
   Application.ProcessMessages;
 
@@ -166,8 +167,8 @@ end;
 
 procedure Tfrmbrobotico.Button14Click(Sender: TObject);
 begin
-  SdpoSerial1.close;
-  SdpoSerial1.Device :=  edPorta.text;
+  frmmain.LazSerial2.close;
+  frmmain.LazSerial2.Device :=  edPorta.text;
 
 end;
 
@@ -236,34 +237,22 @@ end;
 
 procedure Tfrmbrobotico.FormDestroy(Sender: TObject);
 begin
-    SdpoSerial1.Close;
+    //frmmain.LazSerial2.Close;
 
 end;
 
-procedure Tfrmbrobotico.SdpoSerial1BlockSerialStatus(Sender: TObject;
-  Reason: THookSerialReason; const Value: string);
-begin
 
-end;
 
-procedure Tfrmbrobotico.SdpoSerial1RxData(Sender: TObject);
-begin
-  if SdpoSerial1.DataAvailable then
-  begin
-    meconsole.Append(SdpoSerial1.ReadData);
-  end;
-  sleep(400);
-end;
 
 procedure Tfrmbrobotico.tbMovChange(Sender: TObject);
 begin
   if ((tbMov.Position- posicaoanterior) > 0) then
   begin
-     SdpoSerial1.WriteData('MOVEDIR='+inttostr(tbMov.Position-posicaoanterior)+#13+#10);
+     frmmain.LazSerial2.WriteData('MOVEDIR='+inttostr(tbMov.Position-posicaoanterior)+#13+#10);
   end
   else
   begin
-     SdpoSerial1.WriteData('MOVEESQ='+inttostr(posicaoanterior-tbMov.Position)+#13+#10);
+     frmmain.LazSerial2.WriteData('MOVEESQ='+inttostr(posicaoanterior-tbMov.Position)+#13+#10);
   end;
   posicaoanterior :=  tbMov.Position;
 end;
