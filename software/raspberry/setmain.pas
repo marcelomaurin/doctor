@@ -288,7 +288,6 @@ begin
     begin
       FCompile := RetiraInfo(arquivo.Strings[posicao]);
     end;
-
     if  BuscaChave(arquivo,'FONT:',posicao) then
     begin
       StringToFont(RetiraInfo(arquivo.Strings[posicao]),FFONT);

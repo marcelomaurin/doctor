@@ -39,7 +39,7 @@ type
         FDllPostPath : string;
         FComPrinter : string;
         FDuploclick : integer;
-        FSerialPort : String;   //Porta
+        FSerialPort : String;   //Porta do Arduino
 
         FRunScript : string;    //Script de Compilação
         FDebugScript : string;  //Script de Debug

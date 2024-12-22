@@ -27,7 +27,6 @@ type
     btPunho: TButton;
     btGirar: TButton;
     btGarra: TButton;
-    Edit1: TEdit;
     edPorta: TEdit;
     Label1: TLabel;
     Label2: TLabel;
@@ -42,6 +41,7 @@ type
     Shape1: TShape;
     Shape2: TShape;
     Shape3: TShape;
+    tbMov: TTrackBar;
     tsconsole: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
@@ -69,6 +69,8 @@ type
     procedure SdpoSerial1BlockSerialStatus(Sender: TObject;
       Reason: THookSerialReason; const Value: string);
     procedure SdpoSerial1RxData(Sender: TObject);
+    procedure tbMovChange(Sender: TObject);
+    procedure tbposicaoChange(Sender: TObject);
   private
     { private declarations }
     operador : integer;
@@ -79,7 +81,7 @@ type
 
   public
     { public declarations }
-
+    posicaoanterior : integer;
   end; 
 
 var
@@ -96,7 +98,9 @@ procedure Tfrmbrobotico.setservo( ope : integer; referencia : integer);
 begin
   operador := ope;
   posicao := referencia;
+
   lstMov.Items.Add('MOVESERVO='+inttostr(ope)+','+inttostr(referencia));
+
 end;
 
 procedure Tfrmbrobotico.moverigth(forca : integer);
@@ -104,24 +108,24 @@ begin
 
   Posicao:= posicao -forca;
   if (posicao < 0) then posicao := 0;
-  SdpoSerial1.WriteData(chr(operador)+chr(posicao));
+  SdpoSerial1.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13);
   tbposicao.Position:= posicao;
-  lstMov.Items.Add('MOVEDIR='+inttostr(01+30));
+  lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
 
 procedure Tfrmbrobotico.moveleft(forca : integer);
 begin
   Posicao:= trunc(posicao +forca);
   if (posicao > 255) then posicao := 255;
-  SdpoSerial1.WriteData(chr(operador)+chr(posicao));
+  SdpoSerial1.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
   tbposicao.Position:= posicao;
-  lstMov.Items.Add('MOVEESQ='+IntToStr(255));
+  lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
 
 
 procedure Tfrmbrobotico.btTestarClick(Sender: TObject);
 begin
-  SdpoSerial1.WriteData(#01+#01);
+  SdpoSerial1.WriteData('RETORNAR'+#13+#10);
 
 end;
 
@@ -194,7 +198,7 @@ end;
 
 procedure Tfrmbrobotico.btPunhoClick(Sender: TObject);
 begin
-  setservo(3, 215);
+  setservo(3, tbposicao.Position);
 end;
 
 procedure Tfrmbrobotico.btGirarClick(Sender: TObject);
@@ -209,46 +213,7 @@ end;
 
 procedure Tfrmbrobotico.Edit1KeyPress(Sender: TObject; var Key: char);
 begin
-  if (key = '4') then
-  begin
-    moverigth(tbforte.Position);
-  end;
-  if (key = '6') then
-  begin
-    moveleft(tbforte.Position);
-  end;
-  if (key = 'a') then
-  begin
-    setservo(1, 60);
-  end;
-  if (key = 's') then
-  begin
-    setservo(2,60);
-  end;
-    if (key = 'd') then
-  begin
-    setservo(3, 60);
-  end;
-  if (key = 'f') then
-  begin
-      setservo(4, 60);
-  end;
-  if (key = 'g') then
-  begin
-    setservo(5, 60);
-  end;
-  if (key = 'h') then
-  begin
-    setservo(6, 60);
-  end;
-  if (key = 'j') then
-  begin
-    setservo(7, 60);
-  end;
-  if (key = 'k') then
-  begin
-    setservo(8, 60);
-  end;
+
 end;
 
 procedure Tfrmbrobotico.edPortaKeyPress(Sender: TObject; var Key: char);
@@ -262,6 +227,7 @@ end;
 procedure Tfrmbrobotico.FormCreate(Sender: TObject);
 begin
   operador := 1;
+  posicaoanterior := 0;
   edPorta.text := FSetMain.SerialPort ;
   PageControl1.ActivePage := TabSheet3;
 
@@ -286,6 +252,25 @@ begin
   begin
     meconsole.Append(SdpoSerial1.ReadData);
   end;
+  sleep(400);
+end;
+
+procedure Tfrmbrobotico.tbMovChange(Sender: TObject);
+begin
+  if ((tbMov.Position- posicaoanterior) > 0) then
+  begin
+     SdpoSerial1.WriteData('MOVEDIR='+inttostr(tbMov.Position-posicaoanterior)+#13+#10);
+  end
+  else
+  begin
+     SdpoSerial1.WriteData('MOVEESQ='+inttostr(posicaoanterior-tbMov.Position)+#13+#10);
+  end;
+  posicaoanterior :=  tbMov.Position;
+end;
+
+procedure Tfrmbrobotico.tbposicaoChange(Sender: TObject);
+begin
+  setservo(operador, tbposicao.Position);
 end;
 
 end.

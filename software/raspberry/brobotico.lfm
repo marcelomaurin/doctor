@@ -45,7 +45,7 @@ object frmbrobotico: Tfrmbrobotico
         Height = 25
         Top = 24
         Width = 75
-        Caption = 'Testa'
+        Caption = 'Retornar'
         OnClick = btTestarClick
         TabOrder = 0
       end
@@ -196,17 +196,9 @@ object frmbrobotico: Tfrmbrobotico
         Top = 56
         Width = 282
         Max = 255
+        OnChange = tbposicaoChange
         Position = 0
         TabOrder = 15
-      end
-      object Edit1: TEdit
-        Left = 120
-        Height = 32
-        Top = 24
-        Width = 80
-        OnKeyPress = Edit1KeyPress
-        TabOrder = 16
-        Text = 'Edit1'
       end
       object tbforte: TTrackBar
         Left = 470
@@ -216,6 +208,16 @@ object frmbrobotico: Tfrmbrobotico
         Max = 255
         Position = 10
         TabOrder = 9
+      end
+      object tbMov: TTrackBar
+        Left = 133
+        Height = 52
+        Top = -3
+        Width = 286
+        Max = 2000
+        OnChange = tbMovChange
+        Position = 0
+        TabOrder = 16
       end
     end
     object TabSheet3: TTabSheet
