@@ -11,7 +11,9 @@
 #define pin_IN4 A3       // Pino IN4 do ULN2003
 #define pin_FIMCURSO 5   // Pino do sensor de fim de curso
 
-
+// Definição dos pinos para a SoftwareSerial
+#define RX_PIN 9
+#define TX_PIN 11
 
 // Sensores
 #define pin_PH A5        // Pino do sensor de pH
@@ -21,18 +23,21 @@
 //2048
 #define PASSOS_POR_VOLTA 128 // Número total de passos para o motor de passo ULN2003
 
-#define VERSAO "0.4"          // Versão do módulo
-//const char VERSAO[] PROGMEM = "0.4";
+#define VERSAO "0.6"          // Versão do módulo
+
 
 
 #define TEMPO_DEBOUNCE 50     // Tempo para debounce (em ms)
 
 
+// Instância da SoftwareSerial
+SoftwareSerial serialSoftware(RX_PIN, TX_PIN);
+
 long NUM_PASSOS = 50;         // Número de passos por comando
 long FIM_CURSO = 17000;       //Posicao final do curso
 
 
-char buffer[100] ={0};           // Buffer para dados recebidos da serial
+char buffer[300] ={0};           // Buffer para dados recebidos da serial
 size_t buffer_pos = 0; // Posição atual no buffer
 
 //Flags de controle
@@ -67,30 +72,31 @@ Stepper motor(PASSOS_POR_VOLTA, pin_IN1, pin_IN3, pin_IN2, pin_IN4);
 // Função para enviar dados para a Serial padrão e SoftwareSerial
 void EnviarSerial(const String& mensagem) {
     Serial.print(mensagem);
-    
+    serialSoftware.print(mensagem);
 }
 
 // Função para enviar dados para a Serial padrão e SoftwareSerial
 void EnviarSerial(int info) {
     Serial.print(info);
-    
+    serialSoftware.print(info);
 }
 
 void EnviarSerialLn(const String& mensagem) {
     Serial.println(mensagem);
+    serialSoftware.println(mensagem);
     
 }
 
 void EnviarSerialLn(int info) {
     Serial.println(info);
-    
+    serialSoftware.print(info);
 }
 
 
 // Função para ativar a comunicação serial
 void Start_serial() {
     Serial.begin(9600);
-    
+    serialSoftware.begin(9600);
     
 }
 
@@ -121,17 +127,22 @@ void WellCome() {
 
 void HelpComandos() {
     EnviarSerialLn(F("=== LISTA DE COMANDOS DISPONÍVEIS ==="));
-    EnviarSerialLn(F("MOVERDIR;         - Move o motor para a direita."));
-    EnviarSerialLn(F("MOVERLONGDIR;     - Move o motor longamente para a direita."));
-    EnviarSerialLn(F("MOVERESQ;         - Move o motor para a esquerda."));
-    EnviarSerialLn(F("MOVERLONGESQ;     - Move o motor longamente para a esquerda."));
-    EnviarSerialLn(F("MOVERFIMCURSOESQ; - Move o motor até o fim de curso à esquerda."));
-    EnviarSerialLn(F("RETCARRO;         - Retorna o carro ao ponto inicial."));
-    EnviarSerialLn(F("LEITURA_PH;       - Exibe o valor de pH atual."));
-    EnviarSerialLn(F("LEITURA_TEMP;     - Exibe a temperatura atual."));
-    EnviarSerialLn(F("ATIVA_PH;         - Ativa a leitura contínua de pH."));
-    EnviarSerialLn(F("DESATIVA_PH;      - Desativa a leitura contínua de pH."));
-    EnviarSerialLn(F("MAN;             - Exibe esta lista de comandos."));
+    EnviarSerialLn(F("MOVERDIR         - Move o motor para a direita."));
+    EnviarSerialLn(F("MOVERLONGDIR     - Move o motor longamente para a direita."));
+    EnviarSerialLn(F("MOVERESQ         - Move o motor para a esquerda."));
+    EnviarSerialLn(F("MOVERLONGESQ     - Move o motor longamente para a esquerda."));
+    EnviarSerialLn(F("MOVERFIMCURSOESQ - Move o motor até o fim de curso à esquerda."));
+    EnviarSerialLn(F("RETCARRO         - Retorna o carro ao ponto inicial."));
+    EnviarSerialLn(F("LEITURA_PH       - Exibe o valor de pH atual."));
+    EnviarSerialLn(F("LEITURA_TEMP     - Exibe a temperatura atual."));
+    EnviarSerialLn(F("ATIVA_PH         - Ativa a leitura contínua de pH."));
+    EnviarSerialLn(F("DESATIVA_PH      - Desativa a leitura contínua de pH."));
+    EnviarSerialLn(F("CALIBRAR         - Inicia a calibração geral."));
+    EnviarSerialLn(F("CALIBRARPH4      - Inicia a calibração com solução de pH 4."));
+    EnviarSerialLn(F("CALIBRARPH7      - Inicia a calibração com solução de pH 7."));
+    EnviarSerialLn(F("CALIBRARPH10     - Inicia a calibração com solução de pH 10."));
+    EnviarSerialLn(F("ENXAGUE          - Inicia o processo de enxágue."));
+    EnviarSerialLn(F("MAN              - Exibe esta lista de comandos."));
     EnviarSerialLn(F("====================================="));
 }
 
@@ -148,7 +159,8 @@ void LerFimCurso() {
             EnviarSerialLn(estadoAtualFimCurso);
 
             if (estadoAtualFimCurso == LOW) {
-                ERRO_SISTEMA("Fim de curso acionado. Parando o motor.");
+                //ERRO_SISTEMA("Fim de curso acionado. Parando o motor.");
+                Serial.println("Fim de curso acionado. Parando o motor.");
                 flagMoverDir = false;
                 flagMoverLong = false;
                 passosDados = 0;
@@ -387,21 +399,25 @@ void ChamaComandos(const String& comando) {
     } else if (comando.indexOf("MAN") != -1) {
         HelpComandos(); // Chama a função de ajuda
     } else {
-        ERRO_SISTEMA("Comando desconhecido recebido.");
+        //ERRO_SISTEMA("Comando desconhecido recebido.");
+        Serial.println(F("Comando desconhecido recebido."));
     }
 }
 
 // Função para processar o buffer
 void ProcessaBuffer() {
-    for (size_t i = 0; i < buffer_pos; i++) {
-        if (buffer[i] == '\n') { // Encontrou o delimitador de comando
-            buffer[i] = '\0'; // Substituir '\n' por '\0' para criar uma string válida
-            ChamaComandos(buffer); // Processar o comando
+    size_t len = strlen(buffer);
+    for (size_t i = 0; i < len; i++) {
+        if (buffer[i] == '\n') {
+            Serial.print("Achou comando:");
+            Serial.println(buffer);
+            ChamaComandos(buffer);
 
-            // Deslocar o restante do buffer
-            memmove(buffer, &buffer[i + 1], buffer_pos - i - 1);
-            buffer_pos -= i + 1;
-            i = -1; // Reiniciar o loop para processar o próximo comando
+            // Desloca o resto do buffer
+            memmove(buffer, &buffer[i + 1], len - i - 1);
+            buffer[len - i - 1] = '\0';
+            i = -1; 
+            len = strlen(buffer); // Recalcula tamanho após o memmove
         }
     }
 }
@@ -515,15 +531,20 @@ void Analisar() {
     }
 }
 
-
-void LeSerial()
-{
-   if (Serial.available()) {
+void LeSerial() {
+    while (Serial.available()) {
         char c = Serial.read();
+        size_t len = strlen(buffer); 
+        if (len < sizeof(buffer) - 1) {
+            buffer[len] = c;
+            buffer[len + 1] = '\0';
+        }
+    }
+    while (serialSoftware.available()) {
+        char c = serialSoftware.read();
         size_t len = strlen(buffer);
         if (len < sizeof(buffer) - 1) {
             buffer[len] = c;
-            Serial.print(c);
             buffer[len + 1] = '\0';
         }
     }
@@ -545,8 +566,7 @@ void Ler() {
 void setup() {
     Start_serial();
     Serial.println(F("Sistema inicializando..."));
-    ConfiguraSensorFim();    
-    
+    ConfiguraSensorFim();        
 
     // Movimentação inicial (opcional)
     EnviarSerialLn(F("Iniciando movimento para a direita..."));
@@ -559,8 +579,8 @@ void setup() {
 }
 
 // Loop principal
-void loop() {
-
+void loop() 
+{
     Ler();
     Analisar();
 }

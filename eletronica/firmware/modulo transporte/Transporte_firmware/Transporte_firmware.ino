@@ -95,6 +95,8 @@ bool OperflgLeitura = false;
 byte flgEscape = 0; //Controla Escape
 byte flgEnter = 0; //Controla Escape
 byte flgTempo = 0; //Controle de Tempo e Temperatura
+// Variável para controlar o estado do motor
+bool flgmotorAtivo = false;
 
 //Buffer do Teclado
 char customKey;
@@ -102,9 +104,11 @@ char customKey;
 // Variáveis globais para posições
 int posBraco[4] = {0, 0, 0, 0}; // Posições iniciais dos servos
 
-float h ;
-float t; 
-float f ;
+float h, oldh ; //Humidade
+float t, oldt; //Temperatura
+float f , oldf;
+
+
 
 //Avancos dos motores de passo
 int passoA;
@@ -210,7 +214,8 @@ Stepper Passo01(stepsPerRevolution, IN1_01, IN3_01, IN2_01, IN4_01);  // Pin inv
 
 
 /*Funcoes predefinidas*/
-
+void ativaMotores(); 
+void desativaMotores();
 void Retorna_Servos();
 void Move_Servo(int eixo, int posicao);
 void Carrega_Movimento(int eixo, int posicao);
@@ -243,10 +248,10 @@ void FOPEImprime();
 void MCONFIG();
 void Le_DHT22();
 
-//void NextionShow(char* info1);
-//void NextionFieldText(char *field,char *value);
-//void NextionMensage(String info);
-//void NextionMensageStop(String info);
+void NextionShow(char* info1);
+void NextionFieldText(char *field,char *value);
+void NextionMensage(String info);
+void NextionMensageStop(String info);
 void RetConsole();
 //void NextionWAITESC();
 //void NextionMensageSTOP(String info);
@@ -285,20 +290,40 @@ Adafruit_Thermal printer(&Serial3);     // Pass addr to printer constructor
 // -----------------------------------------------------------------------
 
 
+// Função para ativar os motores
+void ativaMotores() 
+{
+  if (!flgmotorAtivo) 
+  {
+    ServoBraco01.attach(Br01_PIN);
+    ServoBraco02.attach(Br02_PIN);
+    ServoBraco03.attach(Br03_PIN);
+    ServoBraco04.attach(Br04_PIN);
+    flgmotorAtivo = true;
+    Serial.println("Motores ativados.");
+  }
+}
+
+// Função para desativar os motores
+void desativaMotores() 
+{
+  if (flgmotorAtivo) {
+    ServoBraco01.detach();
+    ServoBraco02.detach();
+    ServoBraco03.detach();
+    ServoBraco04.detach();
+    flgmotorAtivo = false;
+    Serial.println("Motores desativados.");
+  }
+}
+
 // Função para inicializar os servos
 void Start_Servos() {
+  flgmotorAtivo = false;
   Serial.println("Inicializando servos...");
-  ServoBraco01.attach(Br01_PIN);
-  ServoBraco02.attach(Br02_PIN);
-  ServoBraco03.attach(Br03_PIN);
-  ServoBraco04.attach(Br04_PIN);
-/*
-  // Configura os servos para a posição inicial
-  ServoBraco01.write(posBraco[0]);
-  ServoBraco02.write(posBraco[1]);
-  ServoBraco03.write(posBraco[2]);
-  ServoBraco04.write(posBraco[3]);
-*/
+  ativaMotores();
+
+  flgmotorAtivo = true;
   Serial.println("Servos inicializados nas posições padrão.");
   Retorna_Servos();
 }
@@ -357,7 +382,7 @@ void Start_SD()
   SD.begin(pinSD);
   if (!card.init(SPI_HALF_SPEED, pinSD)) {
     Serial.println("initialization failed");
-    //NextionMensage("initialization failed");
+    NextionMensage("initialization failed");
     return;
   }
   else
@@ -371,11 +396,11 @@ void Start_Nextion()
   Serial.println("Ativando Nextion Display");
   // set the data rate for the SoftwareSerial port
   Serial1.begin(9600);
-  //NextionShow("Splah"); //Chamando tela splash
+  NextionShow("Splah"); //Chamando tela splash
   char info[40];
   memset(info,'\0',sizeof(info));
   sprintf(info,"%s.%s",Versao,Release);
-  //NextionFieldText("versao",info);
+  NextionFieldText("versao",info);
 
 }
 
@@ -418,6 +443,10 @@ void WellComeConsole()
 
 // Função para calibrar os servos
 void Calibra_Servos() {
+  if(flgmotorAtivo = false) 
+  {
+      ativaMotores();
+  }
   Serial.println("Calibrando servos...");
   PosicaoCentral();
  
@@ -441,6 +470,10 @@ void Calibra_Servos() {
 
 // Função para retornar todos os servos à posição inicial
 void Retorna_Servos() {
+  if(flgmotorAtivo = false) 
+  {
+      ativaMotores();
+  }
   Serial.println("Retornando todos os servos para a posição inicial...");
   
   
@@ -455,8 +488,14 @@ void Retorna_Servos() {
 }
 
 // Função para carregar o movimento para os servos
-void Carrega_Movimento(int eixo, int posicao) {
-  if (eixo < 1 || eixo > 4) {
+void Carrega_Movimento(int eixo, int posicao) 
+{
+  if(flgmotorAtivo = false) 
+  {
+      ativaMotores();
+  }
+  if (eixo < 1 || eixo > 4) 
+  {
     Serial.println("Eixo inválido! Use valores entre 1 e 4.");
     return;
   }
@@ -472,6 +511,10 @@ void Carrega_Movimento(int eixo, int posicao) {
 // Função para mover qualquer servo
 void Move_Servo(int eixo, int posicao)
 {
+  if(flgmotorAtivo = false) 
+  {
+      ativaMotores();
+  }
   posicao = constrain(posicao, 0, 180); // Limita a posição entre 0 e 180 graus
 
   switch (eixo) {
@@ -507,7 +550,12 @@ void Move_Servo(int eixo, int posicao)
 
 
 // Move o servo diretamente até a posição final, em incrementos de ANGULO_MAXIMO
-void Move_Servo_Completo(int eixo, int posicao) {
+void Move_Servo_Completo(int eixo, int posicao) 
+{
+  if(flgmotorAtivo = false) 
+  {
+      ativaMotores();
+  }
   posicao = constrain(posicao, 0, 180); // Limita a posição entre 0 e 180 graus
   posBracoDestino[eixo - 1] = posicao; // Atualiza a posição desejada
 
@@ -545,6 +593,11 @@ void Move_Servo_Completo(int eixo, int posicao) {
 // Move todos os servos em uma única etapa incremental
 void Move_Servo_Incremental() 
 {
+
+  if(flgmotorAtivo = false) 
+  {
+      ativaMotores();
+  }
   bool movimentoRestante = false;
 
   for (int eixo = 0; eixo < 4; eixo++) {
@@ -586,7 +639,7 @@ void Move_Servo_Incremental()
 void Calibracao()
 {
   Serial.println("Iniciando Calibra��o");
-  //NextionShow("CALIB"); //Chamando tela calibra��o
+  NextionShow("CALIB"); //Chamando tela calibra��o
 
   Serial.println("Retornando carro");
   
@@ -664,6 +717,7 @@ void setup() {
   
   
   Start_I2C(); //Start de comunica��o I2C
+  Start_Servos();
   
 
   // Font options
@@ -673,18 +727,19 @@ void setup() {
   Reset();
   NextionShow("CALIB");  
   delay(100);
-  Calibracao(); /*Calibra��o do equipamento*/
-  Start_Servos();
-  Calibra_Servos();
+  //Calibracao(); /*Calibra��o do equipamento*/
+  
+  //Calibra_Servos();
   
   delay(100);
   NextionShow("Menu");
-  //ImprimeStart();
+  desativaMotores();
+  ImprimeStart();
   Sound('a');
   Sound('b');
   Sound('c');
   WellComeConsole(); 
-
+  
 }
 
 void sendStringToI2C(int address, char* data) {
@@ -787,6 +842,7 @@ void ImprimeAvanco()
   
   printer.println(' ');
   printer.println(' ');
+  printer.println(' ');
 }
 
 void ImprimeReset()
@@ -799,13 +855,20 @@ void ImprimeReset()
 void ImprimeStart() 
 {
   // Test inverse on & off
- ImprimeInvertido('DOCTOR');  
+ //ImprimeInvertido("DOCTOR");  
+ ImprimeGrande("Doctor");
+ ImprimeMedio("===========");
+ ImprimePequeno(" ");
+ ImprimePequeno("Equipamento DOCTOR do TCC da FATEC-RP");
+ ImprimePequeno("Inicializacao do equipamento concluido");
+ ImprimePequeno(" ");
  char info[40];
  memset(info,'\0',sizeof(info));
- sprintf(info,"%s.%s",Versao,Release);
+ sprintf(info,"Versao:%s.%s",Versao,Release);
+ 
  ImprimeMedio(info);  
-  //ImprimeBarra(etiqueta.barra);
-  ImprimeAvanco();
+ //ImprimeBarra(etiqueta.barra);
+ ImprimeAvanco();
 }
 
 void ImprimeEtiqueta() 
@@ -1064,11 +1127,11 @@ void LOAD(File root, char *sMSG1)
  
   //Imprime(1, "Carregando APP...");
   Serial.println("Carregando APP..");
-  //NextionShow("LOAD");
+  NextionShow("LOAD");
  
   //Realiza opera��o de Loop
   LOADLoop(root, sMSG1);
-  //NextionShow("Menu");
+  NextionShow("Menu");
 
 }
 
@@ -1078,11 +1141,11 @@ void DeleteFile(File root, char *sMSG1)
  
   //Imprime(1, "Carregando APP...");
   Serial.println("DeleteFile..");
-  //NextionShow("LOAD");
+  NextionShow("LOAD");
  
   //Realiza opera��o de Loop
-  //LOADLoop(root, sMSG1);
-  //NextionShow("Menu");
+  LOADLoop(root, sMSG1);
+  NextionShow("Menu");
   if (SD.exists(sMSG1)) 
   {
    SD.remove(sMSG1);
@@ -1099,7 +1162,7 @@ void LOADLEARQUIVO(char *Arquivo)
 {
   File arquivo;
   Serial.println("Carregando APP..");
-  //NextionShow("LOAD");
+  NextionShow("LOAD");
   Serial.print("Arquivo=");
   Serial.println(Arquivo);
   arquivo = SD.open(Arquivo);
@@ -1209,7 +1272,7 @@ void LOADLeituras()
   
   
   Chk_Beep();
-  //Le_DHT22();
+  Le_DHT22();
   Le_FimCurso(); /*Leitura de fim de curso*/
 }
 
@@ -1549,7 +1612,7 @@ void FOPELeituras()
   
   
   
-  //Le_DHT22();
+  Le_DHT22();
   Le_FimCurso(); /*Leitura de fim de curso*/
   //Precisa implementar o tempo em ciclos para leitura
   //Le_Temperatura();
@@ -1664,7 +1727,7 @@ void NextionFieldText(char *field,char *value)
   sprintf(cmd,"%s.txt=\"%s\"%c%c%c",field,value,strFF,strFF,strFF);  
   //cmd = field+".txt=\""+value+"\""+String(strFF)+String(strFF)+String(strFF);
   Serial.println(cmd); 
-  Serial1.println(cmd);  
+  Serial1.print(cmd);  
 }
 
 void NextionWAITESC()
@@ -2106,7 +2169,7 @@ void KeyCMD()
         strncpy(sMSG1, posequ,(posend)-posequ);
         Serial.print("sMSG1=");
         Serial.println(sMSG1);
-        //NextionShow(sMSG1);
+        NextionShow(sMSG1);
         
         resp = true;
       }
@@ -2142,7 +2205,7 @@ void KeyCMD()
         Serial.print("sVALUE=");
         Serial.println(sVALUE);
         //NextionShow(sMSG1);
-        //NextionFieldText(sFIELD,sVALUE);
+        NextionFieldText(sFIELD,sVALUE);
         
         resp = true;
       }
@@ -2167,6 +2230,7 @@ void KeyCMD()
 
               if (dispositivo == 1) {
                   EnviaParaSerial2(mensagem);
+                  EnviaParaSerial2("\n");
                   resp = true;
               } else 
               {
@@ -2195,7 +2259,7 @@ void KeyCMD()
         Serial.println(posequ);
         Serial.print("sMSG1=");
         Serial.println(posequ);
-        //NextionMensage(String(posequ));
+        NextionMensage(String(posequ));
         NextionShow('MSG');
         delay(100);
         NextionFieldText('MSGtxt',posequ);
@@ -2223,7 +2287,7 @@ void KeyCMD()
         strcpy(sMSG1, posequ);
         Serial.print("sMSG1=");
         Serial.println(posequ);
-        //NextionMensageSTOP(String(posequ));
+        NextionMensageSTOP(String(posequ));
         
         resp = true;
       }
@@ -2464,6 +2528,7 @@ void Le_Serial1() {
 // Função para enviar mensagem para Serial2
 void EnviaParaSerial2(const char* mensagem) {
     Serial2.println(mensagem);
+    //Serial2.print("\n\r");
     Serial.print("Mensagem enviada para Serial2: ");
     Serial.println(mensagem);
 }
@@ -2472,16 +2537,12 @@ void EnviaParaSerial2(const char* mensagem) {
 
 
 void Le_Serial2() {
-    char key;
-    while (Serial2.available() > 0) {
-        key = Serial2.read();
-
-        if (key != 0) {
-            Serial.print(key);  // Imprime na Serial padrão para debug
-            sprintf(Buffer, "%s%c", Buffer, key);
-        }
-    }
+  while (Serial2.available() > 0) {
+    char key = Serial2.read();
+    Serial.print(key);  // Se o jumper estiver certo, deve chegar "Enviei via Serial2"
+  }
 }
+
 
 
 void Le_DHT22()
@@ -2510,18 +2571,25 @@ void Le_DHT22()
   memset(temperatura,'\0',sizeof(temperatura));
   //sprintf(temperatura,"%f",t);
   dtostrf(t, 3, 2, temperatura);  // 8 char min total width, 6 after decimal
-  //Serial.print("TEMPERATURA:");
-  //Serial.println(temperatura);
-  //NextionFieldText("temp",temperatura);
-  
+  if(oldt != t)
+  {
+    Serial.print("TEMPERATURA:");
+    Serial.println(temperatura);
+    NextionFieldText("temp",temperatura);
+    oldt = t;
+  }
   //sprintf(temperatura,"%f",h);
   char humidade[10];
   memset(humidade,'\0',sizeof(humidade));
   dtostrf(h, 3, 2, humidade);  // 8 char min total width, 6 after decimal
-  //Serial.print("Humidade:");
-  //Serial.println(temperatura);
-  //delay(100);
-  //NextionFieldText("hum",humidade);
+  if(oldh!=h)
+  {
+    Serial.print("Humidade:");
+    Serial.println(humidade);
+    //delay(100);
+    NextionFieldText("hum",humidade);
+    oldh = h;
+  }
   
 }
 
@@ -2561,7 +2629,7 @@ void Leituras()
   Le_Serial1();
   Le_Serial2();
   
-  //Le_DHT22();
+  Le_DHT22();
   Le_FimCurso();
   Chk_Beep();
   //Serial.print('.');
