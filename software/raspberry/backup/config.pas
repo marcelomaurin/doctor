@@ -32,6 +32,7 @@ type
     procedure Image3MouseEnter(Sender: TObject);
     procedure Image4Click(Sender: TObject);
     procedure Image4MouseEnter(Sender: TObject);
+    procedure Image5Click(Sender: TObject);
     procedure Image5MouseEnter(Sender: TObject);
   private
 
@@ -104,6 +105,11 @@ procedure Tfrmconfig.Image4MouseEnter(Sender: TObject);
 begin
   frmToolsfalar.Falar('Configurações de Braço robótico');
   Application.ProcessMessages;
+end;
+
+procedure Tfrmconfig.Image5Click(Sender: TObject);
+begin
+
 end;
 
 procedure Tfrmconfig.Image5MouseEnter(Sender: TObject);

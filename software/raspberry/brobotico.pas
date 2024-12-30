@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, synaser, setmain, LazSerial;
+  ComCtrls, ExtCtrls, synaser, setmain, LazSerial, MKnob;
 
 type
 
@@ -14,6 +14,7 @@ type
 
   Tfrmbrobotico = class(TForm)
     btTestar: TButton;
+    btTestar1: TButton;
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
@@ -28,24 +29,30 @@ type
     btGirar: TButton;
     btGarra: TButton;
     edPorta: TEdit;
-    Label1: TLabel;
-    Label2: TLabel;
+    Image1: TImage;
+    Image2: TImage;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    lbPosicao: TLabel;
+    lbPosicao1: TLabel;
     lstMov: TListBox;
     meconsole: TMemo;
+    mKnob1: TmKnob;
     OpenDialog1: TOpenDialog;
     PageControl1: TPageControl;
     SaveDialog1: TSaveDialog;
     Shape1: TShape;
-    Shape2: TShape;
     Shape3: TShape;
+    TabSheet1: TTabSheet;
+    TabSheet4: TTabSheet;
     tbMov: TTrackBar;
+    tbposicao1: TTrackBar;
+    tbposicao2: TTrackBar;
     tsconsole: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
-    tbforte: TTrackBar;
-    tbfraco: TTrackBar;
     tbposicao: TTrackBar;
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);

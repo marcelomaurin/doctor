@@ -34,6 +34,7 @@ type
     procedure Image2Click(Sender: TObject);
     procedure Image2DblClick(Sender: TObject);
     procedure Image2MouseEnter(Sender: TObject);
+    procedure Image3Click(Sender: TObject);
     procedure Image3MouseEnter(Sender: TObject);
     procedure Image4MouseEnter(Sender: TObject);
     procedure Image5Click(Sender: TObject);
@@ -127,6 +128,11 @@ procedure Tfrmmain.Image2MouseEnter(Sender: TObject);
 begin
   frmToolsfalar.Falar('Amostragem');
   Application.ProcessMessages;
+end;
+
+procedure Tfrmmain.Image3Click(Sender: TObject);
+begin
+
 end;
 
 procedure Tfrmmain.Image3MouseEnter(Sender: TObject);

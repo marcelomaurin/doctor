@@ -26,13 +26,16 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="industrial"/>
+      </Item>
+      <Item>
+        <PackageName Value="laz_synapse"/>
+      </Item>
+      <Item>
         <PackageName Value="pkg_gifanim"/>
       </Item>
       <Item>
         <PackageName Value="SdpoJoystickLaz"/>
-      </Item>
-      <Item>
-        <PackageName Value="SdpoSerialLaz"/>
       </Item>
       <Item>
         <PackageName Value="lnetvisual"/>

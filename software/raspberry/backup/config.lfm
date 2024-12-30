@@ -48997,6 +48997,7 @@ object frmconfig: Tfrmconfig
     Height = 90
     Top = 472
     Width = 90
+    OnClick = Image5Click
     OnMouseEnter = Image5MouseEnter
     Picture.Data = {
       1754506F727461626C654E6574776F726B4772617068696346E6000089504E47
