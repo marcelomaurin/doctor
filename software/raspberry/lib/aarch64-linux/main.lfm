@@ -2,13 +2,13 @@ object frmmain: Tfrmmain
   Left = 30
   Height = 643
   Top = 11
-  Width = 164
+  Width = 162
   Caption = 'Tela Principal'
   ClientHeight = 643
-  ClientWidth = 164
+  ClientWidth = 162
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.6.0.0'
   object Image1: TImage
     Left = 28
     Height = 83
@@ -4076,9 +4076,9 @@ object frmmain: Tfrmmain
   end
   object Label1: TLabel
     Left = 40
-    Height = 22
+    Height = 15
     Top = 88
-    Width = 95
+    Width = 72
     Caption = 'Configuração'
     ParentColor = False
   end
@@ -8149,9 +8149,9 @@ object frmmain: Tfrmmain
   end
   object Label2: TLabel
     Left = 40
-    Height = 22
+    Height = 15
     Top = 208
-    Width = 91
+    Width = 69
     Caption = 'Amostragem'
     ParentColor = False
   end
@@ -8160,6 +8160,7 @@ object frmmain: Tfrmmain
     Height = 90
     Top = 248
     Width = 103
+    OnClick = Image3Click
     OnMouseEnter = Image3MouseEnter
     Picture.Data = {
       07544269746D617076FA0100424D76FA0100000000003600000028000000B400
@@ -15045,25 +15046,25 @@ object frmmain: Tfrmmain
   end
   object Label3: TLabel
     Left = 57
-    Height = 22
+    Height = 15
     Top = 344
-    Width = 52
+    Width = 38
     Caption = 'Análise'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 56
-    Height = 22
+    Height = 15
     Top = 472
-    Width = 72
+    Width = 52
     Caption = 'Relatorios'
     ParentColor = False
   end
   object Label5: TLabel
     Left = 72
-    Height = 22
+    Height = 15
     Top = 616
-    Width = 28
+    Width = 19
     Caption = 'Sair'
     ParentColor = False
   end
@@ -47868,7 +47869,6 @@ object frmmain: Tfrmmain
     SynSer.ConvertLineEnd = False
     SynSer.AtTimeout = 1000
     SynSer.InterPacketTimeout = True
-    SynSer.NonBlock = False
     Device = 'COM1'
     RcvLineCRLF = False
     Left = 56
@@ -47892,10 +47892,10 @@ object frmmain: Tfrmmain
     SynSer.ConvertLineEnd = False
     SynSer.AtTimeout = 1000
     SynSer.InterPacketTimeout = True
-    SynSer.NonBlock = False
+    Device = '/dev/ttyS0'
     RcvLineCRLF = False
     OnRxData = LazSerial2RxData
-    Left = 40
+    Left = 56
     Top = 208
   end
 end

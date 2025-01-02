@@ -178,12 +178,12 @@ end;
 
 procedure Tfrmbrobotico.btDirForteClick(Sender: TObject);
 begin
-  moveleft(tbforte.Position);
+  //moveleft(tbforte.Position);
 end;
 
 procedure Tfrmbrobotico.btEsqForteClick(Sender: TObject);
 begin
-  moverigth(tbforte.Position);
+  //moverigth(tbforte.Position);
 end;
 
 procedure Tfrmbrobotico.btEsqFracoClick(Sender: TObject);
@@ -193,7 +193,7 @@ end;
 
 procedure Tfrmbrobotico.btDirFracoClick(Sender: TObject);
 begin
-  moveleft(tbfraco.Position);
+  //moveleft(tbfraco.Position);
 end;
 
 procedure Tfrmbrobotico.btBracoClick(Sender: TObject);

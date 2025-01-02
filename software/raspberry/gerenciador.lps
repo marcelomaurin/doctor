@@ -250,10 +250,9 @@
         <ComponentName Value="frmbrobotico"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="131"/>
-        <CursorPos X="34" Y="138"/>
+        <TopLine Value="182"/>
+        <CursorPos X="7" Y="191"/>
         <UsageCount Value="30"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -391,26 +390,22 @@
       <Unit>
         <Filename Value="D:\projetos\lazandroidmodulewizard\android_wizard\lamwdesigner.pas"/>
         <UnitName Value="LamwDesigner"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="793"/>
         <CursorPos X="48" Y="809"/>
         <UsageCount Value="11"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\..\..\..\..\usr\lib\lazarus\2.2.6\lcl\include\custommemo.inc"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="33"/>
+        <CursorPos Y="42"/>
+        <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="brobotico.pas"/>
-        <Caret Line="171" Column="26" TopLine="154"/>
-      </Position>
-      <Position>
-        <Filename Value="brobotico.pas"/>
-        <Caret Line="172" Column="26" TopLine="155"/>
-      </Position>
-      <Position>
-        <Filename Value="brobotico.pas"/>
-        <Caret Line="173" Column="26" TopLine="156"/>
-      </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
         <Caret Line="174" Column="26" TopLine="157"/>
@@ -518,6 +513,18 @@
       <Position>
         <Filename Value="brobotico.pas"/>
         <Caret Line="151" Column="64" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="138" Column="34" TopLine="131"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="196" Column="5" TopLine="191"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="191" Column="7" TopLine="182"/>
       </Position>
     </JumpHistory>
     <RunParams>
