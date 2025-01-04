@@ -23,7 +23,7 @@
 //2048
 #define PASSOS_POR_VOLTA 128 // Número total de passos para o motor de passo ULN2003
 
-#define VERSAO "0.6"          // Versão do módulo
+#define VERSAO "0.7"          // Versão do módulo
 
 
 
@@ -47,7 +47,7 @@ bool flagMoverEsq = false;    // Controle de movimento para a esquerda
 bool flagRetCarro = false; // Controle de retorno do carro
 bool flagMoverFimCursoEsq = false; // Novo flag para o comando MOVERFIMCURSOESQ
 
-
+int estadoAtualFimCurso = -1;
 
 int contadorpassosDados = 0;          // Contador de passos dados
 int passosDados = 0;          // Contador de passos dados
@@ -56,7 +56,10 @@ unsigned long ultimoTempoFimCurso = 0; // Controle de tempo para debounce
 // Adicionado flag flg_PH
 bool flg_PH = false; // Inicia o flag como falso
 
+int flgCallModulo = 0; //Chamada de modulo de CallModulo
 
+float Etemp = 0; //Temperatura
+float pHValue = 0; //PH
 
 // Instâncias
 OneWire oneWire(pin_ONEWIRE);
@@ -66,6 +69,15 @@ DallasTemperature sensors(&oneWire);
 Stepper motor(PASSOS_POR_VOLTA, pin_IN1, pin_IN3, pin_IN2, pin_IN4);
 
 
+//Funcoes
+void MoverLongEsq();
+void MoverLongDir();
+void MoverEsq();
+void MoverDir();
+void MoverRetCarro();
+void MoverFimCursoEsq();
+void WaitModulo();
+void RetModulo();
 
 
 
@@ -89,7 +101,7 @@ void EnviarSerialLn(const String& mensagem) {
 
 void EnviarSerialLn(int info) {
     Serial.println(info);
-    serialSoftware.print(info);
+    serialSoftware.println(info);
 }
 
 
@@ -142,6 +154,9 @@ void HelpComandos() {
     EnviarSerialLn(F("CALIBRARPH7      - Inicia a calibração com solução de pH 7."));
     EnviarSerialLn(F("CALIBRARPH10     - Inicia a calibração com solução de pH 10."));
     EnviarSerialLn(F("ENXAGUE          - Inicia o processo de enxágue."));
+    EnviarSerialLn(F("CALLMODULO       - Inicia o processo de analise."));
+    EnviarSerialLn(F("WAITMODULO       - Mostra se processo acabou."));
+    EnviarSerialLn(F("RETMODULO        - Mostra resultado obtido."));
     EnviarSerialLn(F("MAN              - Exibe esta lista de comandos."));
     EnviarSerialLn(F("====================================="));
 }
@@ -149,7 +164,7 @@ void HelpComandos() {
 
 // Função para verificar o estado do fim de curso com debounce
 void LerFimCurso() {
-    int estadoAtualFimCurso = digitalRead(pin_FIMCURSO);
+    estadoAtualFimCurso = digitalRead(pin_FIMCURSO);
     if (millis() - ultimoTempoFimCurso > TEMPO_DEBOUNCE) {
         if (estadoAtualFimCurso != estadoAnteriorFimCurso) {
             estadoAnteriorFimCurso = estadoAtualFimCurso;
@@ -296,8 +311,8 @@ void Ler_ph() {
     float phVoltage = phAvg * (5.0 / 1023.0); // Convertendo leitura para mV
 
     sensors.requestTemperatures(); // Obtendo temperaturas dos sensores 1-Wire
-    float Etemp = temVoltage * 0.1; // Convertendo mV para °C
-    float pHValue = phVoltage * 0.0178 + 0.1; // Ajustar os valores conforme calibração
+    Etemp = temVoltage * 0.1; // Convertendo mV para °C
+    pHValue = phVoltage * 0.0178 + 0.1; // Ajustar os valores conforme calibração
     float Wtemp = sensors.getTempCByIndex(0);
     float TempDif = fabs(Etemp - Wtemp); // Diferença absoluta entre temperaturas
 
@@ -306,33 +321,122 @@ void Ler_ph() {
     EnviarSerialLn(pHValue);
     EnviarSerial(F("Temperatura (Etemp): "));
     EnviarSerialLn(Etemp);
-    EnviarSerial(F("Temperatura (1-Wire): "));
-    EnviarSerialLn(Wtemp);
-    EnviarSerial(F("Diferenca de temperatura: "));
-    EnviarSerialLn(TempDif);
+    //EnviarSerial(F("Temperatura (1-Wire): "));
+    //EnviarSerialLn(Wtemp);
+    //EnviarSerial(F("Diferenca de temperatura: "));
+    //EnviarSerialLn(TempDif);
+    
+    flg_PH = 0;
+    MoverRetCarro();
+}
+
+
+
+
+void MoverLongEsq()
+{
+  EnviarSerialLn(F("Comando MOVERESQ recebido."));
+  flagMoverEsq = true;
+  flagMoverLong = false;
+  flagMoverDir = false;
+  flagRetCarro = false;
+  flagMoverFimCursoEsq = false;
+  passosDados = 0;
+}
+
+void MoverDir()
+{
+  EnviarSerialLn(F("Comando MOVERDIR recebido."));
+  flagMoverDir = true;
+  flagMoverLong = false;
+  passosDados = 0;
+}
+
+void MoverLongDir()
+{
+  EnviarSerialLn(F("Comando MOVERDIR recebido."));
+  flagMoverDir = true;
+  flagMoverLong = true;
+  passosDados = 0;
+}
+
+
+/*
+void MoverLongEsq()
+{
+  EnviarSerialLn(F("Comando MOVERESQ recebido."));
+  flagMoverEsq = true;
+  flagMoverLong = true;
+  passosDados = 0;
+}
+*/
+
+void MoverEsq()
+{
+    EnviarSerialLn(F("Comando MOVERESQ recebido."));
+    flagMoverEsq = true;
+    flagMoverLong = false;
+    passosDados = 0;
+}
+
+void MoverRetCarro()
+{
+        EnviarSerialLn(F("Comando RETCARRO recebido."));
+        flagMoverFimCursoEsq = false;
+        flagRetCarro = true; // Ativa o movimento de retorno
+        flagMoverDir = true;
+        flagMoverLong = true;
+        flagMoverEsq = false;
+        passosDados = 0;
+}
+
+
+
+void MoverFimCursoEsq()
+{
+  EnviarSerialLn(F("Comando MOVERFIMCURSOESQ recebido."));
+  flagMoverFimCursoEsq = true;
+  flagMoverEsq = true; // Garante que o flagMoverEsq esteja desligado
+  flagMoverLong = true;
+  flagMoverDir = false;
+  flagRetCarro = false;
+  passosDados = 0;
+}
+
+void WaitModulo()
+{
+  EnviarSerialLn(F("Comando WAITMODULO recebido."));
+  if(flgCallModulo==1) 
+  {
+    EnviarSerialLn(F("flgCallModulo=ATIVO"));
+  } else
+  {
+    EnviarSerialLn(F("flgCallModulo=INATIVO"));
+  }
+}
+
+void RetModulo()
+{
+  EnviarSerialLn(F("Comando RETMODULO recebido."));
+  if(flgCallModulo==0) 
+  {
+        // Exibindo valores via Serial
+        EnviarSerial(F("pH calculado: "));
+        EnviarSerialLn(pHValue);
+        EnviarSerial(F("Temperatura (Etemp): "));
+        EnviarSerialLn(Etemp);
+  }
 }
 
 void ChamaComandos(const String& comando) {
     if (comando.indexOf("MOVERDIR") != -1) {
-        EnviarSerialLn(F("Comando MOVERDIR recebido."));
-        flagMoverDir = true;
-        flagMoverLong = false;
-        passosDados = 0;
+        MoverDir();
     } else if (comando.indexOf("MOVERLONGDIR") != -1) {
-        EnviarSerialLn(F("Comando MOVERDIR recebido."));
-        flagMoverDir = true;
-        flagMoverLong = true;
-        passosDados = 0;
+        MoverLongDir();
     } else if (comando.indexOf("MOVERESQ") != -1) {
-        EnviarSerialLn(F("Comando MOVERESQ recebido."));
-        flagMoverEsq = true;
-        flagMoverLong = false;
-        passosDados = 0;
+        MoverEsq();
     } else if (comando.indexOf("MOVERLONGESQ") != -1) {
-        EnviarSerialLn(F("Comando MOVERESQ recebido."));
-        flagMoverEsq = true;
-        flagMoverLong = true;
-        passosDados = 0;
+        MoverLongEsq();
     } else if (comando.indexOf("LEITURA_PH") != -1) {
         EnviarSerial(F("Valor de pH: "));
         EnviarSerialLn(LerPH());
@@ -346,32 +450,15 @@ void ChamaComandos(const String& comando) {
         flg_PH = false; // Desativa a leitura de pH
         EnviarSerialLn(F("Leitura de pH desativada."));
     } else if (comando.indexOf("MOVERLONGESQ") != -1) {
-        EnviarSerialLn(F("Comando MOVERESQ recebido."));
-        flagMoverEsq = true;
-        flagMoverLong = false;
-        flagMoverDir = false;
-        flagRetCarro = false;
-        flagMoverFimCursoEsq = false;
-        passosDados = 0;
+        MoverLongEsq();
     }  else if (comando.indexOf("MOVERFIMCURSOESQ") != -1) {
-        EnviarSerialLn(F("Comando MOVERFIMCURSOESQ recebido."));
-        flagMoverFimCursoEsq = true;
-        flagMoverEsq = true; // Garante que o flagMoverEsq esteja desligado
-        flagMoverLong = true;
-        flagMoverDir = false;
-        flagRetCarro = false;
-        passosDados = 0;
+        MoverFimCursoEsq();
     } else if (comando.indexOf("RETCARRO") != -1) {
-        EnviarSerialLn(F("Comando RETCARRO recebido."));
-        flagMoverFimCursoEsq = false;
-        flagRetCarro = true; // Ativa o movimento de retorno
-        flagMoverDir = true;
-        flagMoverLong = true;
-        flagMoverEsq = false;
-        passosDados = 0;
+        MoverRetCarro();
     }  else if (comando.indexOf("CALIBRAR") != -1) {
         EnviarSerialLn(F("Comando CALIBRAR recebido."));
-        ConfiguraSensorFim();
+        //ConfiguraSensorFim();
+        Calibrar();
         // Insira aqui a funcionalidade para calibrar o sistema
         EnviarSerialLn(F("Iniciando calibração geral..."));
         // Exemplo: Alguma lógica de calibração pode ser adicionada
@@ -398,9 +485,24 @@ void ChamaComandos(const String& comando) {
         Enxaguar();
     } else if (comando.indexOf("MAN") != -1) {
         HelpComandos(); // Chama a função de ajuda
+    } else if (comando.indexOf("CALLMODULO") != -1) {
+        EnviarSerialLn(F("Comando CALLMODULO recebido."));
+        MoverFimCursoEsq();
+        EnviarSerialLn(F("Posicionando sensor"));
+        flgCallModulo = 1;
+        EnviarSerialLn(F("flgCallModulo=ATIVO"));
+        
+    } else if (comando.indexOf("WAITMODULO") != -1) {
+        WaitModulo();
+        
+    } else if (comando.indexOf("RETMODULO") != -1) {
+        //EnviarSerialLn(F("Comando RETMODULO recebido."));
+        RetModulo();
     } else {
         //ERRO_SISTEMA("Comando desconhecido recebido.");
-        Serial.println(F("Comando desconhecido recebido."));
+        //Serial.println(F("Comando desconhecido recebido."));
+        EnviarSerial(F("Comando desconhecido recebido"));
+        EnviarSerialLn(comando);
     }
 }
 
@@ -438,6 +540,8 @@ void MoverMotor(int passos, bool horario) {
         flagRetCarro = false;
         flagMoverFimCursoEsq = false;
         passosDados = 0;
+        EnviarSerialLn(F("flgCallModulo=INATIVO"));
+        flgCallModulo = 0;
         return;
     }
 
@@ -450,7 +554,7 @@ void MoverMotor(int passos, bool horario) {
         contadorpassosDados += (horario ? -passos : +passos);
     }
 
-    EnviarSerial("Posição absoluta: ");
+    EnviarSerial("Posição absoluta:");
     EnviarSerialLn(contadorpassosDados);
 }
 
@@ -479,6 +583,11 @@ void MoverEsquerda() {
         if((FIM_CURSO <= contadorpassosDados)) 
         {
           EnviarSerialLn(F("Movimento para a esquerda concluído."));
+          if (flgCallModulo == 1)
+          {
+            EnviarSerialLn(F("Iniciando Leitura de Devices."));
+            flg_PH = 1;
+          }
           flagMoverEsq = false;
           flagMoverFimCursoEsq  = false;
         } else if ((passosDados >= NUM_PASSOS)&(!flagMoverFimCursoEsq )) 
@@ -498,14 +607,15 @@ void MoverEsquerda() {
         }
     }
 }
-
-
+void Calibrar()
+{
+    MoverRetCarro();
+}
 
 // Função para analisar comandos
 void Analisar() {
-    //if (buffer.indexOf('\n') != -1) {
     ProcessaBuffer();
-    //}
+    
 
     if (flagMoverDir) {
         MoverDireita();
@@ -525,7 +635,7 @@ void Analisar() {
             passosDados = 0;
             flagMoverLong = true; 
             flagMoverDir = true;
-            EnviarSerialLn(F("Retornando carro..."));
+            //EnviarSerialLn(F("Retornando carro..."));
           }         
       }
     }
@@ -554,7 +664,7 @@ void LeSerial() {
 // Função principal de leitura
 void Ler() {
     LeSerial();
-    ProcessaBuffer();
+    
     LerFimCurso();
     // Chama Ler_ph apenas se o flag estiver ativo
     if (flg_PH) {
@@ -566,15 +676,11 @@ void Ler() {
 void setup() {
     Start_serial();
     Serial.println(F("Sistema inicializando..."));
-    ConfiguraSensorFim();        
-
-    // Movimentação inicial (opcional)
-    EnviarSerialLn(F("Iniciando movimento para a direita..."));
-    flagMoverDir = true;
-    passosDados = 0;
-    flagRetCarro = true;
-    flagMoverLong = true;
+           
+    
+    ConfiguraSensorFim(); 
     WellCome();
+    Calibrar();
     Serial.println('Feito!');
 }
 

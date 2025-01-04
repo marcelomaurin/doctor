@@ -2230,7 +2230,7 @@ void KeyCMD()
 
               if (dispositivo == 1) {
                   EnviaParaSerial2(mensagem);
-                  EnviaParaSerial2("\n");
+                  //EnviaParaSerial2("\n");
                   resp = true;
               } else 
               {
