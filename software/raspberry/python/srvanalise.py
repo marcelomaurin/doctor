@@ -5,7 +5,7 @@ import openai
 
 # ------------------------------------------------------------------------------
 # Configuração da API da OpenAI (use a chave fornecida)
-openai.api_key = "sua chave"
+openai.api_key = "Digite sua chave aqui"
 # ------------------------------------------------------------------------------
 
 def get_db_connection():

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  lNetComponents, lNet, strutils, toolsfalar;
+  lNetComponents, lNet, strutils, toolsfalar, Process;
 
 type
 
@@ -38,7 +38,7 @@ type
     procedure Conectar();
     procedure Disconectar();
     procedure EnviaPerguntaAssociada(texto : String);
-
+    procedure ProcessarBatch();
   end;
 
 var
@@ -88,7 +88,7 @@ begin
          frmToolsfalar.falar('Claro, deixa eu ver se encontro sua resposta!');
          //frmmain.NewContext();
          //frmmain.pergunta := info;
-
+         ProcessarBatch();
          //frmmain.FazPergunta();
          //Registra a frase que veio
          frmmain.RecebeuPergunta(info);
@@ -126,7 +126,7 @@ begin
   //edTexto.Text := lowercase(info);
   if(info<>'-1') then
   begin
-    frmToolsfalar.Falar('Encontrei uma resposta');
+    //frmToolsfalar.Falar('Encontrei uma resposta');
     frmmain.RecebeuAssociacao(info );
   end;
 
@@ -157,6 +157,41 @@ end;
 procedure TfrmToolsOuvir.EnviaPerguntaAssociada(texto: String);
 begin
  LTCPComponent2.SendMessage(texto, nil);
+end;
+
+procedure TfrmToolsOuvir.ProcessarBatch();
+var
+  ScriptPath: String;
+  AProcess: TProcess;
+begin
+  AProcess := TProcess.Create(nil);
+  try
+    // Detecta o sistema operacional
+    {$IFDEF WINDOWS}
+    ScriptPath := 'D:\projetos\maurinsoft\doctor\software\script\scripts.bat';
+    {$ELSE}
+    ScriptPath := '/path/to/your/linux/scripts.sh'; // Substitua pelo caminho correto no Linux
+    {$ENDIF}
+
+    // Configura o processo para executar o script
+    AProcess.Executable := ScriptPath;
+
+    {$IFDEF UNIX}
+    // Necessário para executar shell scripts no Linux
+    AProcess.Executable := '/bin/bash';
+    AProcess.Parameters.Add(ScriptPath);
+    {$ENDIF}
+
+    AProcess.Options := [poWaitOnExit]; // Aguarda a execução ser concluída
+    AProcess.Execute;
+
+    // Exibe uma mensagem indicando sucesso
+    //ShowMessage('Script executado com sucesso!');
+  except
+    on E: Exception do
+      //ShowMessage('Erro ao executar o script: ' + E.Message);
+  end;
+  AProcess.Free;
 end;
 
 end.

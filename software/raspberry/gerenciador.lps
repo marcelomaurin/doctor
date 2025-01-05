@@ -12,7 +12,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="81"/>
+        <UsageCount Value="90"/>
       </Unit>
       <Unit>
         <Filename Value="main.pas"/>
@@ -23,7 +23,7 @@
         <EditorIndex Value="5"/>
         <TopLine Value="174"/>
         <CursorPos X="32" Y="184"/>
-        <UsageCount Value="81"/>
+        <UsageCount Value="90"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -33,7 +33,7 @@
         <EditorIndex Value="7"/>
         <TopLine Value="20"/>
         <CursorPos X="71" Y="117"/>
-        <UsageCount Value="81"/>
+        <UsageCount Value="90"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -45,7 +45,7 @@
         <EditorIndex Value="9"/>
         <TopLine Value="37"/>
         <CursorPos X="16" Y="46"/>
-        <UsageCount Value="81"/>
+        <UsageCount Value="90"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -55,7 +55,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="591"/>
         <CursorPos X="118" Y="604"/>
-        <UsageCount Value="81"/>
+        <UsageCount Value="90"/>
       </Unit>
       <Unit>
         <Filename Value="config.pas"/>
@@ -66,7 +66,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="28"/>
         <CursorPos X="3" Y="44"/>
-        <UsageCount Value="81"/>
+        <UsageCount Value="90"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -76,10 +76,9 @@
         <ComponentName Value="dmbanco"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="51"/>
-        <CursorPos X="52" Y="57"/>
-        <UsageCount Value="81"/>
+        <TopLine Value="61"/>
+        <CursorPos X="77" Y="73"/>
+        <UsageCount Value="90"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -92,7 +91,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="29"/>
         <CursorPos X="32" Y="45"/>
-        <UsageCount Value="77"/>
+        <UsageCount Value="86"/>
       </Unit>
       <Unit>
         <Filename Value="cfgbanco.pas"/>
@@ -104,7 +103,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="18"/>
         <CursorPos Y="33"/>
-        <UsageCount Value="75"/>
+        <UsageCount Value="84"/>
       </Unit>
       <Unit>
         <Filename Value="bloqueio.pas"/>
@@ -115,7 +114,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="18"/>
         <CursorPos Y="37"/>
-        <UsageCount Value="71"/>
+        <UsageCount Value="80"/>
       </Unit>
       <Unit>
         <Filename Value="opamostragem.pas"/>
@@ -126,7 +125,7 @@
         <UnitName Value="OpAmostragem"/>
         <EditorIndex Value="6"/>
         <CursorPos X="10" Y="5"/>
-        <UsageCount Value="69"/>
+        <UsageCount Value="78"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -136,7 +135,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="283"/>
         <CursorPos Y="294"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="77"/>
       </Unit>
       <Unit>
         <Filename Value="imp_elgini9.pas"/>
@@ -145,14 +144,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="69"/>
         <CursorPos X="32" Y="69"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="77"/>
       </Unit>
       <Unit>
         <Filename Value="imp_generico.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="32"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="77"/>
       </Unit>
       <Unit>
         <Filename Value="imp_qr203.pas"/>
@@ -161,7 +160,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="77"/>
       </Unit>
       <Unit>
         <Filename Value="cfgimp.pas"/>
@@ -173,7 +172,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="27"/>
         <CursorPos X="6" Y="39"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="74"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -185,7 +184,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Etiquetar"/>
         <EditorIndex Value="4"/>
-        <UsageCount Value="63"/>
+        <UsageCount Value="72"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -197,7 +196,7 @@
         <UnitName Value="PesqPacientes"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="9"/>
-        <UsageCount Value="61"/>
+        <UsageCount Value="70"/>
       </Unit>
       <Unit>
         <Filename Value="pesqtipoexames.pas"/>
@@ -209,7 +208,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="37"/>
         <CursorPos X="3" Y="51"/>
-        <UsageCount Value="60"/>
+        <UsageCount Value="69"/>
       </Unit>
       <Unit>
         <Filename Value="chatgpt.pas"/>
@@ -218,7 +217,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="66"/>
       </Unit>
       <Unit>
         <Filename Value="toolsouvir.pas"/>
@@ -227,10 +226,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ToolsOuvir"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="116"/>
-        <CursorPos X="51" Y="129"/>
-        <UsageCount Value="57"/>
+        <CursorPos X="80" Y="8"/>
+        <UsageCount Value="66"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -243,7 +242,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="66"/>
       </Unit>
       <Unit>
         <Filename Value="brobotico.pas"/>
@@ -254,7 +253,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="182"/>
         <CursorPos X="7" Y="191"/>
-        <UsageCount Value="30"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -267,7 +266,7 @@
         <EditorIndex Value="8"/>
         <TopLine Value="43"/>
         <CursorPos X="14" Y="61"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="38"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -276,14 +275,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2366"/>
         <CursorPos Y="2385"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="banco.lfm"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="16"/>
         <CursorPos X="35" Y="28"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="15"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit>
       <Unit>
@@ -291,13 +290,13 @@
         <UnitName Value="Unit1"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="37" Y="13"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="19"/>
       </Unit>
       <Unit>
         <Filename Value="pesqtipoexames.lfm"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="26" Y="4"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="15"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit>
       <Unit>
@@ -306,14 +305,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="270"/>
         <CursorPos Y="293"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="main.lfm"/>
         <EditorIndex Value="11"/>
         <TopLine Value="47838"/>
         <CursorPos X="19" Y="47854"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="17"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit>
@@ -322,21 +321,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2579"/>
         <CursorPos Y="2588"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="d:\.lazarus\onlinepackagemanager\packages\zeosdbo\src\component\ZAbstractConnection.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1119"/>
         <CursorPos Y="1129"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="8"/>
       </Unit>
       <Unit>
         <Filename Value="d:\.lazarus\onlinepackagemanager\packages\zeosdbo\src\dbc\ZDbcMySql.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1249"/>
         <CursorPos Y="1264"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="d:\usr\lib\lazarus\2.2.6\components\lazdebuggers\lazdebugtestbase\testcommonsources.pas"/>
@@ -344,49 +343,49 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="231"/>
         <CursorPos Y="249"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2290"/>
         <CursorPos Y="2305"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\buttoncontrol.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="6"/>
         <CursorPos Y="22"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\buttons.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="154"/>
         <CursorPos Y="170"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\wincontrol.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="5416"/>
         <CursorPos X="24" Y="5443"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="5" Y="5"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="d:\usr\share\fpcsrc\3.2.2\rtl\inc\systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1233"/>
         <CursorPos X="10" Y="1208"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
       <Unit>
         <Filename Value="..\..\..\..\lazandroidmodulewizard\android_wizard\lamwdesigner.pas"/>
@@ -394,33 +393,17 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="793"/>
         <CursorPos X="48" Y="809"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="d:\usr\lib\lazarus\2.2.6\lcl\include\custommemo.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="33"/>
         <CursorPos Y="42"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="brobotico.pas"/>
-        <Caret Line="174" Column="26" TopLine="157"/>
-      </Position>
-      <Position>
-        <Filename Value="brobotico.pas"/>
-        <Caret Line="173" Column="26" TopLine="156"/>
-      </Position>
-      <Position>
-        <Filename Value="brobotico.pas"/>
-        <Caret Line="172" Column="26" TopLine="155"/>
-      </Position>
-      <Position>
-        <Filename Value="brobotico.pas"/>
-        <Caret Line="171" Column="26" TopLine="154"/>
-      </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
         <Caret Line="170" Column="26" TopLine="153"/>
@@ -524,6 +507,22 @@
       <Position>
         <Filename Value="brobotico.pas"/>
         <Caret Line="191" Column="7" TopLine="182"/>
+      </Position>
+      <Position>
+        <Filename Value="toolsouvir.pas"/>
+        <Caret Line="91" Column="10" TopLine="85"/>
+      </Position>
+      <Position>
+        <Filename Value="toolsouvir.pas"/>
+        <Caret Line="41" Column="15" TopLine="32"/>
+      </Position>
+      <Position>
+        <Filename Value="toolsouvir.pas"/>
+        <Caret Line="165" Column="22" TopLine="155"/>
+      </Position>
+      <Position>
+        <Filename Value="toolsouvir.pas"/>
+        <Caret Line="160" Column="87" TopLine="149"/>
       </Position>
     </JumpHistory>
     <RunParams>
