@@ -2534,12 +2534,71 @@ void EnviaParaSerial2(const char* mensagem) {
 }
 
 
+void Le_Serial2() 
+{
+  // Buffer local, fica dentro da função.
+  // A cada vez que você entra na função, ele inicia vazio.
+  char bufferprint[1000];  // Ajuste o tamanho conforme necessário
+  size_t pos = 0;         // Índice de escrita
 
-
-void Le_Serial2() {
-  while (Serial2.available() > 0) {
+  // Enquanto houver dados na Serial2, faça a leitura
+  while (Serial2.available() > 0) 
+  {
     char key = Serial2.read();
-    Serial.print(key);  // Se o jumper estiver certo, deve chegar "Enviei via Serial2"
+    Serial.print(key);
+    // Ignora '\r' (caractere de retorno de carro).
+    // Em muitos casos (Windows), as quebras de linha chegam como "\r\n"
+    if (key == '\r') {
+      continue; 
+    }
+
+    // Se chegar '\n', significa que finalizamos uma linha
+    if (key == '\n') {
+      // Finaliza a string em C, colocando \0
+      bufferprint[pos] = '\0';
+      
+      // Chama a função que espera um char*
+      //ImprimeMedio(bufferprint);
+      //ImprimePequeno(bufferprint);
+
+      // Exemplos de debug:
+      Serial.println();
+      Serial.print("MODULO1:");
+      //Serial.println(bufferprint);
+
+      // Zera o índice do buffer para começar uma nova linha
+      pos = 0;
+    }
+    else 
+    {
+     
+      // Se ainda houver espaço no buffer
+      if (pos < (sizeof(bufferprint) - 1)) {
+        bufferprint[pos] = key;  // Armazena o caractere
+        pos++;
+        
+        // Opcional: imprimir no Serial
+        //Serial.print(key); 
+      } 
+      else 
+      {
+        // Caso o buffer esteja cheio, trate como achar melhor.
+        // Aqui, vamos: 
+        // 1) Fechar a string
+        // 2) Enviar para ImprimeMedio
+        // 3) Avisar overflow
+        // 4) Resetar o buffer
+        
+//MODULO1:pH calculado: 0
+
+//MODULO1:Temperatura (Etemp): 5
+
+        ImprimePequeno(bufferprint);
+        bufferprint[pos] = '\0';
+        Serial.println("\n[WARN] Buffer cheio, resetando...");
+        pos = 0;
+      }
+    }
   }
 }
 
