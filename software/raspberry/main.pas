@@ -26,6 +26,7 @@ type
     Label5: TLabel;
     LazSerial1: TLazSerial;
     LazSerial2: TLazSerial;
+    procedure FormChangeBounds(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Image1Click(Sender: TObject);
@@ -51,6 +52,9 @@ type
     chavepessoa : string;
     nomepessoa : string;
     idpessoa : integer;
+    buffer : string;
+    POSESTEIRA : INTEGER;
+
 
     procedure BloqueioAcesso();
     procedure RecebeuPergunta(Pergunta: string);
@@ -58,6 +62,7 @@ type
     procedure StatusSistema();
     procedure SairSistema();
     procedure Etiquetagem();
+    procedure AnalisarBuffer(const linha: string);
 
   end;
 
@@ -76,6 +81,13 @@ begin
   frmsplash.showmodal();
   Setup();
   frmsplash.free;
+  buffer := '';
+  POSESTEIRA := 0;
+end;
+
+procedure Tfrmmain.FormChangeBounds(Sender: TObject);
+begin
+
 end;
 
 procedure Tfrmmain.FormDestroy(Sender: TObject);
@@ -173,33 +185,34 @@ end;
 
 procedure Tfrmmain.LazSerial2RxData(Sender: TObject);
 var
-  info, info2 : string;
-  posicao : integer;
-  posicaofinal : integer;
+  info, linha: string;
+  posicaoLF: integer;
 begin
-  posicaofinal := 0;
-  if LazSerial2.DataAvailable then
+  while LazSerial2.DataAvailable do
   begin
     info := LazSerial2.ReadData;
-    posicao := pos('POSFIMSERVA=',info);
-    if(posicao <> 0) then
-    begin
-      info2:= copy(info,posicao+12,pos(#13,copy(info, posicao+13,Length(info))));
-      posicaofinal := strtoint(info2);
+    buffer := buffer + info; // Adiciona os dados ao buffer
 
-    end;
-    if(frmbrobotico<> nil) then
-    begin
-         frmbrobotico.meconsole.Append(info);
-         if(posicaofinal<>0) then
-         begin
-              frmbrobotico.tbMov.Max:= posicaofinal;
-         end;
-    end;
-    sleep(300);
+    repeat
+      posicaoLF := pos(#10, buffer); // Procura por \n (Line Feed)
+      if posicaoLF > 0 then
+      begin
+        linha := copy(buffer, 1, posicaoLF - 1); // Texto antes do \n
+        // Chama a rotina AnalisarBuffer com a linha extraída
+        AnalisarBuffer(linha);
+        if (frmbrobotico <> nil) then
+        begin
+          frmbrobotico.meconsole.Append(linha);
+        end;
+
+        // Remove a linha processada do buffer
+        buffer := copy(buffer, posicaoLF + 1, Length(buffer));
+      end;
+    until posicaoLF = 0;
   end;
-
+  Application.ProcessMessages;
 end;
+
 
 procedure Tfrmmain.SdpoSerial1RxData(Sender: TObject);
 begin
@@ -344,6 +357,55 @@ begin
   frmEtiquetar.showmodal();
   frmEtiquetar.free();
 end;
+
+
+procedure Tfrmmain.AnalisarBuffer(const linha: string);
+var
+  posTemperatura, posHumidade, posMoveDir, posMoveEsc: integer;
+  temperatura, humidade, moveDir, moveEsc: string;
+begin
+  posTemperatura := pos('TEMPERATURA:', linha);
+  if posTemperatura > 0 then
+  begin
+    temperatura := copy(linha, posTemperatura + 12, pos(#32, linha + ' ', posTemperatura + 12) - posTemperatura - 12);
+    if (frmbrobotico <> nil) then
+    begin
+      frmbrobotico.LEDTEMP.Caption := temperatura;
+    end;
+  end;
+
+  posHumidade := pos('Humidade:', linha);
+  if posHumidade > 0 then
+  begin
+    humidade := copy(linha, posHumidade + 9, pos(#32, linha + ' ', posHumidade + 9) - posHumidade - 9);
+    if (frmbrobotico <> nil) then
+    begin
+      frmbrobotico.LEDHUM.Caption := humidade;
+    end;
+  end;
+
+  posMoveDir := pos('POSSERVA=', linha);
+  if posMoveDir > 0 then
+  begin
+    moveDir := copy(linha, posMoveDir + 9, pos(#32, linha + ' ', posMoveDir + 9) - posMoveDir - 9);
+    if (frmbrobotico <> nil) then
+    begin
+      POSESTEIRA := POSESTEIRA + strtoint(moveDir);
+      if  (frmbrobotico<> nil) then
+      begin
+           frmbrobotico.Image2.Left:= 32+trunc(frmbrobotico.tbMov.Position * 0.228);
+           frmbrobotico.Image2.refresh;
+           frmbrobotico.lbPosicao.Caption:=  inttostr(frmbrobotico.tbMov.Position);
+           frmbrobotico.lbPosicao.Refresh;
+           application.ProcessMessages;
+           //frmbrobotico.tbMov.Position := POSESTEIRA;
+      end;
+    end;
+  end;
+
+end;
+
+
 
 end.
 

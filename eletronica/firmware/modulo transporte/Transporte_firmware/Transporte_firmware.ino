@@ -259,8 +259,10 @@ void showPageId();
 void Rele01(bool Value);
 void Rele02(bool Value);
 
-void MovePassoA_Dir();
-void MovePassoA_Esq(int passo);
+void RetornoCarro();
+void MovePasso(int passo); //Posicao Absoluta
+void MovePassoA_Dir(int passo); //Posicao Relativa
+void MovePassoA_Esq(int passo); //Posicao Relativa
 void PosicaoCentral();
 void RetornaCarro();
 long fLOCAL_DEFMOD(int modulo);
@@ -635,35 +637,10 @@ void Move_Servo_Incremental()
   delay(DELAY_TEMPO); // Aguarda entre os incrementos
 }
 
-/*Rotina que posiciona o equipamento no local correto*/
-void Calibracao()
-{
-  Serial.println("Iniciando Calibra��o");
-  NextionShow("CALIB"); //Chamando tela calibra��o
 
-  Serial.println("Retornando carro");
-  
-  while (!flgFIMA1 )
-  {
-      MovePassoA_Esq(MOVPASSOS);
-      Le_FimCurso();
-  }
-  Serial.println("Avancando carro");
-  while (!flgFIMA2 )
-  {
-      MovePassoA_Dir(MOVPASSOS);
-      Le_FimCurso();
-  }
-  
-  Serial.println("Retornando carro");
-  while (!flgFIMA1 )
-  {
-      MovePassoA_Esq(1);
-      Le_FimCurso();
-  }
-  Serial.println("Fim de calibracao");
-  
-}
+
+
+
 
 
 void PosicaoCentral()
@@ -938,20 +915,64 @@ void printQR(uint8_t size, uint8_t correction, const char* data) {
  // printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o c�digo QR
 }
 
+//Posicao absoluta
+void MovePasso(int passo)
+{
+  
+    // 1 rotation counterclockwise:  
+    //Serial.println("counterclockwise");    
+    long passos = passo - posSERVA;
+    Passo01.step(passos);  
+    posSERVA = passo;
+    Serial.print("POSSERVA=");  
+    Serial.println(posSERVA);
+    //delay(100); 
+}
 
 
+/*Rotina que posiciona o equipamento no local correto*/
+void Calibracao()
+{
+  Serial.println("Iniciando Calibra��o");
+  RetornoCarro();
+
+  PosFimCarro();
+  
+  RetornoCarro();
+  Serial.println("Fim de calibracao");
+  
+}
+
+//Retorna Carro
+void RetornoCarro()
+{
+
+  NextionShow("CALIB"); //Chamando tela calibra��o
+
+  Serial.println("Retornando carro");
+  
+  while (!flgFIMA1 )
+  {
+      MovePassoA_Esq(MOVPASSOS);
+      Le_FimCurso();
+  }
+  posSERVA = 0;
+}
+
+//Posicao posicao relativa
 void MovePassoA_Dir(int passo)
 {
   
     // 1 rotation counterclockwise:  
     //Serial.println("counterclockwise");    
     Passo01.step(passo);  
-    posSERVA = posSERVA+ passo;
+    posSERVA = passo-posSERVA;
     Serial.print("POSSERVA=");  
     Serial.println(posSERVA);
     //delay(100); 
 }
 
+//Posicao posicao relativa
 void MovePassoA_Esq(int passo)
 {
   // 1 rotation clockwise: 
@@ -974,6 +995,16 @@ void RetornaCarro()
   
 }
 
+
+void PosFimCarro()
+{
+  Serial.println("Avancando carro");
+  while (!flgFIMA2 )
+  {
+      MovePassoA_Dir(MOVPASSOS);
+      Le_FimCurso();
+  }
+}
 
 int analise_DEFMOD(int modulo, char linha[])
 {
@@ -1217,7 +1248,7 @@ int LOADLoop(File root, char *Info)
 {
 
   memset(Buffer,'\0',sizeof(Buffer)); /*Zera buffer*/
-  Serial.println("Iniciando rotina LOADLoop");
+  Serial.println(F("Iniciando rotina LOADLoop"));
   //Tenta carregar arquivo t para ser temporario
   Serial.print("LOADLoop Info:");
   Serial.println(Info);
@@ -1228,8 +1259,8 @@ int LOADLoop(File root, char *Info)
   //Limpa os buffer
   if (!farquivo)
   {
-    Serial.println("Erro SD");
-    Serial.print("Nao pode abrir SD:");
+    Serial.println(F("Erro SD"));
+    Serial.print(F("Nao pode abrir SD:"));
     Serial.println(Info);
     //NextionMessage("Nao pode abrir SD");
     //Imprime(1, "Erro SD");
@@ -1238,7 +1269,7 @@ int LOADLoop(File root, char *Info)
   }
   else
   {
-    Serial.println("Iniciou bloco de grava��o do arquivo");
+    Serial.println(F("Iniciou bloco de gravacao do arquivo"));
     flgEscape = false; //Sai quando verdadeiro
     //Loop
     while (!flgEscape)
@@ -1248,10 +1279,10 @@ int LOADLoop(File root, char *Info)
       LOADAnalisa(&farquivo);      
       //arquivo.println("Leitura Potenciometro: ");
     }
-    Serial.println("Finalizou bloco de grava��o do arquivo");
+    Serial.println(F("Finalizou bloco de gravacao do arquivo"));
   }
   farquivo.close();
-  Serial.println("Fechou arquivo ");
+  Serial.println(F("Fechou arquivo "));
   //Apaga o Arquivo Temporario
   //LOADRename(Info);
    //LOADCOPYTEMP(ArquivoFinal);
@@ -1292,7 +1323,7 @@ void LOADRename(String filename)
   {
     //SD.rename("temp.out",filename);
     // open the file named ourfile.txt
-    Serial.println("Iniciando copia de arquivo temp.out"); 
+    Serial.println(F("Iniciando copia de arquivo temp.out")); 
     File FOrigem = SD.open("temp.out");
     char filename[40];
     sprintf(filename,"%s",ArquivoTrabalho);
@@ -1315,7 +1346,7 @@ void LOADRename(String filename)
       }
     
     }
-    Serial.println("Finalizando copia de arquivo temp.out"); 
+    Serial.println(F("Finalizando copia de arquivo temp.out")); 
     FOrigem.close();
     FDestino.close();
     SD.remove("temp.out");
@@ -1365,7 +1396,7 @@ void LOADBloco(File *farquivo, char *Info)
 //Finaliza o arquivo temporario copiando para arquivo final
 void LOADFIMARQUIVO()
 {
-  Serial.println("Fim do Arquivo");
+  Serial.println(F("Fim do Arquivo"));
   //Imprime(1, "Carregando Arquivo  ");
   //Imprime(2, "Copiando Arquivo    ");
   //Copia o temporario para o definitivo
@@ -1692,7 +1723,7 @@ void showPageId() {
           i++;
         }
       }
-      Serial.print("ID da pagina atual: ");
+      Serial.print(F("ID da pagina atual: "));
       Serial.println(pageId);
     }
   }
@@ -1850,30 +1881,32 @@ void MAN()
   Serial.print(Versao);
   Serial.print(".");
   Serial.println(Release);
-  Serial.println("INICIO - Inicia bloco");
-  Serial.println("FIM - Finaliza bloco");
-  Serial.println("BEEP - Emite som");
-  Serial.println("BEEPMSG - Mensagem com SOM");
-  Serial.println("SOUND - Toca som");
-  Serial.println("ESC - ESCAPE");
-  Serial.println("MAN - AUXILIO MANUAL");
-  Serial.println("LSTDIR - LISTA DIRETORIO");
-  Serial.println("LOAD - CARREGA ARQUIVO");
-  Serial.println("RUN - RODA SCRIPT");
-  Serial.println("SENDMSG=DEV,MSG - Envia uma mensagem para uma Serial:");
-  Serial.println("   DEV: Dispositivo (1 = Serial2)");
-  Serial.println("   MSG: Mensagem a ser enviada, termina antes do '\\n'");  
-  Serial.println("MENSAGEM - Mostra mensagem");
-  Serial.println("RESET - RESETA O AMBIENTE");
-  Serial.println("MOPERACAO - MODO OPERACIONAL");
-  Serial.println("MOPERACAO - MODO CONFIG");
-  Serial.println("RELE01 - ACIONAMENTO RELE01");
-  Serial.println("RELE02 - ACIONAMENTO RELE02");
-  Serial.println("DELFILE - REMOVE ARQUIVO");
-  Serial.println("MOVESERVO=NRO_SERVO,ANGULO - Move um servo para o ângulo especificado");
-  Serial.println("MOVEDIR=NRO_PASSOS - Move o motor de passo para a direita");
-  Serial.println("MOVEESQ=NRO_PASSOS - Move o motor de passo para a esquerda");
-  Serial.println("POSFIMSERVA - Informa Posicao final do carro ");
+  Serial.println(F("INICIO - Inicia bloco"));
+  Serial.println(F("FIM - Finaliza bloco"));
+  Serial.println(F("BEEP - Emite som"));
+  Serial.println(F("BEEPMSG - Mensagem com SOM"));
+  Serial.println(F("SOUND - Toca som"));
+  Serial.println(F("ESC - ESCAPE"));
+  Serial.println(F("MAN - AUXILIO MANUAL"));
+  Serial.println(F("LSTDIR - LISTA DIRETORIO"));
+  Serial.println(F("LOAD - CARREGA ARQUIVO"));
+  Serial.println(F("RUN - RODA SCRIPT"));
+  Serial.println(F("SENDMSG=DEV,MSG - Envia uma mensagem para uma Serial:"));
+  Serial.println(F("   DEV: Dispositivo (1 = Serial2)"));
+  Serial.println(F("   MSG: Mensagem a ser enviada, termina antes do '\\n'"));  
+  Serial.println(F("MENSAGEM=[MENSAGEM] - Mostra mensagem"));
+  Serial.println(F("RESET - RESETA O AMBIENTE"));
+  Serial.println(F("MOPERACAO - MODO OPERACIONAL"));
+  Serial.println(F("MOPERACAO - MODO CONFIG"));
+  Serial.println(F("RELE01 - ACIONAMENTO RELE01"));
+  Serial.println(F("RELE02 - ACIONAMENTO RELE02"));
+  Serial.println(F("DELFILE - REMOVE ARQUIVO"));
+  Serial.println(F("MOVESERVO=NRO_SERVO,ANGULO - Move um servo para o ângulo especificado"));
+  Serial.println(F("MOVEPASSO=PASSOS - Move o motor para a posicao absoluta em passos"));
+  Serial.println(F("MOVEDIR=NRO_PASSOS - Move o motor de passo para a direita"));
+  Serial.println(F("MOVEESQ=NRO_PASSOS - Move o motor de passo para a esquerda"));
+  Serial.println(F("POSFIMSERVA - Informa Posicao final do carro "));
+  Serial.println(F("RETORNOCARRO - Informa Posicao final do carro "));
   Serial.println(" ");
 }
 
@@ -2005,6 +2038,21 @@ void KeyCMD()
       resp = true;
     }
 
+    // MOVEPASSO=NRO_PASSOS
+    if (strstr(Buffer, "MOVEPASSO=") != NULL)
+    {
+      char *paramStart = strstr(Buffer, "=");
+      if (paramStart != NULL)
+      {
+        paramStart++; // Avança para depois do '='
+        int passos = atoi(paramStart);
+        MovePasso(passos);
+        resp = true;
+        Serial.print("POSSERVA=");
+        Serial.println(posSERVA);        
+      }
+    }
+
     // MOVEDIR=NRO_PASSOS
     if (strstr(Buffer, "MOVEDIR=") != NULL)
     {
@@ -2053,7 +2101,7 @@ void KeyCMD()
           Serial.print(", Ângulo ");
           Serial.println(angle);
         } else {
-          Serial.println("Erro: parâmetros inválidos para MOVESERVO. Use MOVESERVO=NRO_SERVO,ANGULO");
+          Serial.println(F("Erro: parâmetros inválidos para MOVESERVO. Use MOVESERVO=NRO_SERVO,ANGULO"));
         }
       }
     }
@@ -2143,7 +2191,7 @@ void KeyCMD()
         resp = true;
       }
       else {
-        Serial.println("Comando mau formado");
+        Serial.println(F("Comando mau formado"));
         resp = false;
       }
     }
@@ -2234,11 +2282,11 @@ void KeyCMD()
                   resp = true;
               } else 
               {
-                  Serial.println("Dispositivo inválido ou não implementado!");
+                  Serial.println(F("Dispositivo inválido ou não implementado!"));
               }
           } else 
           {
-              Serial.println("Formato do comando inválido. Use SENDMSG=DEV,MSG");
+              Serial.println(F("Formato do comando inválido. Use SENDMSG=DEV,MSG"));
           }
       }
     }
@@ -2276,7 +2324,7 @@ void KeyCMD()
     {
       char sMSG1[20];
       char sMSG2[20];
-      Serial.println("Achou MENSAGEM");
+      Serial.println(F("Achou MENSAGEM"));
       char *posequ = strstr( Buffer, "=");
       Serial.print("POSEQU=");
       Serial.println(posequ);
@@ -2367,6 +2415,40 @@ void KeyCMD()
       //Serial.print("Temperatura:");
       //Serial.print(Temperatura);
       Serial.println(";");
+      resp = true;
+    }
+
+    //RETORNOCARRO - INICIO de curso posicao
+    if (strcmp( Buffer, "RETORNOCARRO\n") == 0)
+    {
+      Serial.print("RETORNOCARRO");      
+      RetornoCarro();
+      resp = true;
+    }
+
+    //Calibracao - INICIO de curso posicao
+    if (strcmp( Buffer, "CALIBRACAO\n") == 0)
+    {
+      Serial.print("CALIBRACAO");      
+      Calibracao();
+      resp = true;
+    }
+
+
+    //POSFIMCARRO - Final de curso posicao do carro
+    if (strcmp( Buffer, "POSFIMCARRO\n") == 0)
+    {
+      Serial.print("POSFIMCARRO");      
+      PosFimCarro();
+      resp = true;
+    }
+    
+
+    //POSINICIOSERVA - INICIO de curso posicao
+    if (strcmp( Buffer, "POSFIMSERVA\n") == 0)
+    {
+      Serial.print("POSINICIOSERVA");
+      
       resp = true;
     }
 
@@ -2504,14 +2586,14 @@ void Le_Serial1() {
                 // Se voc� quiser exibir o nome da tela, pode associar o ID da p�gina ao nome
                 switch (pageId) {
                     case 0:
-                        Serial.println("Tela: Home");
+                        Serial.println(F("Tela: Home"));
                         break;
                     case 1:
-                        Serial.println("Tela: Configuracoes");
+                        Serial.println(F("Tela: Configuracoes"));
                         break;
                     // Adicione outros casos para suas telas conforme necess�rio
                     default:
-                        Serial.println("Tela: Desconhecida");
+                        Serial.println(F("Tela: Desconhecida"));
                         break;
                 }
             }
@@ -2529,7 +2611,7 @@ void Le_Serial1() {
 void EnviaParaSerial2(const char* mensagem) {
     Serial2.println(mensagem);
     //Serial2.print("\n\r");
-    Serial.print("Mensagem enviada para Serial2: ");
+    Serial.print(F("Mensagem enviada para Serial2: "));
     Serial.println(mensagem);
 }
 
@@ -2595,7 +2677,7 @@ void Le_Serial2()
 
         ImprimePequeno(bufferprint);
         bufferprint[pos] = '\0';
-        Serial.println("\n[WARN] Buffer cheio, resetando...");
+        Serial.println(F("\n[WARN] Buffer cheio, resetando..."));
         pos = 0;
       }
     }

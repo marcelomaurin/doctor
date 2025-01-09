@@ -6,9 +6,10 @@ object frmmain: Tfrmmain
   Caption = 'Tela Principal'
   ClientHeight = 643
   ClientWidth = 162
+  OnChangeBounds = FormChangeBounds
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '3.6.0.0'
+  LCLVersion = '3.4.0.0'
   object Image1: TImage
     Left = 28
     Height = 83

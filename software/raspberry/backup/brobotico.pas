@@ -6,15 +6,17 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ComCtrls, ExtCtrls, synaser, setmain, LazSerial, MKnob;
+  ComCtrls, ExtCtrls, synaser, setmain, LazSerial, MKnob, LedNumber,
+  indGnouMeter;
 
 type
 
   { Tfrmbrobotico }
 
   Tfrmbrobotico = class(TForm)
-    btTestar: TButton;
-    btTestar1: TButton;
+    btInicioEsteira: TButton;
+    btCalibrar: TButton;
+    btFinalEsteira: TButton;
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
@@ -31,12 +33,16 @@ type
     edPorta: TEdit;
     Image1: TImage;
     Image2: TImage;
+    Label1: TLabel;
+    Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     lbPosicao: TLabel;
     lbPosicao1: TLabel;
+    LEDTEMP: TLEDNumber;
+    LEDHUM: TLEDNumber;
     lstMov: TListBox;
     meconsole: TMemo;
     mKnob1: TmKnob;
@@ -47,6 +53,7 @@ type
     Shape3: TShape;
     TabSheet1: TTabSheet;
     TabSheet4: TTabSheet;
+    TabSheet5: TTabSheet;
     tbMov: TTrackBar;
     tbposicao1: TTrackBar;
     tbposicao2: TTrackBar;
@@ -54,12 +61,14 @@ type
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     tbposicao: TTrackBar;
+    procedure btCalibrarClick(Sender: TObject);
+    procedure btFinalEsteiraClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
     procedure Button13Click(Sender: TObject);
     procedure Button14Click(Sender: TObject);
-    procedure btTestarClick(Sender: TObject);
+    procedure btInicioEsteiraClick(Sender: TObject);
     procedure btDirForteClick(Sender: TObject);
     procedure btEsqForteClick(Sender: TObject);
     procedure btEsqFracoClick(Sender: TObject);
@@ -128,15 +137,26 @@ begin
 end;
 
 
-procedure Tfrmbrobotico.btTestarClick(Sender: TObject);
+procedure Tfrmbrobotico.btInicioEsteiraClick(Sender: TObject);
 begin
-  frmmain.LazSerial2.WriteData('RETORNAR'+#13+#10);
+  frmmain.LazSerial2.WriteData('RETORNOCARRO'+#13+#10);
 
 end;
 
 procedure Tfrmbrobotico.Button10Click(Sender: TObject);
 begin
   lstMov.Items.clear;;
+end;
+
+procedure Tfrmbrobotico.btFinalEsteiraClick(Sender: TObject);
+begin
+  frmmain.LazSerial2.WriteData('RETORNOCARRO'+#13+#10);
+
+end;
+
+procedure Tfrmbrobotico.btCalibrarClick(Sender: TObject);
+begin
+   frmmain.LazSerial2.WriteData('RETORNOCARRO'+#13+#10);
 end;
 
 procedure Tfrmbrobotico.Button11Click(Sender: TObject);
@@ -188,7 +208,7 @@ end;
 
 procedure Tfrmbrobotico.btEsqFracoClick(Sender: TObject);
 begin
-    moverigth(tbfraco.Position);
+    //moverigth(tbfraco.Position);
 end;
 
 procedure Tfrmbrobotico.btDirFracoClick(Sender: TObject);
@@ -250,15 +270,12 @@ end;
 
 procedure Tfrmbrobotico.tbMovChange(Sender: TObject);
 begin
-  if ((tbMov.Position- posicaoanterior) > 0) then
+  if (tbMov.Position<> posicaoanterior) then
   begin
-     frmmain.LazSerial2.WriteData('MOVEDIR='+inttostr(tbMov.Position-posicaoanterior)+#13+#10);
-  end
-  else
-  begin
-     frmmain.LazSerial2.WriteData('MOVEESQ='+inttostr(posicaoanterior-tbMov.Position)+#13+#10);
+     frmmain.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#13+#10);
+     posicaoanterior :=  tbMov.Position;
   end;
-  posicaoanterior :=  tbMov.Position;
+
 end;
 
 procedure Tfrmbrobotico.tbposicaoChange(Sender: TObject);
