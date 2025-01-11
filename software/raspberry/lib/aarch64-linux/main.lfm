@@ -1,14 +1,15 @@
 object frmmain: Tfrmmain
-  Left = 30
+  Left = -4
   Height = 643
-  Top = 11
-  Width = 162
+  Top = 6
+  Width = 152
   Caption = 'Tela Principal'
   ClientHeight = 643
-  ClientWidth = 162
+  ClientWidth = 152
+  OnChangeBounds = FormChangeBounds
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '3.6.0.0'
+  LCLVersion = '3.4.0.0'
   object Image1: TImage
     Left = 28
     Height = 83
@@ -12224,6 +12225,7 @@ object frmmain: Tfrmmain
     Height = 90
     Top = 384
     Width = 103
+    OnClick = Image4Click
     OnMouseEnter = Image4MouseEnter
     Picture.Data = {
       07544269746D6170C65F0100424DC65F01000000000036000000280000007D00
@@ -47879,11 +47881,12 @@ object frmmain: Tfrmmain
     BaudRate = br__9600
     DataBits = db8bits
     Parity = pNone
-    FlowControl = fcNone
+    FlowControl = fcHardware
     StopBits = sbOne
     SynSer.Tag = 0
     SynSer.Handle = -1
     SynSer.RaiseExcept = False
+    SynSer.OnStatus = LazSerial2BlockSerialStatus
     SynSer.TestDSR = False
     SynSer.TestCTS = False
     SynSer.MaxLineLength = 0

@@ -3,24 +3,26 @@ object frmAguarde: TfrmAguarde
   Height = 218
   Top = 290
   Width = 345
-  Caption = 'Esperando a inicialização do Equipamento'
+  Caption = 'Inicializando...'
   ClientHeight = 218
   ClientWidth = 345
+  OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '2.2.6.0'
   object Label1: TLabel
     Left = 48
-    Height = 15
+    Height = 22
     Top = 8
-    Width = 216
+    Width = 290
     Caption = 'Equipamento em Inicialização, aguarde...'
+    ParentColor = False
   end
   object GifAnim1: TGifAnim
     Left = 16
     Height = 180
     Top = 32
     Width = 320
-    FileName = 'D:\projetos\maurinsoft\doctor\imgs\inicializando.gif'
+    FileName = '/home/mmm/projetos/maurinsoft/doctor/imgs/inicializando.gif'
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
