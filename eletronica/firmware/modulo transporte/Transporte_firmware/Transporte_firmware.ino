@@ -1909,7 +1909,8 @@ void MAN()
   Serial.println(F("MOVEPASSO=PASSOS - Move o motor para a posicao absoluta em passos"));
   Serial.println(F("MOVEDIR=NRO_PASSOS - Move o motor de passo para a direita"));
   Serial.println(F("MOVEESQ=NRO_PASSOS - Move o motor de passo para a esquerda"));
-  Serial.println(F("POSFIMSERVA - Posicao final do carro "));
+  Serial.println(F("POSFIMSERVA - Informa posicao final do carro "));  
+  Serial.println(F("POSFIMCARRO - Vai no final do carro "));
   Serial.println(F("RETORNOCARRO - Posicao inicio do carro "));  
   Serial.println(F("CALIBRACAO - Calibracao "));
   Serial.println(" ");
@@ -2449,13 +2450,7 @@ void KeyCMD()
     }
     
 
-    //POSINICIOSERVA - INICIO de curso posicao
-    if (strcmp( Buffer, "POSFIMSERVA\n") == 0)
-    {
-      Serial.println("POSINICIOSERVA");
-      
-      resp = true;
-    }
+
 
     //POSFIMSERVA - FIM de curso posicao
     if (strcmp( Buffer, "POSFIMSERVA\n") == 0)
