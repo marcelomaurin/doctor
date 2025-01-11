@@ -7,16 +7,20 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ExtCtrls, synaser, setmain, LazSerial, MKnob, LedNumber,
-  indGnouMeter;
+  indGnouMeter, AdvLed;
 
 type
 
   { Tfrmbrobotico }
 
   Tfrmbrobotico = class(TForm)
+    AdvLed1: TAdvLed;
+    AdvLed2: TAdvLed;
     btInicioEsteira: TButton;
     btCalibrar: TButton;
     btFinalEsteira: TButton;
+    btMover: TButton;
+    btPosFimServa: TButton;
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
@@ -40,29 +44,29 @@ type
     Label5: TLabel;
     Label6: TLabel;
     lbPosicao: TLabel;
-    lbPosicao1: TLabel;
+    lbPOSFIMESTEIRA: TLabel;
     LEDTEMP: TLEDNumber;
     LEDHUM: TLEDNumber;
     lstMov: TListBox;
-    meconsole: TMemo;
     mKnob1: TmKnob;
     OpenDialog1: TOpenDialog;
     PageControl1: TPageControl;
     SaveDialog1: TSaveDialog;
     Shape1: TShape;
     Shape3: TShape;
-    TabSheet1: TTabSheet;
-    TabSheet4: TTabSheet;
-    TabSheet5: TTabSheet;
+    tsEsteira: TTabSheet;
+    tsMovimento: TTabSheet;
+    tsMonitor: TTabSheet;
     tbMov: TTrackBar;
     tbposicao1: TTrackBar;
     tbposicao2: TTrackBar;
-    tsconsole: TTabSheet;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
+    tsBraco: TTabSheet;
+    tsConfig: TTabSheet;
     tbposicao: TTrackBar;
     procedure btCalibrarClick(Sender: TObject);
     procedure btFinalEsteiraClick(Sender: TObject);
+    procedure btMoverClick(Sender: TObject);
+    procedure btPosFimServaClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
@@ -81,7 +85,8 @@ type
     procedure edPortaKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure tbMovChange(Sender: TObject);
+    procedure tbMovEndDrag(Sender, Target: TObject; X, Y: Integer);
+    procedure tbMovExit(Sender: TObject);
     procedure tbposicaoChange(Sender: TObject);
   private
     { private declarations }
@@ -139,7 +144,7 @@ end;
 
 procedure Tfrmbrobotico.btInicioEsteiraClick(Sender: TObject);
 begin
-  frmmain.LazSerial2.WriteData('RETORNOCARRO'+#13+#10);
+  frmmain.LazSerial2.WriteData('RETORNOCARRO'+#10);
 
 end;
 
@@ -150,13 +155,30 @@ end;
 
 procedure Tfrmbrobotico.btFinalEsteiraClick(Sender: TObject);
 begin
-  frmmain.LazSerial2.WriteData('RETORNOCARRO'+#13+#10);
+  frmmain.LazSerial2.WriteData('POSFIMCARRO'+#10);
 
+end;
+
+procedure Tfrmbrobotico.btMoverClick(Sender: TObject);
+begin
+  if (tbMov.Position<> posicaoanterior) then
+  begin
+     frmmain.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
+     posicaoanterior :=  tbMov.Position;
+     Image2.left := trunc(tbMov.Position*0.28);
+     lbPosicao.Caption:= inttostr(tbMov.Position);
+
+  end;
+end;
+
+procedure Tfrmbrobotico.btPosFimServaClick(Sender: TObject);
+begin
+  frmmain.LazSerial2.WriteData('POSFIMSERVA'+#10);
 end;
 
 procedure Tfrmbrobotico.btCalibrarClick(Sender: TObject);
 begin
-   frmmain.LazSerial2.WriteData('RETORNOCARRO'+#13+#10);
+   frmmain.LazSerial2.WriteData('CALIBRACAO'+#10);
 end;
 
 procedure Tfrmbrobotico.Button11Click(Sender: TObject);
@@ -254,8 +276,12 @@ begin
   operador := 1;
   posicaoanterior := 0;
   edPorta.text := FSetMain.SerialPort ;
-  PageControl1.ActivePage := TabSheet3;
-
+  PageControl1.ActivePage := tsEsteira;
+  if(frmmain.POSFIMESTEIRA<>0) then
+  begin
+    tbMov.max := frmmain.POSFIMESTEIRA;
+    lbPOSFIMESTEIRA.Caption:= inttostr(frmmain.POSFIMESTEIRA);
+  end;
 
 end;
 
@@ -265,18 +291,20 @@ begin
 
 end;
 
-
-
-
-procedure Tfrmbrobotico.tbMovChange(Sender: TObject);
+procedure Tfrmbrobotico.tbMovEndDrag(Sender, Target: TObject; X, Y: Integer);
 begin
-  if (tbMov.Position<> posicaoanterior) then
-  begin
-     frmmain.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#13+#10);
-     posicaoanterior :=  tbMov.Position;
-  end;
 
 end;
+
+
+
+
+procedure Tfrmbrobotico.tbMovExit(Sender: TObject);
+begin
+
+end;
+
+
 
 procedure Tfrmbrobotico.tbposicaoChange(Sender: TObject);
 begin

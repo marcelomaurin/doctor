@@ -704,7 +704,7 @@ void setup() {
   Reset();
   NextionShow("CALIB");  
   delay(100);
-  //Calibracao(); /*Calibra��o do equipamento*/
+  Calibracao(); /*Calibra��o do equipamento*/
   
   //Calibra_Servos();
   
@@ -917,13 +917,15 @@ void printQR(uint8_t size, uint8_t correction, const char* data) {
 
 //Posicao absoluta
 void MovePasso(int passo)
-{
-  
+{  
     // 1 rotation counterclockwise:  
-    //Serial.println("counterclockwise");    
+    //Serial.println("counterclockwise");   
+    Serial.print("Anterior POSSERVA:");  
+    Serial.println(posSERVA);
     long passos = passo - posSERVA;
     Passo01.step(passos);  
-    posSERVA = passo;
+    
+    posSERVA = posSERVA+ passos;
     Serial.print("POSSERVA=");  
     Serial.println(posSERVA);
     //delay(100); 
@@ -935,6 +937,7 @@ void Calibracao()
 {
   Serial.println("Iniciando Calibra��o");
   RetornoCarro();
+  
 
   PosFimCarro();
   
@@ -957,6 +960,7 @@ void RetornoCarro()
       Le_FimCurso();
   }
   posSERVA = 0;
+  Serial.println("posSERVA=0");
 }
 
 //Posicao posicao relativa
@@ -966,7 +970,7 @@ void MovePassoA_Dir(int passo)
     // 1 rotation counterclockwise:  
     //Serial.println("counterclockwise");    
     Passo01.step(passo);  
-    posSERVA = passo-posSERVA;
+    posSERVA =posSERVA+ passo;
     Serial.print("POSSERVA=");  
     Serial.println(posSERVA);
     //delay(100); 
@@ -1905,8 +1909,9 @@ void MAN()
   Serial.println(F("MOVEPASSO=PASSOS - Move o motor para a posicao absoluta em passos"));
   Serial.println(F("MOVEDIR=NRO_PASSOS - Move o motor de passo para a direita"));
   Serial.println(F("MOVEESQ=NRO_PASSOS - Move o motor de passo para a esquerda"));
-  Serial.println(F("POSFIMSERVA - Informa Posicao final do carro "));
-  Serial.println(F("RETORNOCARRO - Informa Posicao final do carro "));
+  Serial.println(F("POSFIMSERVA - Posicao final do carro "));
+  Serial.println(F("RETORNOCARRO - Posicao inicio do carro "));  
+  Serial.println(F("CALIBRACAO - Calibracao "));
   Serial.println(" ");
 }
 
@@ -2087,21 +2092,21 @@ void KeyCMD()
 
 
     // Comando MOVESERVO
-    if (strstr(Buffer, "MOVESERVO") != NULL) 
+    if (strstr(Buffer, "MOVESERVO=") != NULL) 
     {
       char *paramStart = strstr(Buffer, "=");
       if (paramStart != NULL) {
         paramStart++; // Avança para depois do '='
-        int servo, angle;
-        if (sscanf(paramStart, "%d,%d", &servo, &angle) == 2) {
-          Carrega_Movimento(servo, angle);
+        int passos;
+        if (sscanf(paramStart, "%d", &passos) == 1) 
+        {          
+          MovePasso(passos);
           resp = true;
           Serial.print("Comando MOVESERVO executado: Servo ");
-          Serial.print(servo);
-          Serial.print(", Ângulo ");
-          Serial.println(angle);
+          Serial.print(passos);
+          
         } else {
-          Serial.println(F("Erro: parâmetros inválidos para MOVESERVO. Use MOVESERVO=NRO_SERVO,ANGULO"));
+          Serial.println(F("Erro: parâmetros inválidos para MOVESERVO. Use MOVESERVO=NRO_SERVO"));
         }
       }
     }
@@ -2421,7 +2426,7 @@ void KeyCMD()
     //RETORNOCARRO - INICIO de curso posicao
     if (strcmp( Buffer, "RETORNOCARRO\n") == 0)
     {
-      Serial.print("RETORNOCARRO");      
+      Serial.println("RETORNOCARRO");      
       RetornoCarro();
       resp = true;
     }
@@ -2429,7 +2434,7 @@ void KeyCMD()
     //Calibracao - INICIO de curso posicao
     if (strcmp( Buffer, "CALIBRACAO\n") == 0)
     {
-      Serial.print("CALIBRACAO");      
+      Serial.println("CALIBRACAO");      
       Calibracao();
       resp = true;
     }
@@ -2438,7 +2443,7 @@ void KeyCMD()
     //POSFIMCARRO - Final de curso posicao do carro
     if (strcmp( Buffer, "POSFIMCARRO\n") == 0)
     {
-      Serial.print("POSFIMCARRO");      
+      Serial.println("POSFIMCARRO");      
       PosFimCarro();
       resp = true;
     }
@@ -2447,7 +2452,7 @@ void KeyCMD()
     //POSINICIOSERVA - INICIO de curso posicao
     if (strcmp( Buffer, "POSFIMSERVA\n") == 0)
     {
-      Serial.print("POSINICIOSERVA");
+      Serial.println("POSINICIOSERVA");
       
       resp = true;
     }
@@ -2744,8 +2749,11 @@ void Le_FimCurso()
   flgFIMC2 = digitalRead(pinFIMC2)!=HIGH?HIGH:LOW;  
   if(lastflgFIMA1!=flgFIMA1)
   {
-     Serial.print("flgFIMA1=");  Serial.println(flgFIMA1==HIGH?"ON":"OFF");
+     Serial.print("flgFIMA1=");  
+     Serial.println(flgFIMA1==HIGH?"ON":"OFF");
      posSERVA = 0;
+     Serial.print("posSERVA=");
+     Serial.println(posSERVA);
      lastflgFIMA1 = flgFIMA1;
   }
   if(lastflgFIMA2!=flgFIMA2)

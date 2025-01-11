@@ -1,11 +1,12 @@
 object frmToolsOuvir: TfrmToolsOuvir
-  Left = 520
+  Left = 477
   Height = 143
-  Top = 476
+  Top = 675
   Width = 529
   Caption = 'Serviço de Reconhecimento de Voz'
   ClientHeight = 143
   ClientWidth = 529
+  Position = poMainFormCenter
   LCLVersion = '3.4.0.0'
   object Shape1: TShape
     Left = 0
@@ -79,7 +80,6 @@ object frmToolsOuvir: TfrmToolsOuvir
     Top = 96
     Width = 520
     TabOrder = 4
-    Text = 'edTexto'
   end
   object LTCPComponent1: TLTCPComponent
     Host = '192.168.0.6'

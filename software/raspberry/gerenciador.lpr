@@ -14,7 +14,7 @@ uses
   LazSerialPort, pkg_gifanim, zcomponent, config, banco, cfgspeak, cfgBanco,
   bloqueio, OpAmostragem, imp, imp_ELGINI9, imp_generico, imp_qr203, cfgImp,
   Etiquetar, PesqPacientes, PesqTipoExames, chatgpt, ToolsOuvir, toolsver,
-  splash
+  splash, log
   { you can add units after this };
 
 {$R *.res}
@@ -24,6 +24,7 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(Tfrmmain, frmmain);
+  Application.CreateForm(TfrmLog, frmLog);
   Application.Run;
 end.
 

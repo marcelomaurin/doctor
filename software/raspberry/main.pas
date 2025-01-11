@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   setmain, Toolsfalar, config, banco, bloqueio, OpAmostragem, imp, LazSerial,
-  ToolsOuvir, Etiquetar, splash, brobotico;
+  ToolsOuvir, Etiquetar, splash, brobotico, log, aguarde, LazSynaSer;
 
 type
 
@@ -37,10 +37,13 @@ type
     procedure Image2MouseEnter(Sender: TObject);
     procedure Image3Click(Sender: TObject);
     procedure Image3MouseEnter(Sender: TObject);
+    procedure Image4Click(Sender: TObject);
     procedure Image4MouseEnter(Sender: TObject);
     procedure Image5Click(Sender: TObject);
     procedure Image5DblClick(Sender: TObject);
     procedure Image5MouseEnter(Sender: TObject);
+    procedure LazSerial2BlockSerialStatus(Sender: TObject;
+      Reason: THookSerialReason; const Value: string);
     procedure LazSerial2RxData(Sender: TObject);
     procedure SdpoSerial1RxData(Sender: TObject);
   private
@@ -53,9 +56,11 @@ type
     nomepessoa : string;
     idpessoa : integer;
     buffer : string;
-    POSESTEIRA : INTEGER;
+    POSESTEIRA : LongInt;
+    POSFIMESTEIRA : LongInt;
+    flgStart : boolean;
 
-
+    procedure AguardeInicializar();
     procedure BloqueioAcesso();
     procedure RecebeuPergunta(Pergunta: string);
     procedure RecebeuAssociacao(Associacao : string);
@@ -77,12 +82,14 @@ implementation
 
 procedure Tfrmmain.FormCreate(Sender: TObject);
 begin
+  flgStart := false;
   frmsplash := tfrmsplash.create(self);
   frmsplash.showmodal();
   Setup();
   frmsplash.free;
   buffer := '';
   POSESTEIRA := 0;
+
 end;
 
 procedure Tfrmmain.FormChangeBounds(Sender: TObject);
@@ -153,6 +160,11 @@ begin
   Application.ProcessMessages;
 end;
 
+procedure Tfrmmain.Image4Click(Sender: TObject);
+begin
+
+end;
+
 procedure Tfrmmain.Image4MouseEnter(Sender: TObject);
 begin
   frmToolsfalar.Falar('Relatórios');
@@ -183,12 +195,18 @@ begin
   Application.ProcessMessages;
 end;
 
+procedure Tfrmmain.LazSerial2BlockSerialStatus(Sender: TObject;
+  Reason: THookSerialReason; const Value: string);
+begin
+
+end;
+
 procedure Tfrmmain.LazSerial2RxData(Sender: TObject);
 var
   info, linha: string;
   posicaoLF: integer;
 begin
-  while LazSerial2.DataAvailable do
+  if LazSerial2.DataAvailable then
   begin
     info := LazSerial2.ReadData;
     buffer := buffer + info; // Adiciona os dados ao buffer
@@ -198,15 +216,18 @@ begin
       if posicaoLF > 0 then
       begin
         linha := copy(buffer, 1, posicaoLF - 1); // Texto antes do \n
+        buffer := copy(buffer,posicaoLF+1,Length(buffer));
         // Chama a rotina AnalisarBuffer com a linha extraída
         AnalisarBuffer(linha);
-        if (frmbrobotico <> nil) then
+        if (frmlog <> nil) then
         begin
-          frmbrobotico.meconsole.Append(linha);
+          frmlog.melog.Append(linha);
+          frmlog.melog.SelStart := Length(frmlog.melog.Text); // Move o cursor para o final
+          frmlog.melog.SelLength := 0; // Remove qualquer seleção de texto visível
+          //frmlog.melog.SetFocus; // Opcional: garante o foco no TMemo
         end;
 
-        // Remove a linha processada do buffer
-        buffer := copy(buffer, posicaoLF + 1, Length(buffer));
+
       end;
     until posicaoLF = 0;
   end;
@@ -223,7 +244,17 @@ procedure Tfrmmain.Setup;
 begin
   FSetMain := TSetMain.create();
   FSetMain.CarregaContexto();
-
+  frmlog := Tfrmlog.create(self); //Cria o log de eventos
+  frmlog.show;
+  try
+    LazSerial2.Device:= FSetMain.SerialPort;
+    LazSerial2.open;
+    AguardeInicializar();
+  except
+     frmbrobotico := Tfrmbrobotico.create(self);
+     ShowMessage('Necessário configurar porta do equipamento');
+     frmbrobotico.show();
+  end;
   dmbanco := Tdmbanco.Create(self);
   Application.ProcessMessages;
   if dmbanco.ZConnection1.Connected then
@@ -279,6 +310,9 @@ begin
     Application.Terminate;
 
   end;
+
+  frmlog.show();
+
 end;
 
 procedure Tfrmmain.ChamaConfiguracao;
@@ -286,6 +320,11 @@ begin
   frmconfig :=  Tfrmconfig.create(self);
   frmToolsfalar.Falar('Configurações do Sistema');
   Application.ProcessMessages;
+  if(frmLog <> nil) then
+  begin
+    frmLog.Free;
+    frmLog := nil;
+  end;
   frmconfig.showmodal();
   frmconfig.free();
   frmToolsfalar.Falar('Voltou a Tela Principal');
@@ -297,15 +336,35 @@ begin
   frmOpAmostragem :=  TfrmOpAmostragem.create(self);
   frmToolsfalar.Falar('Operações de Amostragem');
   Application.ProcessMessages;
+  if(frmLog <> nil) then
+  begin
+    frmLog.Free;
+    frmLog := nil;
+  end;
   frmOpAmostragem.showmodal();
   frmOpAmostragem.free();
   frmToolsfalar.Falar('Voltou a Tela Principal');
   Application.ProcessMessages;
 end;
 
+procedure Tfrmmain.AguardeInicializar();
+begin
+  frmaguarde := tfrmaguarde.create(self);
+
+  frmaguarde.showmodal();
+  frmaguarde.free;
+  frmaguarde := nil;
+end;
+
 procedure Tfrmmain.BloqueioAcesso;
 begin
     frmBloqueio := TfrmBloqueio.create(self);
+    if(frmLog<> nil) then
+    begin
+      frmLog.free;   //Pre
+      frmLog := nil;
+
+    end;
     frmBloqueio.showmodal();
     chavepessoa :=frmBloqueio.edChave.text;
     nomepessoa := dmbanco.BuscaNomePessoa(chavepessoa);
@@ -313,6 +372,8 @@ begin
     frmToolsfalar.Falar('Bem vindo ao Sistema '+ nomepessoa);
     Application.ProcessMessages;
     frmBloqueio.free;
+    frmLog := Tfrmlog.create(self);
+    frmLog.show;
 
 end;
 
@@ -361,7 +422,7 @@ end;
 
 procedure Tfrmmain.AnalisarBuffer(const linha: string);
 var
-  posTemperatura, posHumidade, posMoveDir, posMoveEsc: integer;
+  posTemperatura, posHumidade, posMoveDir, posMoveEsc: longint;
   temperatura, humidade, moveDir, moveEsc: string;
 begin
   posTemperatura := pos('TEMPERATURA:', linha);
@@ -372,6 +433,12 @@ begin
     begin
       frmbrobotico.LEDTEMP.Caption := temperatura;
     end;
+  end;
+
+  posTemperatura := pos('Bem vindo', linha);
+  if posTemperatura > 0 then
+  begin
+    flgStart := true;
   end;
 
   posHumidade := pos('Humidade:', linha);
@@ -395,14 +462,24 @@ begin
       begin
            frmbrobotico.Image2.Left:= 32+trunc(frmbrobotico.tbMov.Position * 0.228);
            frmbrobotico.Image2.refresh;
-           frmbrobotico.lbPosicao.Caption:=  inttostr(frmbrobotico.tbMov.Position);
-           frmbrobotico.lbPosicao.Refresh;
-           application.ProcessMessages;
-           //frmbrobotico.tbMov.Position := POSESTEIRA;
+           //frmbrobotico.Image2.Left := 24 + trunc(tbMov.Position*0.28);
+           frmbrobotico.lbPosicao.Caption:=  moveDir;
+           //frmbrobotico.lbPosicao. := POSESTEIRA;
       end;
     end;
   end;
-
+  //POSFIMSERVA
+  posMoveDir := pos('POSFIMSERVA=', linha);
+  if posMoveDir > 0 then
+  begin
+    moveDir := copy(linha, posMoveDir + 12, pos(#32, linha + ' ', posMoveDir + 12) - posMoveDir - 12);
+    if (frmbrobotico <> nil) then
+    begin
+       POSFIMESTEIRA := StrToInt64(moveDir);
+       frmbrobotico.lbPOSFIMESTEIRA.Caption := moveDir;
+       frmbrobotico.tbMov.Max:= POSFIMESTEIRA;
+    end;
+  end;
 end;
 
 

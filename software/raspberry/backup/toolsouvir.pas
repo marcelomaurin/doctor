@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  lNetComponents, lNet, strutils, toolsfalar;
+  lNetComponents, lNet, strutils, toolsfalar, Process;
 
 type
 
