@@ -7,7 +7,8 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   setmain, Toolsfalar, config, banco, bloqueio, OpAmostragem, imp, LazSerial,
-  ToolsOuvir, Etiquetar, splash, brobotico, log, aguarde, LazSynaSer;
+  ToolsOuvir, Etiquetar, splash, brobotico, log, aguarde,
+  SdpoSerial;
 
 type
 
@@ -24,8 +25,8 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    LazSerial1: TLazSerial;
-    LazSerial2: TLazSerial;
+    LazSerial2: TSdpoSerial;
+    LazSerial1: TSdpoSerial;
     procedure FormChangeBounds(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -42,9 +43,9 @@ type
     procedure Image5Click(Sender: TObject);
     procedure Image5DblClick(Sender: TObject);
     procedure Image5MouseEnter(Sender: TObject);
-    procedure LazSerial2BlockSerialStatus(Sender: TObject;
-      Reason: THookSerialReason; const Value: string);
+
     procedure LazSerial2RxData(Sender: TObject);
+
     procedure SdpoSerial1RxData(Sender: TObject);
   private
     procedure Setup();
@@ -195,44 +196,39 @@ begin
   Application.ProcessMessages;
 end;
 
-procedure Tfrmmain.LazSerial2BlockSerialStatus(Sender: TObject;
-  Reason: THookSerialReason; const Value: string);
-begin
-
-end;
 
 procedure Tfrmmain.LazSerial2RxData(Sender: TObject);
 var
-  info, linha: string;
-  posicaoLF: integer;
+    info, linha: string;
+    posicaoLF: integer;
 begin
-  if LazSerial2.DataAvailable then
-  begin
-    info := LazSerial2.ReadData;
-    buffer := buffer + info; // Adiciona os dados ao buffer
+    if LazSerial2.DataAvailable then
+    begin
+      info := LazSerial2.ReadData;
+      buffer := buffer + info; // Adiciona os dados ao buffer
 
-    repeat
-      posicaoLF := pos(#10, buffer); // Procura por \n (Line Feed)
-      if posicaoLF > 0 then
-      begin
-        linha := copy(buffer, 1, posicaoLF - 1); // Texto antes do \n
-        buffer := copy(buffer,posicaoLF+1,Length(buffer));
-        // Chama a rotina AnalisarBuffer com a linha extraída
-        AnalisarBuffer(linha);
-        if (frmlog <> nil) then
+      repeat
+        posicaoLF := pos(#10, buffer); // Procura por \n (Line Feed)
+        if posicaoLF > 0 then
         begin
-          frmlog.melog.Append(linha);
-          frmlog.melog.SelStart := Length(frmlog.melog.Text); // Move o cursor para o final
-          frmlog.melog.SelLength := 0; // Remove qualquer seleção de texto visível
-          //frmlog.melog.SetFocus; // Opcional: garante o foco no TMemo
+          linha := copy(buffer, 1, posicaoLF - 1); // Texto antes do \n
+          buffer := copy(buffer,posicaoLF+1,Length(buffer));
+          // Chama a rotina AnalisarBuffer com a linha extraída
+          AnalisarBuffer(linha);
+          if (frmlog <> nil) then
+          begin
+            frmlog.melog.Append(linha);
+            frmlog.melog.SelStart := Length(frmlog.melog.Text); // Move o cursor para o final
+            frmlog.melog.SelLength := 0; // Remove qualquer seleção de texto visível
+            //frmlog.melog.SetFocus; // Opcional: garante o foco no TMemo
+          end;
         end;
-
-
-      end;
-    until posicaoLF = 0;
-  end;
-  Application.ProcessMessages;
+      until posicaoLF = 0;
+    end;
+    Application.ProcessMessages;
 end;
+
+
 
 
 procedure Tfrmmain.SdpoSerial1RxData(Sender: TObject);
@@ -244,6 +240,24 @@ procedure Tfrmmain.Setup;
 begin
   FSetMain := TSetMain.create();
   FSetMain.CarregaContexto();
+  dmbanco := Tdmbanco.Create(self);
+  //Application.ProcessMessages;
+  LazSerial1.Device:= FSetMain.ComPrinter;
+  LazSerial1.BaudRate:= br__9600;
+  LazSerial1.DataBits:=db8bits;
+  LazSerial1.FlowControl := fcNone;
+  LazSerial1.StopBits:= sbOne;
+  LazSerial1.Open;
+  Fimp := TImp.create(LazSerial1);
+  if( not LazSerial1.Active) then
+  begin
+    frmToolsfalar.Falar('Atenção, houve um problema na porta serial, reconfigure a porta e reinicie a aplicação');
+    Application.ProcessMessages;
+
+    //Application.Terminate;
+
+  end;
+
   frmlog := Tfrmlog.create(self); //Cria o log de eventos
   frmlog.show;
   try
@@ -255,8 +269,8 @@ begin
      ShowMessage('Necessário configurar porta do equipamento');
      frmbrobotico.show();
   end;
-  dmbanco := Tdmbanco.Create(self);
-  Application.ProcessMessages;
+
+  //Application.ProcessMessages;
   if dmbanco.ZConnection1.Connected then
   begin
     frmToolsfalar :=   TfrmToolsfalar.create(self);
@@ -268,39 +282,28 @@ begin
 
     frmToolsfalar.edIP.text :=  Fsetmain.IPFALAR;
     frmToolsOuvir.edIP.text :=  Fsetmain.IPFALAR;
-    Application.ProcessMessages;
-    Sleep(1000);
+    //Application.ProcessMessages;
+    //Sleep(1000);
 
     frmToolsfalar.Conectar();
     frmToolsOuvir.Conectar();
-    Application.ProcessMessages;
-
+    //Application.ProcessMessages;
+    LazSerial2.OnRxData:= nil;
+    frmlog.close;
+    frmLog.free;
+    frmlog := nil;
 
 
     frmToolsfalar.Falar('Iniciando o servidor do Doctor, aguarde');
-    Application.ProcessMessages;
-    LazSerial1.Device:= FSetMain.ComPrinter;
-    LazSerial1.BaudRate:= br__9600;
-    LazSerial1.DataBits:=db8bits;
-    LazSerial1.FlowControl := fcNone;
-    LazSerial1.StopBits:= sbOne;
-    LazSerial1.Open;
-    if( not LazSerial1.Active) then
-    begin
-      frmToolsfalar.Falar('Atenção, houve um problema na porta serial, reconfigure a porta e reinicie a aplicação');
-      Application.ProcessMessages;
 
-      //Application.Terminate;
-
-    end;
-    Fimp := TImp.create(LazSerial1);
-    Sleep(10000);
+    //Sleep(10000);
     //frmToolsfalar.Hide;
     //Application.ProcessMessages;
     //Finalizando o Setup
     frmToolsfalar.Falar('Equipamento pronto para operar');
-    Application.ProcessMessages;
+    //Application.ProcessMessages;
     BloqueioAcesso();
+    LazSerial2.OnRxData:= @LazSerial2RxData;
   end
   else
   begin
@@ -311,7 +314,6 @@ begin
 
   end;
 
-  frmlog.show();
 
 end;
 
@@ -359,12 +361,6 @@ end;
 procedure Tfrmmain.BloqueioAcesso;
 begin
     frmBloqueio := TfrmBloqueio.create(self);
-    if(frmLog<> nil) then
-    begin
-      frmLog.free;   //Pre
-      frmLog := nil;
-
-    end;
     frmBloqueio.showmodal();
     chavepessoa :=frmBloqueio.edChave.text;
     nomepessoa := dmbanco.BuscaNomePessoa(chavepessoa);
@@ -372,8 +368,14 @@ begin
     frmToolsfalar.Falar('Bem vindo ao Sistema '+ nomepessoa);
     Application.ProcessMessages;
     frmBloqueio.free;
-    frmLog := Tfrmlog.create(self);
-    frmLog.show;
+    if(frmLog = nil) then
+    begin
+         frmLog := Tfrmlog.create(self);
+    end;
+    if(frmlog <> nil) then
+    begin
+         frmLog.show;
+    end;
 
 end;
 
@@ -477,7 +479,7 @@ begin
     begin
        POSFIMESTEIRA := StrToInt64(moveDir);
        frmbrobotico.lbPOSFIMESTEIRA.Caption := moveDir;
-       frmbrobotico.tbMov.Max:=;
+       frmbrobotico.tbMov.Max:= POSFIMESTEIRA;
     end;
   end;
 end;
