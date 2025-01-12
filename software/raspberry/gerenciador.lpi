@@ -222,6 +222,7 @@
         <Filename Value="aguarde.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmAguarde"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>

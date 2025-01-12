@@ -20,9 +20,8 @@
         <ComponentName Value="frmmain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="50"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="13"/>
         <CursorPos X="34" Y="63"/>
         <UsageCount Value="104"/>
         <Loaded Value="True"/>
@@ -31,9 +30,9 @@
       <Unit>
         <Filename Value="setmain.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="148"/>
-        <CursorPos X="10" Y="158"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="158"/>
+        <CursorPos X="4" Y="171"/>
         <UsageCount Value="104"/>
         <Loaded Value="True"/>
       </Unit>
@@ -125,7 +124,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="OpAmostragem"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <CursorPos X="10" Y="5"/>
         <UsageCount Value="92"/>
         <Loaded Value="True"/>
@@ -185,7 +184,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Etiquetar"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="6"/>
         <UsageCount Value="86"/>
         <Loaded Value="True"/>
       </Unit>
@@ -265,7 +264,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="43"/>
+        <TopLine Value="45"/>
         <CursorPos Y="61"/>
         <UsageCount Value="52"/>
         <Loaded Value="True"/>
@@ -277,9 +276,22 @@
         <ComponentName Value="frmLog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <CursorPos X="49" Y="11"/>
         <UsageCount Value="29"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="aguarde.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmAguarde"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="36"/>
+        <CursorPos X="86" Y="49"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -424,31 +436,15 @@
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="aguarde.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="frmAguarde"/>
-        <ResourceBaseClass Value="Form"/>
-        <TopLine Value="15"/>
-        <CursorPos X="20" Y="37"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="C:\Users\marce\AppData\Local\lazarus\onlinepackagemanager\packages\LazSerial\lazserial.pas"/>
         <UnitName Value="LazSerial"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="470"/>
         <CursorPos X="61" Y="486"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="342" Column="43" TopLine="337"/>
-      </Position>
       <Position>
         <Filename Value="main.pas"/>
         <Caret Line="220" Column="23" TopLine="202"/>
@@ -563,6 +559,10 @@
       <Position>
         <Filename Value="main.pas"/>
         <Caret Line="204" Column="36" TopLine="198"/>
+      </Position>
+      <Position>
+        <Filename Value="aguarde.pas"/>
+        <Caret Line="27" Column="44" TopLine="22"/>
       </Position>
     </JumpHistory>
     <RunParams>

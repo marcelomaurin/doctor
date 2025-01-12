@@ -1,0 +1,19 @@
+object frmLog: TfrmLog
+  Left = 159
+  Height = 117
+  Top = 572
+  Width = 606
+  Caption = 'Log de serial'
+  ClientHeight = 117
+  ClientWidth = 606
+  LCLVersion = '3.4.0.0'
+  object meLog: TMemo
+    Left = 0
+    Height = 117
+    Top = 0
+    Width = 606
+    Align = alClient
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+end

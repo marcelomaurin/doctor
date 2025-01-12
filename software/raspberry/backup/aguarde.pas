@@ -16,6 +16,7 @@ type
     GifAnim1: TGifAnim;
     Label1: TLabel;
     Timer1: TTimer;
+    procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
 
@@ -40,6 +41,16 @@ begin
   begin
     close;
   end;
+end;
+
+procedure TfrmAguarde.FormCreate(Sender: TObject);
+begin
+  {$IFDEF LINUX}
+    GifAnim1.FileName := 'D:\projetos\maurinsoft\doctor\imgs\inicializando.gif';
+  {$ENDIF}
+  {$IFDEF WINDOWS}
+    GifAnim1.FileName := 'D:\projetos\maurinsoft\doctor\imgs\inicializando.gif';
+  {$ENDIF}
 end;
 
 end.
