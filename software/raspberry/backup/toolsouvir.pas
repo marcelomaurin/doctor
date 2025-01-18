@@ -85,7 +85,7 @@ begin
        begin
          lastfrase := info;
          info := replacestr(info,frase, '');
-         frmToolsfalar.falar('Claro, deixa eu ver se encontro sua resposta!');
+         //frmToolsfalar.falar('Claro, deixa eu ver se encontro sua resposta!');
          //frmmain.NewContext();
          //frmmain.pergunta := info;
          ProcessarBatch();

@@ -18364,7 +18364,7 @@ object frmbrobotico: Tfrmbrobotico
       object LEDTEMP: TLEDNumber
         Left = 18
         Height = 30
-        Top = 48
+        Top = 56
         Width = 170
         Caption = '0'
       end
@@ -18379,7 +18379,7 @@ object frmbrobotico: Tfrmbrobotico
       object LEDHUM: TLEDNumber
         Left = 18
         Height = 30
-        Top = 112
+        Top = 120
         Width = 170
         Caption = '0'
       end
