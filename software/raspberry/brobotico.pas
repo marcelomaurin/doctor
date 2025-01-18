@@ -127,6 +127,7 @@ begin
 
   Posicao:= posicao -forca;
   if (posicao < 0) then posicao := 0;
+  frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
   frmmain.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
@@ -136,6 +137,7 @@ procedure Tfrmbrobotico.moveleft(forca : integer);
 begin
   Posicao:= trunc(posicao +forca);
   if (posicao > 255) then posicao := 255;
+  frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
   frmmain.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
@@ -144,6 +146,7 @@ end;
 
 procedure Tfrmbrobotico.btInicioEsteiraClick(Sender: TObject);
 begin
+  frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
   frmmain.LazSerial2.WriteData('RETORNOCARRO'+#10);
 
 end;
@@ -155,6 +158,7 @@ end;
 
 procedure Tfrmbrobotico.btFinalEsteiraClick(Sender: TObject);
 begin
+  frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
   frmmain.LazSerial2.WriteData('POSFIMCARRO'+#10);
 
 end;
@@ -163,6 +167,7 @@ procedure Tfrmbrobotico.btMoverClick(Sender: TObject);
 begin
   if (tbMov.Position<> posicaoanterior) then
   begin
+     frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
      frmmain.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
      posicaoanterior :=  tbMov.Position;
      Image2.left := trunc(tbMov.Position*0.28);
@@ -173,12 +178,23 @@ end;
 
 procedure Tfrmbrobotico.btPosFimServaClick(Sender: TObject);
 begin
-  frmmain.LazSerial2.WriteData('POSFIMSERVA'+#10);
+  if(frmmain.LazSerial2.Active) then
+  begin
+       frmmain.LazSerial2.WriteData('POSFIMSERVA'+#10);
+  end
+  else
+  begin
+       //Nao ativo
+  end;
 end;
 
 procedure Tfrmbrobotico.btCalibrarClick(Sender: TObject);
 begin
-   frmmain.LazSerial2.WriteData('CALIBRACAO'+#10);
+  if(frmmain.LazSerial2.Active) then
+  begin
+       frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+       frmmain.LazSerial2.WriteData('CALIBRACAO'+#10);
+  end;
 end;
 
 procedure Tfrmbrobotico.Button11Click(Sender: TObject);
@@ -201,21 +217,26 @@ end;
 
 procedure Tfrmbrobotico.Button13Click(Sender: TObject);
 begin
-  frmmain.LazSerial2.close;
-  frmmain.LazSerial2.Device :=  edPorta.text;
-  fsetmain.SerialPort :=  edPorta.text;
-  FSetMain.SalvaContexto(false);
-  frmmain.LazSerial2.Open;
-  PageControl1.PageIndex := 0;
-  Application.ProcessMessages;
-
+  if(not frmmain.LazSerial2.Active) then
+  begin
+    frmmain.LazSerial2.close;
+    frmmain.LazSerial2.Device :=  edPorta.text;
+    fsetmain.SerialPort :=  edPorta.text;
+    FSetMain.SalvaContexto(false);
+    frmmain.LazSerial2.Open;
+    frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+    PageControl1.PageIndex := 0;
+    Application.ProcessMessages;
+  end;
 end;
 
 procedure Tfrmbrobotico.Button14Click(Sender: TObject);
 begin
-  frmmain.LazSerial2.close;
-  frmmain.LazSerial2.Device :=  edPorta.text;
-
+  if(frmmain.LazSerial2.Active) then
+  begin
+    frmmain.LazSerial2.close;
+    frmmain.LazSerial2.Device :=  edPorta.text;
+  end;
 end;
 
 procedure Tfrmbrobotico.btDirForteClick(Sender: TObject);

@@ -1,12 +1,12 @@
 object frmToolsOuvir: TfrmToolsOuvir
-  Left = 477
+  Left = 744
   Height = 143
-  Top = 511
+  Top = 45
   Width = 529
+  ActiveControl = edIP
   Caption = 'Serviço de Reconhecimento de Voz'
   ClientHeight = 143
   ClientWidth = 529
-  Position = poMainFormCenter
   LCLVersion = '2.2.6.0'
   object Shape1: TShape
     Left = 0

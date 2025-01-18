@@ -76,7 +76,8 @@ type
     procedure RetornarBracoRobototico();
     procedure TelaReceita();
     procedure AnalisarBuffer(const linha: string);
-
+    procedure CalibrarEquipamento();
+    procedure PHFimCurso();
   end;
 
 var
@@ -275,6 +276,7 @@ begin
     LazSerial2.Device:= FSetMain.SerialPort;
     LazSerial2.open;
     AguardeInicializar();
+    CalibrarModulo1();
   except
      frmbrobotico := Tfrmbrobotico.create(self);
      ShowMessage('Necessário configurar porta do equipamento');
@@ -408,6 +410,8 @@ begin
    11: CalibrarModulo2();
    12: RetornarBracoRobototico();
    13: TelaReceita();
+   14: CalibrarEquipamento();
+   15: PHFimCurso();
   else
         frmToolsfalar.Falar('Comando não encontrado '); //Comando nao encontrado
   end;
@@ -451,16 +455,29 @@ end;
 procedure Tfrmmain.CalibrarModulo1;
 begin
   frmToolsfalar.Falar('Iniciando módulo de calibragem 1 '); //Ola
+  if(frmlog=nil) then
+  begin
+       frmlog := Tfrmlog.create(self);
+  end;
+  frmlog.show();
+  //SENDMSG=   1, CALIBRAR
+  LazSerial2.OnRxData:= @LazSerial2RxData;
+  LazSerial2.WriteData('SENDMSG=1,CALIBRAR'+#10);
+
 end;
 
 procedure Tfrmmain.CalibrarModulo2;
 begin
   frmToolsfalar.Falar('Iniciando módulo de calibragem 2 '); //Ola
+  LazSerial2.OnRxData:= @LazSerial2RxData;
+  LazSerial2.WriteData('SENDMSG=2,CALIBRAR'+#10);
 end;
 
 procedure Tfrmmain.RetornarBracoRobototico;
 begin
   frmToolsfalar.Falar('Iniciando braço robótico '); //Ola
+  LazSerial2.OnRxData:= @LazSerial2RxData;
+  LazSerial2.WriteData('RETORNOCARRO'+#10);
 end;
 
 procedure Tfrmmain.TelaReceita;
@@ -529,6 +546,20 @@ begin
        frmbrobotico.tbMov.Max:= POSFIMESTEIRA;
     end;
   end;
+end;
+
+procedure Tfrmmain.CalibrarEquipamento;
+begin
+  frmToolsfalar.Falar('Iniciando Calibração do equipamento '); //Ola
+  LazSerial2.OnRxData:= @LazSerial2RxData;
+  LazSerial2.WriteData('CALIBRACAO'+#10);
+end;
+
+procedure Tfrmmain.PHFimCurso;
+begin
+  frmToolsfalar.Falar('Posicionando PH na posicao de leitura '); //Ola
+  LazSerial2.OnRxData:= @LazSerial2RxData;
+  LazSerial2.WriteData('SENDMSG=1,MOVERFIMCURSOESQ'+#10);
 end;
 
 
