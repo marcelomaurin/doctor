@@ -5,7 +5,8 @@ unit imp;
 interface
 
 uses
-  Classes, SysUtils, imp_generico, imp_elgini9, imp_qr203,LazSerial, funcoes;
+  Classes, SysUtils, imp_generico, imp_elgini9, imp_qr203,LazSerial, funcoes,
+  SdpoSerial;
 
 
 
@@ -30,7 +31,7 @@ type TImp = class(tobject)
           procedure SetTipoimp(value : CTipoIMP);
           procedure Setmodeloimp(value : CModeloIMP);
     public
-          constructor create(PLazSerial1: TLazSerial);
+          constructor create(PLazSerial1: TSdpoSerial);
           destructor destroy();
           procedure DefaultSerial();
           function FormatacaoString(info: string;tam: integer; Formatacao:CFormat; margin: integer): TStringList;
@@ -73,7 +74,7 @@ begin
   Fmodeloimp := value;
 end;
 
-constructor TImp.create(PLazSerial1: TLazSerial);
+constructor TImp.create(PLazSerial1: TSdpoSerial);
 begin
   LazSerial1:= PLazSerial1;
   DefaultSerial();
@@ -253,7 +254,10 @@ begin
     LineSerial();
     LineSerial();
     LineSerial();
-
+  end;
+   if modeloimp = MI_IMP59COL then
+  begin
+    LineSerial();
   end;
 end;
 

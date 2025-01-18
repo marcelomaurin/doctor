@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ExtCtrls, synaser, setmain, LazSerial, MKnob, LedNumber,
-  indGnouMeter, AdvLed;
+  indGnouMeter, AdvLed, log;
 
 type
 
@@ -277,6 +277,11 @@ begin
   posicaoanterior := 0;
   edPorta.text := FSetMain.SerialPort ;
   PageControl1.ActivePage := tsEsteira;
+  if (frmlog = nil) then
+  begin
+      frmlog := tfrmlog.create(self);
+  end;
+  frmlog.show;
   if(frmmain.POSFIMESTEIRA<>0) then
   begin
     tbMov.max := frmmain.POSFIMESTEIRA;
@@ -288,6 +293,13 @@ end;
 procedure Tfrmbrobotico.FormDestroy(Sender: TObject);
 begin
     //frmmain.LazSerial2.Close;
+
+    if (frmlog <> nil) then
+    begin
+        frmlog.close;
+        frmlog.free;
+        frmlog
+    end;
 
 end;
 

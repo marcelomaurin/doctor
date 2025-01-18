@@ -26,6 +26,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="SdpoSerialLaz"/>
+      </Item>
+      <Item>
         <PackageName Value="industrial"/>
       </Item>
       <Item>
