@@ -46,11 +46,16 @@ end;
 procedure TfrmAguarde.FormCreate(Sender: TObject);
 begin
   {$IFDEF LINUX}
-    GifAnim1.FileName := 'D:\projetos\maurinsoft\doctor\imgs\inicializando.gif';
+    GifAnim1.FileName := '/home/mmm/projetos/maurinsoft/doctor/imgs/inicializando.gif';
   {$ENDIF}
   {$IFDEF WINDOWS}
     GifAnim1.FileName := 'D:\projetos\maurinsoft\doctor\imgs\inicializando.gif';
   {$ENDIF}
+  frmToolsfalar.Falar('Estou Inicializando o equipamento, aguarde! '); //Ola
+  if(frmToolsfalar<> nil) then
+  begin
+
+  end;
 end;
 
 end.

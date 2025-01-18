@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  GifAnim;
+  GifAnim, Toolsfalar;
 
 type
 
@@ -51,6 +51,11 @@ begin
   {$IFDEF WINDOWS}
     GifAnim1.FileName := 'D:\projetos\maurinsoft\doctor\imgs\inicializando.gif';
   {$ENDIF}
+  frmToolsfalar.Falar('Estou Inicializando o equipamento, aguarde! '); //Ola
+  if(frmToolsfalar<> nil) then
+  begin
+
+  end;
 end;
 
 end.

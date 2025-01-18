@@ -6,6 +6,7 @@ object frmToolsOuvir: TfrmToolsOuvir
   Caption = 'Serviço de Reconhecimento de Voz'
   ClientHeight = 143
   ClientWidth = 529
+  Position = poMainFormCenter
   LCLVersion = '3.4.0.0'
   object Shape1: TShape
     Left = 0

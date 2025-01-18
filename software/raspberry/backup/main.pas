@@ -68,6 +68,13 @@ type
     procedure StatusSistema();
     procedure SairSistema();
     procedure Etiquetagem();
+    procedure TestarAmostra();
+    procedure CadastrarAmostra();
+    procedure CadastrarPaciente();
+    procedure CalibrarModulo1();
+    procedure CalibrarModulo2();
+    procedure RetornarBracoRobototico();
+    procedure TelaReceita();
     procedure AnalisarBuffer(const linha: string);
 
   end;
@@ -241,6 +248,9 @@ begin
   FSetMain := TSetMain.create();
   FSetMain.CarregaContexto();
   dmbanco := Tdmbanco.Create(self);
+  frmToolsfalar :=   TfrmToolsfalar.create(self);
+  frmToolsfalar.Show;
+  Application.ProcessMessages;
   //Application.ProcessMessages;
   LazSerial1.Device:= FSetMain.ComPrinter;
   LazSerial1.BaudRate:= br__9600;
@@ -257,9 +267,10 @@ begin
     //Application.Terminate;
 
   end;
-
+  Application.ProcessMessages;
   frmlog := Tfrmlog.create(self); //Cria o log de eventos
   frmlog.show;
+  Application.ProcessMessages;
   try
     LazSerial2.Device:= FSetMain.SerialPort;
     LazSerial2.open;
@@ -268,15 +279,16 @@ begin
      frmbrobotico := Tfrmbrobotico.create(self);
      ShowMessage('Necessário configurar porta do equipamento');
      frmbrobotico.show();
+     Application.ProcessMessages;
   end;
 
   //Application.ProcessMessages;
   if dmbanco.ZConnection1.Connected then
   begin
-    frmToolsfalar :=   TfrmToolsfalar.create(self);
+
     frmToolsOuvir := TfrmToolsOuvir.create(self);
     Application.ProcessMessages;
-    frmToolsfalar.Show;
+
     frmToolsOuvir.Show;
     Application.ProcessMessages;
 
@@ -295,7 +307,7 @@ begin
 
 
     frmToolsfalar.Falar('Iniciando o servidor do Doctor, aguarde');
-
+    Application.ProcessMessages;
     //Sleep(10000);
     //frmToolsfalar.Hide;
     //Application.ProcessMessages;
@@ -313,6 +325,7 @@ begin
     Application.Terminate;
 
   end;
+   Application.ProcessMessages;
 
 
 end;
@@ -368,15 +381,6 @@ begin
     frmToolsfalar.Falar('Bem vindo ao Sistema '+ nomepessoa);
     Application.ProcessMessages;
     frmBloqueio.free;
-    if(frmLog = nil) then
-    begin
-         frmLog := Tfrmlog.create(self);
-    end;
-    if(frmlog <> nil) then
-    begin
-         frmLog.show;
-    end;
-
 end;
 
 procedure Tfrmmain.RecebeuPergunta(Pergunta: string);
@@ -397,6 +401,13 @@ begin
     2: StatusSistema();
     3: SairSistema();
     4: Etiquetagem();
+    6: TestarAmostra();
+    8: CadastrarAmostra();
+    9: CadastrarPaciente();
+   10: CalibrarModulo1();
+   11: CalibrarModulo2();
+   12: RetornarBracoRobototico();
+   13: TelaReceita();
   else
         frmToolsfalar.Falar('Comando não encontrado '); //Comando nao encontrado
   end;
@@ -419,6 +430,42 @@ begin
   frmEtiquetar := TfrmEtiquetar.create(self);
   frmEtiquetar.showmodal();
   frmEtiquetar.free();
+end;
+
+procedure Tfrmmain.TestarAmostra;
+begin
+  frmToolsfalar.Falar('Iniciando Teste de Amostra '); //Ola
+  frmToolsfalar.Falar('Informe o codigo de barras da amostra que deseja testar! '); //Ola
+end;
+
+procedure Tfrmmain.CadastrarAmostra;
+begin
+  frmToolsfalar.Falar('Chamando tela de Cadastro de Amostra '); //Ola
+end;
+
+procedure Tfrmmain.CadastrarPaciente;
+begin
+  frmToolsfalar.Falar('Chamando tela de Cadastro de Paciente '); //Ola
+end;
+
+procedure Tfrmmain.CalibrarModulo1;
+begin
+  frmToolsfalar.Falar('Iniciando módulo de calibragem 1 '); //Ola
+end;
+
+procedure Tfrmmain.CalibrarModulo2;
+begin
+  frmToolsfalar.Falar('Iniciando módulo de calibragem 2 '); //Ola
+end;
+
+procedure Tfrmmain.RetornarBracoRobototico;
+begin
+  frmToolsfalar.Falar('Iniciando braço robótico '); //Ola
+end;
+
+procedure Tfrmmain.TelaReceita;
+begin
+  frmToolsfalar.Falar('Chamando tela de receita '); //Ola
 end;
 
 
