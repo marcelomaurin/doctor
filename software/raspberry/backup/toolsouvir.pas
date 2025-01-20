@@ -127,7 +127,7 @@ begin
   if(info<>'-1') then
   begin
     //frmToolsfalar.Falar('Encontrei uma resposta');
-    frmmain.RecebeuAssociacao(info );
+    dmbanco.RecebeuAssociacao(info );
   end;
 
   //ShowMessage(info);

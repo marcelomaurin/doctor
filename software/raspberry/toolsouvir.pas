@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  lNetComponents, lNet, strutils, toolsfalar, Process;
+  lNetComponents, lNet, strutils, toolsfalar, Process, banco;
 
 type
 
@@ -127,7 +127,7 @@ begin
   if(info<>'-1') then
   begin
     //frmToolsfalar.Falar('Encontrei uma resposta');
-    frmmain.RecebeuAssociacao(info );
+    dmbanco.RecebeuAssociacao(info );
   end;
 
   //ShowMessage(info);

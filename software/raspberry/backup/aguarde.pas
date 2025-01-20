@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  GifAnim;
+  GifAnim, Toolsfalar;
 
 type
 
@@ -37,7 +37,7 @@ uses main;
 
 procedure TfrmAguarde.Timer1Timer(Sender: TObject);
 begin
-  if(frmmain.flgStart) then
+  if(dmbanco.flgStart) then
   begin
     close;
   end;

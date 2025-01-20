@@ -47853,19 +47853,6 @@ object frmmain: Tfrmmain
     }
     Stretch = True
   end
-  object LazSerial2: TSdpoSerial
-    Active = False
-    BaudRate = br__9600
-    AltBaudRate = 0
-    DataBits = db8bits
-    Parity = pNone
-    FlowControl = fcNone
-    StopBits = sbOne
-    Device = '/dev/ttyS0'
-    OnRxData = LazSerial2RxData
-    Left = 97
-    Top = 161
-  end
   object LazSerial1: TSdpoSerial
     Active = False
     BaudRate = br__9600
