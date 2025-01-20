@@ -1,13 +1,13 @@
 object frmconfig: Tfrmconfig
-  Left = 5
+  Left = 164
   Height = 591
-  Top = 2
-  Width = 122
+  Top = 3
+  Width = 125
   Caption = 'Configurações'
   ClientHeight = 591
-  ClientWidth = 122
+  ClientWidth = 125
   OnCreate = FormCreate
-  LCLVersion = '3.6.0.0'
+  LCLVersion = '3.4.0.0'
   object Image1: TImage
     Left = 8
     Height = 90

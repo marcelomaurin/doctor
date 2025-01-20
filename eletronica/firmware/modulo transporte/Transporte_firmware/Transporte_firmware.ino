@@ -17,7 +17,7 @@
 //*************** Descricao do Produto *********************
 //Versao do produto 
 #define Versao  "0"  //Controle de Versao do Firmware
-#define Release "5" //Controle Revisao do Firmware
+#define Release "6" //Controle Revisao do Firmware
 char Produto[20] = { "Doctor - Betha"};
 
 #define MAXCICLO 90000
@@ -42,11 +42,14 @@ int posBracoDestino[4] = {90, 90, 90, 90}; // Posições finais desejadas
  * Pinout 
  ****************************************************/
 #include "SoftwareSerial.h"
-#define Br01_PIN 7 //Braco robotico servo 01
-#define Br02_PIN 6  //Braco robotico servo 02
-#define Br03_PIN 5  //Braco robotico servo 03
-#define Br04_PIN 4  //Braco robotico servo 04
+#define Br01_PIN 6 //Braco robotico servo 01
+#define Br02_PIN 5  //Braco robotico servo 02
+#define Br03_PIN 7  //Braco robotico servo 03
+#define Br04_PIN 4  //Braco robotico servo 04 
 
+
+//5 garra
+//7 articulacao final
 #define speakerPin 13 //Speaker
 #define DHT22Pin A9 //DHT22
 #define pinSD  53
@@ -455,17 +458,20 @@ void Calibra_Servos() {
   Move_Servo_Completo(2, 150);
   delay(1000);
   Move_Servo_Completo(2, 1);
+  
   Move_Servo_Completo(1, 1);
   delay(1000);
   Move_Servo_Completo(1, 100);
   delay(1000);
   Move_Servo_Completo(1, 1);
+  
   Move_Servo_Completo(3, 140);
   delay(1000);
   Move_Servo_Completo(3, 1);
   Move_Servo_Completo(4, 50);
   delay(1000);
   Move_Servo_Completo(4, 169);
+  
   RetornaCarro();
   Serial.println("Servos calibrados.");
 }
@@ -558,7 +564,7 @@ void Move_Servo_Completo(int eixo, int posicao)
   {
       ativaMotores();
   }
-  posicao = constrain(posicao, 0, 180); // Limita a posição entre 0 e 180 graus
+  posicao = constrain(posicao, 0, 180); // Limita a posição entre 0 e 359 graus
   posBracoDestino[eixo - 1] = posicao; // Atualiza a posição desejada
 
   while (posBracoAtual[eixo - 1] != posBracoDestino[eixo - 1]) {
@@ -672,10 +678,11 @@ void Start_I2C()
 void setup() {
  
   Start_Serial();
+  Serial.println("Starting modules...");
   Start_Nextion();
   NextionShow("Splah");
   delay(100);
-  Serial.println("Starting modules...");
+  
   Speak_Start();  
   Beep(); 
   Start_Printer();
@@ -706,7 +713,7 @@ void setup() {
   delay(100);
   Calibracao(); /*Calibra��o do equipamento*/
   
-  //Calibra_Servos();
+  Calibra_Servos();
   
   delay(100);
   NextionShow("Menu");
@@ -1912,6 +1919,8 @@ void MAN()
   Serial.println(F("POSFIMSERVA - Informa posicao final do carro "));  
   Serial.println(F("POSFIMCARRO - Vai no final do carro "));
   Serial.println(F("RETORNOCARRO - Posicao inicio do carro "));  
+  Serial.println(F("BRACOOFF - Faz a desativacao do braço robotico "));  
+  Serial.println(F("ATIVABRACO - Faz a ativacao do braço robotico "));    
   Serial.println(F("CALIBRACAO - Calibracao "));
   Serial.println(" ");
 }
@@ -2034,6 +2043,25 @@ void KeyCMD()
       MAN();
       resp = true;
     }
+    
+    //BRACOOFF
+    if (strcmp( Buffer, "BRACOOFF\n") == 0)
+    {
+      //Serial.println(Temperatura);
+      desativaMotores();
+      resp = true;
+    }
+
+    //ATIVABRACO
+    if (strcmp( Buffer, "ATIVABRACO\n") == 0)
+    {
+      //Serial.println(Temperatura);
+      ativaMotores();
+      resp = true;
+    }
+
+    
+    
 
     //void Report()
     //MAN
@@ -2091,26 +2119,35 @@ void KeyCMD()
       }
     }
 
-
     // Comando MOVESERVO
     if (strstr(Buffer, "MOVESERVO=") != NULL) 
     {
-      char *paramStart = strstr(Buffer, "=");
-      if (paramStart != NULL) {
-        paramStart++; // Avança para depois do '='
-        int passos;
-        if (sscanf(paramStart, "%d", &passos) == 1) 
-        {          
-          MovePasso(passos);
-          resp = true;
-          Serial.print("Comando MOVESERVO executado: Servo ");
-          Serial.print(passos);
-          
-        } else {
-          Serial.println(F("Erro: parâmetros inválidos para MOVESERVO. Use MOVESERVO=NRO_SERVO"));
+        char *paramStart = strstr(Buffer, "=");
+        if (paramStart != NULL) 
+        {
+            paramStart++; // Avança para depois do '='
+            int eixo, angulo;
+            // Verifica e extrai os dois parâmetros (eixo e angulo)
+            if (sscanf(paramStart, "%d,%d", &eixo, &angulo) == 2) 
+            {
+                // Executa o movimento do servo com os parâmetros extraídos
+                Move_Servo_Completo(eixo, angulo);
+                resp = true;
+    
+                // Mensagem de confirmação
+                Serial.print(F("Comando MOVESERVO executado: Servo "));
+                Serial.print(eixo);
+                Serial.print(F(", Ângulo "));
+                Serial.println(angulo);
+            } 
+            else 
+            {
+                // Mensagem de erro em caso de parâmetros inválidos
+                Serial.println(F("Erro: parâmetros inválidos para MOVESERVO. Use o formato MOVESERVO=eixo,angulo"));
+            }
         }
-      }
     }
+
 
     //Load - Carrega arquivo no SD
     if (strstr( Buffer,"LOAD=") != 0)
@@ -2608,11 +2645,12 @@ void Le_Serial1() {
 
 
 // Função para enviar mensagem para Serial2
-void EnviaParaSerial2(const char* mensagem) {
+void EnviaParaSerial2(const char* mensagem) 
+{
+    Serial.print("mensagem:");
+    Serial.println(mensagem);
     Serial2.println(mensagem);
     //Serial2.print("\n\r");
-    Serial.print(F("Mensagem enviada para Serial2: "));
-    Serial.println(mensagem);
 }
 
 

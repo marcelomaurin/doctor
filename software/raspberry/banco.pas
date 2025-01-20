@@ -68,16 +68,34 @@ procedure Tdmbanco.AnalisarBuffer(const linha: string);
 var
   posTemperatura, posHumidade, posMoveDir, posMoveEsc: longint;
   temperatura, humidade, moveDir, moveEsc: string;
+  valorInt: Integer;
+  valorTemperatura : double;
+  valorHumidade : double;
+
 begin
   posTemperatura := pos('TEMPERATURA:', linha);
   if posTemperatura > 0 then
   begin
+    // Extrai o valor da temperatura e substitui vírgulas por pontos
     temperatura := copy(linha, posTemperatura + 12, pos(#32, linha + ' ', posTemperatura + 12) - posTemperatura - 12);
+    temperatura := StringReplace(temperatura, '.', ',', [rfReplaceAll]); // Substitui vírgulas por pontos
+
+    // Remove o caractere `#0D` se estiver presente
+    if (Length(temperatura) > 0) and (temperatura[Length(temperatura)] = #13) then
+      Delete(temperatura, Length(temperatura), 1);
+
+    // Verifica se o parâmetro `temperatura` é válido
+    if not TryStrToFloat(temperatura, valorTemperatura) then
+    begin
+      valorTemperatura := 0; // Define como 0 caso o valor seja inválido ou não informado
+    end;
+
     if (frmbrobotico <> nil) then
     begin
-      frmbrobotico.LEDTEMP.Caption := temperatura;
+      frmbrobotico.LEDTEMP.Caption := FloatToStr(valorTemperatura);
     end;
   end;
+
 
   posTemperatura := pos('Bem vindo', linha);
   if posTemperatura > 0 then
@@ -88,40 +106,76 @@ begin
   posHumidade := pos('Humidade:', linha);
   if posHumidade > 0 then
   begin
+    // Extrai o valor da humidade e substitui vírgulas por pontos
     humidade := copy(linha, posHumidade + 9, pos(#32, linha + ' ', posHumidade + 9) - posHumidade - 9);
+    humidade := StringReplace(humidade, '.', ',', [rfReplaceAll]); // Substitui vírgulas por pontos
+
+    // Remove o caractere `#0D` se estiver presente
+    if (Length(humidade) > 0) and (humidade[Length(humidade)] = #13) then
+      Delete(humidade, Length(humidade), 1);
+
+    // Verifica se o parâmetro `humidade` é válido
+    if not TryStrToFloat(humidade, valorHumidade) then
+    begin
+      valorHumidade := 0; // Define como 0 caso o valor seja inválido ou não informado
+    end;
+
     if (frmbrobotico <> nil) then
     begin
-      frmbrobotico.LEDHUM.Caption := humidade;
+      frmbrobotico.LEDHUM.Caption := FloatToStr(valorHumidade);
     end;
   end;
+
+
 
   posMoveDir := pos('POSSERVA=', linha);
   if posMoveDir > 0 then
   begin
     moveDir := copy(linha, posMoveDir + 9, pos(#32, linha + ' ', posMoveDir + 9) - posMoveDir - 9);
+
+    // Verifica se moveDir é um valor válido e trata valores negativos
+    if TryStrToInt(moveDir, valorInt) then
+    begin
+      if valorInt < 0 then
+        valorInt := 0; // Substitui valores negativos por zero
+    end
+    else
+      valorInt := 0; // Substitui valores inválidos por zero
+
     if (frmbrobotico <> nil) then
     begin
-      dmbanco.POSESTEIRA := dmbanco.POSESTEIRA + strtoint(moveDir);
-      if  (frmbrobotico<> nil) then
+      dmbanco.POSESTEIRA := dmbanco.POSESTEIRA + valorInt;
+
+      if (frmbrobotico <> nil) then
       begin
-           frmbrobotico.Image2.Left:= 32+trunc(frmbrobotico.tbMov.Position * 0.228);
-           frmbrobotico.Image2.refresh;
-           //frmbrobotico.Image2.Left := 24 + trunc(tbMov.Position*0.28);
-           frmbrobotico.lbPosicao.Caption:=  moveDir;
-           //frmbrobotico.lbPosicao. := POSESTEIRA;
+        frmbrobotico.Image2.Left := 32 + trunc(frmbrobotico.tbMov.Position * 0.228);
+        frmbrobotico.Image2.Refresh;
+        frmbrobotico.lbPosicao.Caption := IntToStr(valorInt);
       end;
     end;
   end;
-  //POSFIMSERVA
+
+
+  // POSFIMSERVA
   posMoveDir := pos('POSFIMSERVA=', linha);
   if posMoveDir > 0 then
   begin
     moveDir := copy(linha, posMoveDir + 12, pos(#32, linha + ' ', posMoveDir + 12) - posMoveDir - 12);
+
+    // Verifica se moveDir é um valor válido e trata valores negativos
+    if TryStrToInt(moveDir, valorInt) then
+    begin
+      if valorInt < 0 then
+        valorInt := 0; // Substitui valores negativos por zero
+    end
+    else
+      valorInt := 0; // Substitui valores inválidos por zero
+
     if (frmbrobotico <> nil) then
     begin
-       dmbanco.POSFIMESTEIRA := StrToInt64(moveDir);
-       frmbrobotico.lbPOSFIMESTEIRA.Caption := moveDir;
-       frmbrobotico.tbMov.Max:= dmbanco.POSFIMESTEIRA;
+      dmbanco.POSFIMESTEIRA := valorInt;
+      frmbrobotico.lbPOSFIMESTEIRA.Caption := IntToStr(valorInt);
+      frmbrobotico.tbMov.Max := valorInt;
     end;
   end;
 end;

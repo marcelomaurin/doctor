@@ -1,21 +1,21 @@
 object frmToolsfalar: TfrmToolsfalar
-  Left = 383
+  Left = 862
   Height = 130
-  Top = 524
+  Top = 315
   Width = 404
   BorderStyle = bsDialog
   Caption = 'Serviço de Sintetização de Voz'
   ClientHeight = 130
   ClientWidth = 404
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.4.0.0'
   object btFalar: TButton
     Left = 296
     Height = 35
     Top = 93
     Width = 104
     Caption = 'Speak'
-    OnClick = btFalarClick
     TabOrder = 0
+    OnClick = btFalarClick
   end
   object Shape1: TShape
     Left = 0
@@ -26,15 +26,15 @@ object frmToolsfalar: TfrmToolsfalar
   end
   object Label1: TLabel
     Left = 8
-    Height = 22
+    Height = 15
     Top = 6
-    Width = 17
+    Width = 13
     Caption = 'IP:'
     ParentColor = False
   end
   object edIP: TEdit
     Left = 27
-    Height = 32
+    Height = 23
     Top = 3
     Width = 192
     TabOrder = 1
@@ -42,20 +42,20 @@ object frmToolsfalar: TfrmToolsfalar
   end
   object Label2: TLabel
     Left = 240
-    Height = 22
+    Height = 15
     Top = 8
-    Width = 33
+    Width = 25
     Caption = 'Port:'
     ParentColor = False
   end
   object edPort: TEdit
     Left = 273
-    Height = 32
+    Height = 23
     Top = 3
     Width = 80
-    OnChange = edPortChange
     TabOrder = 2
     Text = '8096'
+    OnChange = edPortChange
   end
   object btConect: TButton
     Left = 176
@@ -63,8 +63,8 @@ object frmToolsfalar: TfrmToolsfalar
     Top = 40
     Width = 75
     Caption = 'Conect'
-    OnClick = btConectClick
     TabOrder = 3
+    OnClick = btConectClick
   end
   object btDisconect: TButton
     Left = 264
@@ -72,24 +72,30 @@ object frmToolsfalar: TfrmToolsfalar
     Top = 40
     Width = 75
     Caption = 'Disconect'
-    OnClick = btDisconectClick
     TabOrder = 4
+    OnClick = btDisconectClick
   end
   object Label3: TLabel
     Left = 10
-    Height = 22
+    Height = 15
     Top = 78
-    Width = 47
+    Width = 34
     Caption = 'Speak:'
     ParentColor = False
   end
   object edFalar: TEdit
     Left = 8
-    Height = 32
+    Height = 23
     Top = 95
     Width = 280
     TabOrder = 5
     Text = 'Wellcome to ToolsFalar'
+  end
+  object AdvLed1: TAdvLed
+    Left = 32
+    Height = 24
+    Top = 40
+    Width = 24
   end
   object LTCPComponent1: TLTCPComponent
     Host = '192.168.0.6'
@@ -98,6 +104,7 @@ object frmToolsfalar: TfrmToolsfalar
     OnError = LTCPComponent1Error
     OnDisconnect = LTCPComponent1Disconnect
     OnConnect = LTCPComponent1Connect
+    OnAccept = LTCPComponent1Accept
     Timeout = 0
     ReuseAddress = True
     Left = 346

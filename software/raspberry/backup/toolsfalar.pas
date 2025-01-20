@@ -6,13 +6,14 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, lNetComponents, Forms, Controls, Graphics,
-  Dialogs, StdCtrls, ExtCtrls, lNet, setmain;
+  Dialogs, StdCtrls, ExtCtrls, AdvLed, lNet, setmain;
 
 type
 
   { TfrmToolsfalar }
 
   TfrmToolsfalar = class(TForm)
+    AdvLed1: TAdvLed;
     btFalar: TButton;
     btConect: TButton;
     btDisconect: TButton;
@@ -28,6 +29,7 @@ type
     procedure btDisconectClick(Sender: TObject);
     procedure btFalarClick(Sender: TObject);
     procedure edPortChange(Sender: TObject);
+    procedure LTCPComponent1Accept(aSocket: TLSocket);
     procedure LTCPComponent1Connect(aSocket: TLSocket);
     procedure LTCPComponent1Disconnect(aSocket: TLSocket);
     procedure LTCPComponent1Error(const msg: string; aSocket: TLSocket);
@@ -76,14 +78,26 @@ begin
 
 end;
 
+procedure TfrmToolsfalar.LTCPComponent1Accept(aSocket: TLSocket);
+begin
+  AdvLed1.Blink:=false;
+  AdvLed1.State:= lsOn;
+
+end;
+
 procedure TfrmToolsfalar.LTCPComponent1Connect(aSocket: TLSocket);
 begin
   //ShowMessage('Conectou!');
+  AdvLed1.Blink:=false;
+  AdvLed1.State:= lsOn;
 end;
 
 procedure TfrmToolsfalar.LTCPComponent1Disconnect(aSocket: TLSocket);
 begin
   //ShowMessage('Disconectou');
+  AdvLed1.Blink:=false;
+  AdvLed1.State:= lsOff;
+
 end;
 
 procedure TfrmToolsfalar.LTCPComponent1Error(const msg: string; aSocket: TLSocket);

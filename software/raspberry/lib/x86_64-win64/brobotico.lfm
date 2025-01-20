@@ -15,9 +15,9 @@ object frmbrobotico: Tfrmbrobotico
     Height = 407
     Top = 0
     Width = 620
-    ActivePage = tsEsteira
+    ActivePage = tsBraco
     Align = alClient
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object tsEsteira: TTabSheet
       Caption = 'Esteira'
@@ -18226,11 +18226,10 @@ object frmbrobotico: Tfrmbrobotico
       end
       object tbposicao: TTrackBar
         Left = 136
-        Height = 52
-        Top = 104
+        Height = 40
+        Top = 96
         Width = 282
-        Max = 255
-        OnChange = tbposicaoChange
+        Max = 180
         Position = 0
         TabOrder = 8
       end
@@ -18240,24 +18239,43 @@ object frmbrobotico: Tfrmbrobotico
         Top = 24
         Width = 60
         Position = 0
+        Max = 180
       end
       object tbposicao1: TTrackBar
         Left = 136
-        Height = 52
-        Top = 176
+        Height = 40
+        Top = 168
         Width = 282
-        Max = 255
+        Max = 180
         Position = 0
         TabOrder = 10
       end
       object tbposicao2: TTrackBar
-        Left = 144
-        Height = 52
+        Left = 136
+        Height = 40
         Top = 232
         Width = 282
-        Max = 255
+        Max = 180
         Position = 0
         TabOrder = 11
+      end
+      object btAtivaBraco: TButton
+        Left = 480
+        Height = 41
+        Top = 88
+        Width = 75
+        Caption = 'Ativa Braço'
+        TabOrder = 12
+        OnClick = btAtivaBracoClick
+      end
+      object btdesativabraco: TToggleBox
+        Left = 480
+        Height = 37
+        Top = 133
+        Width = 75
+        Caption = 'Desativa Braço'
+        TabOrder = 13
+        OnChange = btdesativabracoChange
       end
     end
     object tsMovimento: TTabSheet
@@ -18358,11 +18376,12 @@ object frmbrobotico: Tfrmbrobotico
         Top = 32
         Width = 69
         Caption = 'Temperatura:'
+        ParentColor = False
       end
       object LEDTEMP: TLEDNumber
         Left = 18
         Height = 30
-        Top = 48
+        Top = 56
         Width = 170
         Caption = '0'
       end
@@ -18372,11 +18391,12 @@ object frmbrobotico: Tfrmbrobotico
         Top = 96
         Width = 59
         Caption = 'Humidade:'
+        ParentColor = False
       end
       object LEDHUM: TLEDNumber
         Left = 18
         Height = 30
-        Top = 112
+        Top = 120
         Width = 170
         Caption = '0'
       end

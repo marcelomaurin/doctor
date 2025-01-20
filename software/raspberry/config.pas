@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
-  toolsfalar, cfgspeak, cfgImp, brobotico;
+  toolsfalar, cfgspeak, cfgImp, brobotico, receitas;
 
 type
 
@@ -109,7 +109,10 @@ end;
 
 procedure Tfrmconfig.Image5Click(Sender: TObject);
 begin
-
+     frmreceitas := Tfrmreceitas.create(self);
+     frmreceitas.showmodal();
+     frmreceitas.free;
+     frmreceitas := nil;
 end;
 
 procedure Tfrmconfig.Image5MouseEnter(Sender: TObject);

@@ -1,13 +1,12 @@
 object frmToolsfalar: TfrmToolsfalar
-  Left = 383
+  Left = 862
   Height = 130
-  Top = 544
+  Top = 315
   Width = 404
   BorderStyle = bsDialog
   Caption = 'Serviço de Sintetização de Voz'
   ClientHeight = 130
   ClientWidth = 404
-  Position = poMainFormCenter
   LCLVersion = '3.4.0.0'
   object btFalar: TButton
     Left = 296
@@ -31,6 +30,7 @@ object frmToolsfalar: TfrmToolsfalar
     Top = 6
     Width = 13
     Caption = 'IP:'
+    ParentColor = False
   end
   object edIP: TEdit
     Left = 27
@@ -46,6 +46,7 @@ object frmToolsfalar: TfrmToolsfalar
     Top = 8
     Width = 25
     Caption = 'Port:'
+    ParentColor = False
   end
   object edPort: TEdit
     Left = 273
@@ -80,6 +81,7 @@ object frmToolsfalar: TfrmToolsfalar
     Top = 78
     Width = 34
     Caption = 'Speak:'
+    ParentColor = False
   end
   object edFalar: TEdit
     Left = 8
@@ -89,6 +91,12 @@ object frmToolsfalar: TfrmToolsfalar
     TabOrder = 5
     Text = 'Wellcome to ToolsFalar'
   end
+  object AdvLed1: TAdvLed
+    Left = 32
+    Height = 24
+    Top = 40
+    Width = 24
+  end
   object LTCPComponent1: TLTCPComponent
     Host = '192.168.0.6'
     Port = 7091
@@ -96,6 +104,7 @@ object frmToolsfalar: TfrmToolsfalar
     OnError = LTCPComponent1Error
     OnDisconnect = LTCPComponent1Disconnect
     OnConnect = LTCPComponent1Connect
+    OnAccept = LTCPComponent1Accept
     Timeout = 0
     ReuseAddress = True
     Left = 346

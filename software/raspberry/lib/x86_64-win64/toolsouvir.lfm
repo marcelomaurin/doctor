@@ -1,12 +1,12 @@
 object frmToolsOuvir: TfrmToolsOuvir
-  Left = 477
+  Left = 744
   Height = 143
-  Top = 675
+  Top = 45
   Width = 529
+  ActiveControl = edIP
   Caption = 'Serviço de Reconhecimento de Voz'
   ClientHeight = 143
   ClientWidth = 529
-  Position = poMainFormCenter
   LCLVersion = '3.4.0.0'
   object Shape1: TShape
     Left = 0
@@ -81,10 +81,19 @@ object frmToolsOuvir: TfrmToolsOuvir
     Width = 520
     TabOrder = 4
   end
+  object AdvLed1: TAdvLed
+    Left = 38
+    Height = 24
+    Top = 34
+    Width = 24
+  end
   object LTCPComponent1: TLTCPComponent
     Host = '192.168.0.6'
     Port = 7091
     OnReceive = LTCPComponent1Receive
+    OnDisconnect = LTCPComponent1Disconnect
+    OnConnect = LTCPComponent1Connect
+    OnAccept = LTCPComponent1Accept
     Timeout = 0
     ReuseAddress = True
     Left = 368

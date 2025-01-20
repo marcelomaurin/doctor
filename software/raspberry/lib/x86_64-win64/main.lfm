@@ -1,5 +1,5 @@
 object frmmain: Tfrmmain
-  Left = -4
+  Left = 0
   Height = 643
   Top = 6
   Width = 152
@@ -47853,52 +47853,16 @@ object frmmain: Tfrmmain
     }
     Stretch = True
   end
-  object LazSerial1: TLazSerial
+  object LazSerial1: TSdpoSerial
     Active = False
     BaudRate = br__9600
+    AltBaudRate = 0
     DataBits = db8bits
     Parity = pNone
     FlowControl = fcNone
     StopBits = sbOne
-    SynSer.Tag = 0
-    SynSer.Handle = -1
-    SynSer.RaiseExcept = False
-    SynSer.TestDSR = False
-    SynSer.TestCTS = False
-    SynSer.MaxLineLength = 0
-    SynSer.DeadlockTimeout = 30000
-    SynSer.LinuxLock = False
-    SynSer.ConvertLineEnd = False
-    SynSer.AtTimeout = 1000
-    SynSer.InterPacketTimeout = True
-    Device = 'COM1'
-    RcvLineCRLF = False
-    Left = 56
-    Top = 328
-  end
-  object LazSerial2: TLazSerial
-    Active = False
-    BaudRate = br__9600
-    DataBits = db8bits
-    Parity = pNone
-    FlowControl = fcHardware
-    StopBits = sbOne
-    SynSer.Tag = 0
-    SynSer.Handle = -1
-    SynSer.RaiseExcept = False
-    SynSer.OnStatus = LazSerial2BlockSerialStatus
-    SynSer.TestDSR = False
-    SynSer.TestCTS = False
-    SynSer.MaxLineLength = 0
-    SynSer.DeadlockTimeout = 30000
-    SynSer.LinuxLock = False
-    SynSer.ConvertLineEnd = False
-    SynSer.AtTimeout = 1000
-    SynSer.InterPacketTimeout = True
     Device = '/dev/ttyS0'
-    RcvLineCRLF = False
-    OnRxData = LazSerial2RxData
-    Left = 56
-    Top = 208
+    Left = 97
+    Top = 384
   end
 end

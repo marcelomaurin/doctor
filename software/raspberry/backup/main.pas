@@ -60,7 +60,7 @@ type
     procedure AguardeInicializar();
     procedure BloqueioAcesso();
     procedure RecebeuPergunta(Pergunta: string);
-    procedure RecebeuAssociacao(Associacao : string);
+
 
   end;
 
@@ -206,26 +206,32 @@ begin
   FSetMain := TSetMain.create();
   FSetMain.CarregaContexto();
   dmbanco := Tdmbanco.Create(self);
+  sleep(1000);
+
+  Application.ProcessMessages;
+  try
+    //Application.ProcessMessages;
+    LazSerial1.Device:= FSetMain.ComPrinter;
+    LazSerial1.BaudRate:= br__9600;
+    LazSerial1.DataBits:=db8bits;
+    LazSerial1.FlowControl := fcNone;
+    LazSerial1.StopBits:= sbOne;
+    LazSerial1.Open;
+    Fimp := TImp.create(LazSerial1);
+    if( not LazSerial1.Active) then
+    begin
+      frmToolsfalar.Falar('Atenção, houve um problema na porta serial, reconfigure a porta e reinicie a aplicação');
+      Application.ProcessMessages;
+
+      //Application.Terminate;
+
+    end;
+
+  finally
+
+  Application.ProcessMessages;
   frmToolsfalar :=   TfrmToolsfalar.create(self);
   frmToolsfalar.Show;
-  Application.ProcessMessages;
-  //Application.ProcessMessages;
-  LazSerial1.Device:= FSetMain.ComPrinter;
-  LazSerial1.BaudRate:= br__9600;
-  LazSerial1.DataBits:=db8bits;
-  LazSerial1.FlowControl := fcNone;
-  LazSerial1.StopBits:= sbOne;
-  LazSerial1.Open;
-  Fimp := TImp.create(LazSerial1);
-  if( not LazSerial1.Active) then
-  begin
-    frmToolsfalar.Falar('Atenção, houve um problema na porta serial, reconfigure a porta e reinicie a aplicação');
-    Application.ProcessMessages;
-
-    //Application.Terminate;
-
-  end;
-  Application.ProcessMessages;
   frmlog := Tfrmlog.create(self); //Cria o log de eventos
   frmlog.show;
   Application.ProcessMessages;
@@ -286,7 +292,7 @@ begin
   end;
   Application.ProcessMessages;
 
-
+  end;
 end;
 
 procedure Tfrmmain.ChamaConfiguracao;

@@ -6,13 +6,14 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  lNetComponents, lNet, strutils, toolsfalar, Process, banco;
+  AdvLed, lNetComponents, lNet, strutils, toolsfalar, Process, banco;
 
 type
 
   { TfrmToolsOuvir }
 
   TfrmToolsOuvir = class(TForm)
+    AdvLed1: TAdvLed;
     btConect: TButton;
     btDisconect: TButton;
     edIP: TEdit;
@@ -26,6 +27,9 @@ type
     Shape1: TShape;
     procedure btConectClick(Sender: TObject);
     procedure btDisconectClick(Sender: TObject);
+    procedure LTCPComponent1Accept(aSocket: TLSocket);
+    procedure LTCPComponent1Connect(aSocket: TLSocket);
+    procedure LTCPComponent1Disconnect(aSocket: TLSocket);
     procedure LTCPComponent1Receive(aSocket: TLSocket);
     procedure LTCPComponent2Connect(aSocket: TLSocket);
     procedure LTCPComponent2Disconnect(aSocket: TLSocket);
@@ -66,6 +70,25 @@ end;
 procedure TfrmToolsOuvir.btDisconectClick(Sender: TObject);
 begin
   Disconectar();
+end;
+
+procedure TfrmToolsOuvir.LTCPComponent1Accept(aSocket: TLSocket);
+begin
+
+
+end;
+
+procedure TfrmToolsOuvir.LTCPComponent1Connect(aSocket: TLSocket);
+begin
+  AdvLed1.Blink:=false;
+  AdvLed1.State:= lsOn;
+
+end;
+
+procedure TfrmToolsOuvir.LTCPComponent1Disconnect(aSocket: TLSocket);
+begin
+  AdvLed1.Blink:=false;
+  AdvLed1.State:= lsOff;
 end;
 
 procedure TfrmToolsOuvir.LTCPComponent1Receive(aSocket: TLSocket);

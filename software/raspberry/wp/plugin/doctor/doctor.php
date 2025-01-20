@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Plugin Name: doctor
  * Plugin URI: https://maurinsoft.com.br
@@ -53,6 +53,7 @@ function doctor_plugin_criar_tabelas() {
         'comandos' => "
             CREATE TABLE IF NOT EXISTS `comandos` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `Nome` varchar(50) NOT NULL,
               `Descricao` varchar(50) NOT NULL,
               `Status` int(11) NOT NULL,
               PRIMARY KEY (`id`)
@@ -500,31 +501,40 @@ function shortcode_crud_clientes() {
 }
 add_shortcode('crud_clientes', 'shortcode_crud_clientes');
 
-
-// CRUD para a tabela "comandos" com layout aprimorado usando Bootstrap
 function shortcode_crud_comandos() {
     global $wpdb;
-    $table_name =    'comandos';
+    $table_name = 'comandos';
+
+    $is_edit = false;
+    $edit_data = null;
 
     // Handle form submissions
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['insert'])) {
-            $wpdb->insert($table_name, [
+        if (isset($_POST['insert']) || isset($_POST['update'])) {
+            $wpdb->replace($table_name, [
+                'id' => isset($_POST['id']) ? intval($_POST['id']) : null,
+                'nome' => sanitize_text_field($_POST['nome']),
                 'Descricao' => sanitize_text_field($_POST['Descricao']),
                 'Status' => intval($_POST['Status']),
             ]);
-        } elseif (isset($_POST['update'])) {
-            $wpdb->update($table_name, [
-                'Descricao' => sanitize_text_field($_POST['Descricao']),
-                'Status' => intval($_POST['Status']),
-            ], ['id' => intval($_POST['id'])]);
         } elseif (isset($_POST['delete'])) {
             $wpdb->delete($table_name, ['id' => intval($_POST['id'])]);
+        } elseif (isset($_POST['edit'])) {
+            $is_edit = true;
+            $edit_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", intval($_POST['id'])), ARRAY_A);
         }
     }
 
+    // Handle search
+    $search_query = '';
+    if (isset($_POST['search'])) {
+        $nome = sanitize_text_field($_POST['nome_filter']);
+        $status = intval($_POST['status_filter']);
+        $search_query = "WHERE nome LIKE '%$nome%' AND Status = $status";
+    }
+
     // Fetch data
-    $comandos = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    $comandos = $wpdb->get_results("SELECT * FROM $table_name $search_query", ARRAY_A);
 
     // Render the form and data table
     ob_start();
@@ -532,29 +542,63 @@ function shortcode_crud_comandos() {
     <div class="container mt-4">
         <h2 class="mb-4">Gerenciar Comandos</h2>
 
-        <!-- Formulário de inserção -->
+        <!-- Área de pesquisa -->
+        <h3 class="mb-4">Pesquisar Comandos</h3>
         <form method="post" class="row g-3 mb-4">
-            <div class="col-md-6">
-                <label for="Descricao" class="form-label">Descrição</label>
-                <input type="text" name="Descricao" class="form-control" required>
+            <div class="col-md-4">
+                <label for="nome_filter" class="form-label">Nome</label>
+                <input type="text" name="nome_filter" class="form-control" value="<?php echo isset($_POST['nome_filter']) ? esc_attr($_POST['nome_filter']) : ''; ?>">
             </div>
-            <div class="col-md-6">
-                <label for="Status" class="form-label">Status</label>
-                <select name="Status" class="form-control" required>
-                    <option value="1">Ativo</option>
-                    <option value="0">Inativo</option>
+            <div class="col-md-3">
+                <label for="status_filter" class="form-label">Status</label>
+                <select name="status_filter" class="form-control">
+                    <option value="1" <?php echo isset($_POST['status_filter']) && $_POST['status_filter'] == 1 ? 'selected' : ''; ?>>Ativo</option>
+                    <option value="0" <?php echo isset($_POST['status_filter']) && $_POST['status_filter'] == 0 ? 'selected' : ''; ?>>Inativo</option>
                 </select>
             </div>
-            <div class="col-12">
-                <button type="submit" name="insert" class="btn btn-primary">Inserir</button>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" name="search" class="btn btn-primary">Pesquisar</button>
             </div>
         </form>
 
+        <!-- Formulário de novo registro/edição -->
+        <?php if ($is_edit || isset($_POST['new'])): ?>
+            <h3 class="mb-4"><?php echo $is_edit ? 'Editar Comando' : 'Novo Registro'; ?></h3>
+            <form method="post" class="row g-3 mb-4">
+                <input type="hidden" name="id" value="<?php echo $is_edit ? esc_attr($edit_data['id']) : ''; ?>">
+                <div class="col-md-3">
+                    <label for="nome" class="form-label">Nome</label>
+                    <input type="text" name="nome" class="form-control" required value="<?php echo $is_edit ? esc_attr($edit_data['nome']) : ''; ?>">
+                </div>
+                <div class="col-md-6">
+                    <label for="Descricao" class="form-label">Descrição</label>
+                    <input type="text" name="Descricao" class="form-control" required value="<?php echo $is_edit ? esc_attr($edit_data['Descricao']) : ''; ?>">
+                </div>
+                <div class="col-md-2">
+                    <label for="Status" class="form-label">Status</label>
+                    <select name="Status" class="form-control" required>
+                        <option value="1" <?php echo $is_edit && $edit_data['Status'] == 1 ? 'selected' : ''; ?>>Ativo</option>
+                        <option value="0" <?php echo $is_edit && $edit_data['Status'] == 0 ? 'selected' : ''; ?>>Inativo</option>
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-center gap-2">
+                    <button type="submit" name="<?php echo $is_edit ? 'update' : 'insert'; ?>" class="btn btn-primary">Salvar</button>
+                    <button type="submit" name="cancel" class="btn btn-secondary">Cancelar</button>
+                </div>
+            </form>
+        <?php else: ?>
+            <form method="post">
+                <button type="submit" name="new" class="btn btn-success mb-4">Novo Registro</button>
+            </form>
+        <?php endif; ?>
+
         <!-- Tabela de dados -->
+        <h3 class="mb-4">Resultado de Comandos</h3>
         <table class="table table-hover table-light">
             <thead class="table-hover">
                 <tr>
                     <th>ID</th>
+                    <th>Nome</th>
                     <th>Descrição</th>
                     <th>Status</th>
                     <th>Ações</th>
@@ -564,6 +608,7 @@ function shortcode_crud_comandos() {
                 <?php foreach ($comandos as $comando): ?>
                     <tr>
                         <td><?php echo $comando['id']; ?></td>
+                        <td><?php echo esc_html($comando['nome']); ?></td>
                         <td><?php echo esc_html($comando['Descricao']); ?></td>
                         <td><?php echo $comando['Status'] ? 'Ativo' : 'Inativo'; ?></td>
                         <td>
@@ -585,6 +630,7 @@ function shortcode_crud_comandos() {
     return ob_get_clean();
 }
 add_shortcode('crud_comandos', 'shortcode_crud_comandos');
+
 
 // CRUD para a tabela "etiquetas" com layout aprimorado usando Bootstrap
 function shortcode_crud_etiquetas() {
@@ -772,32 +818,54 @@ function shortcode_crud_exames() {
 }
 add_shortcode('crud_exames', 'shortcode_crud_exames');
 
-// CRUD para a tabela "logouve" com layout aprimorado usando Bootstrap
+
 function shortcode_crud_logouve() {
     global $wpdb;
-    $table_name =    'logouve';
+    $table_name = 'logouve';
+
+    $is_edit = false;
+    $edit_data = null;
 
     // Handle form submissions
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['insert'])) {
-            $wpdb->insert($table_name, [
+        if (isset($_POST['insert']) || isset($_POST['update'])) {
+            $wpdb->replace($table_name, [
+                'id' => isset($_POST['id']) ? intval($_POST['id']) : null,
                 'texto' => sanitize_text_field($_POST['texto']),
                 'dtcad' => sanitize_text_field($_POST['dtcad']),
                 'idComando' => intval($_POST['idComando']),
             ]);
-        } elseif (isset($_POST['update'])) {
-            $wpdb->update($table_name, [
-                'texto' => sanitize_text_field($_POST['texto']),
-                'dtcad' => sanitize_text_field($_POST['dtcad']),
-                'idComando' => intval($_POST['idComando']),
-            ], ['id' => intval($_POST['id'])]);
         } elseif (isset($_POST['delete'])) {
             $wpdb->delete($table_name, ['id' => intval($_POST['id'])]);
+        } elseif (isset($_POST['edit'])) {
+            $is_edit = true;
+            $edit_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", intval($_POST['id'])), ARRAY_A);
+        }
+    }
+
+    // Handle search
+    $search_query = "ORDER BY dtcad DESC";
+    if (isset($_POST['search'])) {
+        $conditions = [];
+        if (!empty($_POST['texto_filter'])) {
+            $texto = sanitize_text_field($_POST['texto_filter']);
+            $conditions[] = "texto LIKE '%$texto%'";
+        }
+        if (!empty($_POST['idComando_filter'])) {
+            $idComando = intval($_POST['idComando_filter']);
+            $conditions[] = "idComando = $idComando";
+        }
+        if (!empty($_POST['data_filter'])) {
+            $data = sanitize_text_field($_POST['data_filter']);
+            $conditions[] = "dtcad = '$data'";
+        }
+        if ($conditions) {
+            $search_query = "WHERE " . implode(" AND ", $conditions) . " ORDER BY dtcad DESC";
         }
     }
 
     // Fetch data
-    $logouve = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    $logouve = $wpdb->get_results("SELECT * FROM $table_name $search_query", ARRAY_A);
 
     // Render the form and data table
     ob_start();
@@ -805,26 +873,56 @@ function shortcode_crud_logouve() {
     <div class="container mt-4">
         <h2 class="mb-4">Gerenciar Logouve</h2>
 
-        <!-- Formulário de inserção -->
+        <!-- Área de pesquisa -->
+        <h3 class="mb-4">Pesquisar Logs</h3>
         <form method="post" class="row g-3 mb-4">
-            <div class="col-md-6">
-                <label for="texto" class="form-label">Texto</label>
-                <input type="text" name="texto" class="form-control" required>
+            <div class="col-md-4">
+                <label for="texto_filter" class="form-label">Texto</label>
+                <input type="text" name="texto_filter" class="form-control" value="<?php echo isset($_POST['texto_filter']) ? esc_attr($_POST['texto_filter']) : ''; ?>">
             </div>
             <div class="col-md-3">
-                <label for="dtcad" class="form-label">Data</label>
-                <input type="date" name="dtcad" class="form-control" required>
+                <label for="idComando_filter" class="form-label">ID Comando</label>
+                <input type="number" name="idComando_filter" class="form-control" value="<?php echo isset($_POST['idComando_filter']) ? esc_attr($_POST['idComando_filter']) : ''; ?>">
             </div>
             <div class="col-md-3">
-                <label for="idComando" class="form-label">ID Comando</label>
-                <input type="number" name="idComando" class="form-control" required>
+                <label for="data_filter" class="form-label">Data</label>
+                <input type="date" name="data_filter" class="form-control" value="<?php echo isset($_POST['data_filter']) ? esc_attr($_POST['data_filter']) : ''; ?>">
             </div>
-            <div class="col-12">
-                <button type="submit" name="insert" class="btn btn-primary">Inserir</button>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" name="search" class="btn btn-primary">Pesquisar</button>
             </div>
         </form>
 
+        <!-- Formulário de novo registro/edição -->
+        <?php if ($is_edit || isset($_POST['new'])): ?>
+            <h3 class="mb-4"><?php echo $is_edit ? 'Editar Log' : 'Novo Registro'; ?></h3>
+            <form method="post" class="row g-3 mb-4">
+                <input type="hidden" name="id" value="<?php echo $is_edit ? esc_attr($edit_data['id']) : ''; ?>">
+                <div class="col-md-6">
+                    <label for="texto" class="form-label">Texto</label>
+                    <input type="text" name="texto" class="form-control" required value="<?php echo $is_edit ? esc_attr($edit_data['texto']) : ''; ?>">
+                </div>
+                <div class="col-md-3">
+                    <label for="dtcad" class="form-label">Data</label>
+                    <input type="date" name="dtcad" class="form-control" required value="<?php echo $is_edit ? esc_attr($edit_data['dtcad']) : ''; ?>">
+                </div>
+                <div class="col-md-3">
+                    <label for="idComando" class="form-label">ID Comando</label>
+                    <input type="number" name="idComando" class="form-control" required value="<?php echo $is_edit ? esc_attr($edit_data['idComando']) : ''; ?>">
+                </div>
+                <div class="col-md-6 d-flex align-items-center gap-2">
+                    <button type="submit" name="<?php echo $is_edit ? 'update' : 'insert'; ?>" class="btn btn-primary">Salvar</button>
+                    <button type="submit" name="cancel" class="btn btn-secondary">Cancelar</button>
+                </div>
+            </form>
+        <?php else: ?>
+            <form method="post">
+                <button type="submit" name="new" class="btn btn-success mb-4">Novo Registro</button>
+            </form>
+        <?php endif; ?>
+
         <!-- Tabela de dados -->
+        <h3 class="mb-4">Resultado de Logs</h3>
         <table class="table table-hover table-light">
             <thead class="table-hover">
                 <tr>
@@ -861,6 +959,7 @@ function shortcode_crud_logouve() {
     return ob_get_clean();
 }
 add_shortcode('crud_logouve', 'shortcode_crud_logouve');
+
 
 // CRUD para a tabela "pessoas" com layout aprimorado usando Bootstrap
 function shortcode_crud_pessoas() {

@@ -9,7 +9,7 @@ object frmmain: Tfrmmain
   OnChangeBounds = FormChangeBounds
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.4.0.0'
   object Image1: TImage
     Left = 28
     Height = 83
@@ -4077,9 +4077,9 @@ object frmmain: Tfrmmain
   end
   object Label1: TLabel
     Left = 40
-    Height = 22
+    Height = 15
     Top = 88
-    Width = 95
+    Width = 72
     Caption = 'Configuração'
     ParentColor = False
   end
@@ -8150,9 +8150,9 @@ object frmmain: Tfrmmain
   end
   object Label2: TLabel
     Left = 40
-    Height = 22
+    Height = 15
     Top = 208
-    Width = 91
+    Width = 69
     Caption = 'Amostragem'
     ParentColor = False
   end
@@ -15048,25 +15048,25 @@ object frmmain: Tfrmmain
   end
   object Label3: TLabel
     Left = 57
-    Height = 22
+    Height = 15
     Top = 344
-    Width = 52
+    Width = 38
     Caption = 'Análise'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 56
-    Height = 22
+    Height = 15
     Top = 472
-    Width = 72
+    Width = 52
     Caption = 'Relatorios'
     ParentColor = False
   end
   object Label5: TLabel
     Left = 72
-    Height = 22
+    Height = 15
     Top = 616
-    Width = 28
+    Width = 19
     Caption = 'Sair'
     ParentColor = False
   end
