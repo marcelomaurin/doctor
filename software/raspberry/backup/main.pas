@@ -25,7 +25,6 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    LazSerial2: TSdpoSerial;
     LazSerial1: TSdpoSerial;
     procedure FormChangeBounds(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -56,28 +55,13 @@ type
     chavepessoa : string;
     nomepessoa : string;
     idpessoa : integer;
-    buffer : string;
-    POSESTEIRA : LongInt;
-    POSFIMESTEIRA : LongInt;
-    flgStart : boolean;
+
 
     procedure AguardeInicializar();
     procedure BloqueioAcesso();
     procedure RecebeuPergunta(Pergunta: string);
     procedure RecebeuAssociacao(Associacao : string);
-    procedure StatusSistema();
-    procedure SairSistema();
-    procedure Etiquetagem();
-    procedure TestarAmostra();
-    procedure CadastrarAmostra();
-    procedure CadastrarPaciente();
-    procedure CalibrarModulo1();
-    procedure CalibrarModulo2();
-    procedure RetornarBracoRobototico();
-    procedure TelaReceita();
-    procedure AnalisarBuffer(const linha: string);
-    procedure CalibrarEquipamento();
-    procedure PHFimCurso();
+
   end;
 
 var
@@ -91,13 +75,12 @@ implementation
 
 procedure Tfrmmain.FormCreate(Sender: TObject);
 begin
-  flgStart := false;
+
   frmsplash := tfrmsplash.create(self);
   frmsplash.showmodal();
   Setup();
   frmsplash.free;
-  buffer := '';
-  POSESTEIRA := 0;
+
 
 end;
 
@@ -206,34 +189,8 @@ end;
 
 
 procedure Tfrmmain.LazSerial2RxData(Sender: TObject);
-var
-    info, linha: string;
-    posicaoLF: integer;
 begin
-    if LazSerial2.DataAvailable then
-    begin
-      info := LazSerial2.ReadData;
-      buffer := buffer + info; // Adiciona os dados ao buffer
 
-      repeat
-        posicaoLF := pos(#10, buffer); // Procura por \n (Line Feed)
-        if posicaoLF > 0 then
-        begin
-          linha := copy(buffer, 1, posicaoLF - 1); // Texto antes do \n
-          buffer := copy(buffer,posicaoLF+1,Length(buffer));
-          // Chama a rotina AnalisarBuffer com a linha extraída
-          AnalisarBuffer(linha);
-          if (frmlog <> nil) then
-          begin
-            frmlog.melog.Append(linha);
-            frmlog.melog.SelStart := Length(frmlog.melog.Text); // Move o cursor para o final
-            frmlog.melog.SelLength := 0; // Remove qualquer seleção de texto visível
-            //frmlog.melog.SetFocus; // Opcional: garante o foco no TMemo
-          end;
-        end;
-      until posicaoLF = 0;
-    end;
-    Application.ProcessMessages;
 end;
 
 
@@ -273,10 +230,10 @@ begin
   frmlog.show;
   Application.ProcessMessages;
   try
-    LazSerial2.Device:= FSetMain.SerialPort;
-    LazSerial2.open;
+    dmbanco.LazSerial2.Device:= FSetMain.SerialPort;
+    dmbanco.LazSerial2.open;
     AguardeInicializar();
-    CalibrarModulo1();
+    dmbanco.CalibrarModulo1();
   except
      frmbrobotico := Tfrmbrobotico.create(self);
      ShowMessage('Necessário configurar porta do equipamento');
@@ -302,7 +259,7 @@ begin
     frmToolsfalar.Conectar();
     frmToolsOuvir.Conectar();
     //Application.ProcessMessages;
-    LazSerial2.OnRxData:= nil;
+    //dmbanco.LazSerial2.OnRxData:= nil;
     frmlog.close;
     frmLog.free;
     frmlog := nil;
@@ -317,7 +274,7 @@ begin
     frmToolsfalar.Falar('Equipamento pronto para operar');
     //Application.ProcessMessages;
     BloqueioAcesso();
-    LazSerial2.OnRxData:= @LazSerial2RxData;
+    //dmbanco.LazSerial2.OnRxData:= @LazSerial2RxData;
   end
   else
   begin
@@ -391,175 +348,15 @@ begin
 
 end;
 
-procedure Tfrmmain.RecebeuAssociacao(Associacao: string);
-var
-  comando: integer;
-begin
-  //Recebeu comando
-  comando := dmbanco.RetornaComando(strtoint(Associacao));
-
-  case comando of
-    1: frmToolsfalar.Falar('Olá, Estou pronto para te atender. Em que posso ajuda-lo? '); //Ola
-    2: StatusSistema();
-    3: SairSistema();
-    4: Etiquetagem();
-    6: TestarAmostra();
-    8: CadastrarAmostra();
-    9: CadastrarPaciente();
-   10: CalibrarModulo1();
-   11: CalibrarModulo2();
-   12: RetornarBracoRobototico();
-   13: TelaReceita();
-   14: CalibrarEquipamento();
-   15: PHFimCurso();
-  else
-        frmToolsfalar.Falar('Comando não encontrado '); //Comando nao encontrado
-  end;
-
-end;
-
-procedure Tfrmmain.StatusSistema;
-begin
-  frmToolsfalar.Falar('Tudo ok com o sistema '); //Status do equipamento
-end;
-
-procedure Tfrmmain.SairSistema;
-begin
-  frmToolsfalar.Falar('Estou finalizando a aplicação, obrigado'); //Status do equipamento
-  application.Terminate;
-end;
-
-procedure Tfrmmain.Etiquetagem;
-begin
-  frmEtiquetar := TfrmEtiquetar.create(self);
-  frmEtiquetar.showmodal();
-  frmEtiquetar.free();
-end;
-
-procedure Tfrmmain.TestarAmostra;
-begin
-  frmToolsfalar.Falar('Iniciando Teste de Amostra '); //Ola
-  frmToolsfalar.Falar('Informe o codigo de barras da amostra que deseja testar! '); //Ola
-end;
-
-procedure Tfrmmain.CadastrarAmostra;
-begin
-  frmToolsfalar.Falar('Chamando tela de Cadastro de Amostra '); //Ola
-end;
-
-procedure Tfrmmain.CadastrarPaciente;
-begin
-  frmToolsfalar.Falar('Chamando tela de Cadastro de Paciente '); //Ola
-end;
-
-procedure Tfrmmain.CalibrarModulo1;
-begin
-  frmToolsfalar.Falar('Iniciando módulo de calibragem 1 '); //Ola
-  if(frmlog=nil) then
-  begin
-       frmlog := Tfrmlog.create(self);
-  end;
-  frmlog.show();
-  //SENDMSG=   1, CALIBRAR
-  LazSerial2.OnRxData:= @LazSerial2RxData;
-  LazSerial2.WriteData('SENDMSG=1,CALIBRAR'+#10);
-
-end;
-
-procedure Tfrmmain.CalibrarModulo2;
-begin
-  frmToolsfalar.Falar('Iniciando módulo de calibragem 2 '); //Ola
-  LazSerial2.OnRxData:= @LazSerial2RxData;
-  LazSerial2.WriteData('SENDMSG=2,CALIBRAR'+#10);
-end;
-
-procedure Tfrmmain.RetornarBracoRobototico;
-begin
-  frmToolsfalar.Falar('Iniciando braço robótico '); //Ola
-  LazSerial2.OnRxData:= @LazSerial2RxData;
-  LazSerial2.WriteData('RETORNOCARRO'+#10);
-end;
-
-procedure Tfrmmain.TelaReceita;
-begin
-  frmToolsfalar.Falar('Chamando tela de receita '); //Ola
-end;
 
 
-procedure Tfrmmain.AnalisarBuffer(const linha: string);
-var
-  posTemperatura, posHumidade, posMoveDir, posMoveEsc: longint;
-  temperatura, humidade, moveDir, moveEsc: string;
-begin
-  posTemperatura := pos('TEMPERATURA:', linha);
-  if posTemperatura > 0 then
-  begin
-    temperatura := copy(linha, posTemperatura + 12, pos(#32, linha + ' ', posTemperatura + 12) - posTemperatura - 12);
-    if (frmbrobotico <> nil) then
-    begin
-      frmbrobotico.LEDTEMP.Caption := temperatura;
-    end;
-  end;
 
-  posTemperatura := pos('Bem vindo', linha);
-  if posTemperatura > 0 then
-  begin
-    flgStart := true;
-  end;
 
-  posHumidade := pos('Humidade:', linha);
-  if posHumidade > 0 then
-  begin
-    humidade := copy(linha, posHumidade + 9, pos(#32, linha + ' ', posHumidade + 9) - posHumidade - 9);
-    if (frmbrobotico <> nil) then
-    begin
-      frmbrobotico.LEDHUM.Caption := humidade;
-    end;
-  end;
 
-  posMoveDir := pos('POSSERVA=', linha);
-  if posMoveDir > 0 then
-  begin
-    moveDir := copy(linha, posMoveDir + 9, pos(#32, linha + ' ', posMoveDir + 9) - posMoveDir - 9);
-    if (frmbrobotico <> nil) then
-    begin
-      POSESTEIRA := POSESTEIRA + strtoint(moveDir);
-      if  (frmbrobotico<> nil) then
-      begin
-           frmbrobotico.Image2.Left:= 32+trunc(frmbrobotico.tbMov.Position * 0.228);
-           frmbrobotico.Image2.refresh;
-           //frmbrobotico.Image2.Left := 24 + trunc(tbMov.Position*0.28);
-           frmbrobotico.lbPosicao.Caption:=  moveDir;
-           //frmbrobotico.lbPosicao. := POSESTEIRA;
-      end;
-    end;
-  end;
-  //POSFIMSERVA
-  posMoveDir := pos('POSFIMSERVA=', linha);
-  if posMoveDir > 0 then
-  begin
-    moveDir := copy(linha, posMoveDir + 12, pos(#32, linha + ' ', posMoveDir + 12) - posMoveDir - 12);
-    if (frmbrobotico <> nil) then
-    begin
-       POSFIMESTEIRA := StrToInt64(moveDir);
-       frmbrobotico.lbPOSFIMESTEIRA.Caption := moveDir;
-       frmbrobotico.tbMov.Max:= POSFIMESTEIRA;
-    end;
-  end;
-end;
 
-procedure Tfrmmain.CalibrarEquipamento;
-begin
-  frmToolsfalar.Falar('Iniciando Calibração do equipamento '); //Ola
-  LazSerial2.OnRxData:= @LazSerial2RxData;
-  LazSerial2.WriteData('CALIBRACAO'+#10);
-end;
 
-procedure Tfrmmain.PHFimCurso;
-begin
-  frmToolsfalar.Falar('Posicionando PH na posicao de leitura '); //Ola
-  LazSerial2.WriteData('SENDMSG=1,MOVERFIMCURSOESQ'+#10);
-end;
+
+
 
 
 

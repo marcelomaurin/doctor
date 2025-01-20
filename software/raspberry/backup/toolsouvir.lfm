@@ -1,7 +1,7 @@
 object frmToolsOuvir: TfrmToolsOuvir
-  Left = 731
+  Left = 744
   Height = 143
-  Top = 511
+  Top = 45
   Width = 529
   ActiveControl = edIP
   Caption = 'Serviço de Reconhecimento de Voz'

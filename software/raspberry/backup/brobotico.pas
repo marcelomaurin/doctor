@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ExtCtrls, synaser, setmain, LazSerial, MKnob, LedNumber,
-  indGnouMeter, AdvLed, log;
+  indGnouMeter, AdvLed, log, ;
 
 type
 
@@ -127,8 +127,8 @@ begin
 
   Posicao:= posicao -forca;
   if (posicao < 0) then posicao := 0;
-  frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-  frmmain.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
+  //frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+  dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
@@ -137,8 +137,8 @@ procedure Tfrmbrobotico.moveleft(forca : integer);
 begin
   Posicao:= trunc(posicao +forca);
   if (posicao > 255) then posicao := 255;
-  frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-  frmmain.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
+  //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+  dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
@@ -146,8 +146,8 @@ end;
 
 procedure Tfrmbrobotico.btInicioEsteiraClick(Sender: TObject);
 begin
-  frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-  frmmain.LazSerial2.WriteData('RETORNOCARRO'+#10);
+  //LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+  dmbanco.LazSerial2.WriteData('RETORNOCARRO'+#10);
 
 end;
 
@@ -158,8 +158,8 @@ end;
 
 procedure Tfrmbrobotico.btFinalEsteiraClick(Sender: TObject);
 begin
-  frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-  frmmain.LazSerial2.WriteData('POSFIMCARRO'+#10);
+  //frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+  dmbanco.LazSerial2.WriteData('POSFIMCARRO'+#10);
 
 end;
 
@@ -167,8 +167,8 @@ procedure Tfrmbrobotico.btMoverClick(Sender: TObject);
 begin
   if (tbMov.Position<> posicaoanterior) then
   begin
-     frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-     frmmain.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
+     //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+     dmbanco.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
      posicaoanterior :=  tbMov.Position;
      Image2.left := trunc(tbMov.Position*0.28);
      lbPosicao.Caption:= inttostr(tbMov.Position);
@@ -178,9 +178,9 @@ end;
 
 procedure Tfrmbrobotico.btPosFimServaClick(Sender: TObject);
 begin
-  if(frmmain.LazSerial2.Active) then
+  if(dmbanco.LazSerial2.Active) then
   begin
-       frmmain.LazSerial2.WriteData('POSFIMSERVA'+#10);
+       dmbanco.LazSerial2.WriteData('POSFIMSERVA'+#10);
   end
   else
   begin
@@ -190,10 +190,10 @@ end;
 
 procedure Tfrmbrobotico.btCalibrarClick(Sender: TObject);
 begin
-  if(frmmain.LazSerial2.Active) then
+  if(dmbanco.LazSerial2.Active) then
   begin
-       frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-       frmmain.LazSerial2.WriteData('CALIBRACAO'+#10);
+       //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+       dmbanco.LazSerial2.WriteData('CALIBRACAO'+#10);
   end;
 end;
 
@@ -217,13 +217,14 @@ end;
 
 procedure Tfrmbrobotico.Button13Click(Sender: TObject);
 begin
-  if(not frmmain.LazSerial2.Active) then
+  if(not dmbanco.LazSerial2.Active) then
   begin
-    frmmain.LazSerial2.close;
-    frmmain.LazSerial2.Device :=  edPorta.text;
+    dmbanco.LazSerial2.close;
+    dmbanco.LazSerial2.Device :=  edPorta.text;
     fsetmain.SerialPort :=  edPorta.text;
     FSetMain.SalvaContexto(false);
-    frmmain.LazSerial2.Open;
+    dmbanco.LazSerial2.Open;
+    //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
     PageControl1.PageIndex := 0;
     Application.ProcessMessages;
   end;
@@ -231,10 +232,10 @@ end;
 
 procedure Tfrmbrobotico.Button14Click(Sender: TObject);
 begin
-  if(frmmain.LazSerial2.Active) then
+  if(dmbanco.LazSerial2.Active) then
   begin
-    frmmain.LazSerial2.close;
-    frmmain.LazSerial2.Device :=  edPorta.text;
+    dmbanco.LazSerial2.close;
+    dmbanco.LazSerial2.Device :=  edPorta.text;
   end;
 end;
 
@@ -302,10 +303,10 @@ begin
       frmlog := tfrmlog.create(self);
   end;
   frmlog.show;
-  if(frmmain.POSFIMESTEIRA<>0) then
+  if(dmbanco.POSFIMESTEIRA<>0) then
   begin
-    tbMov.max := frmmain.POSFIMESTEIRA;
-    lbPOSFIMESTEIRA.Caption:= inttostr(frmmain.POSFIMESTEIRA);
+    tbMov.max := dmbanco.POSFIMESTEIRA;
+    lbPOSFIMESTEIRA.Caption:= inttostr(dmbanco.POSFIMESTEIRA);
   end;
 
 end;

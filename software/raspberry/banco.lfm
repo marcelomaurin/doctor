@@ -59,4 +59,17 @@ object dmbanco: Tdmbanco
     Left = 72
     Top = 118
   end
+  object LazSerial2: TSdpoSerial
+    Active = False
+    BaudRate = br__9600
+    AltBaudRate = 0
+    DataBits = db8bits
+    Parity = pNone
+    FlowControl = fcNone
+    StopBits = sbOne
+    Device = '/dev/ttyS0'
+    OnRxData = LazSerial2RxData
+    Left = 208
+    Top = 189
+  end
 end
