@@ -1,18 +1,20 @@
-﻿import socket
+#!/usr/bin/python3
+
+import socket
 import serial
 import threading
 import logging
 from datetime import datetime
 
-# Configurações da porta serial
+# Configuracoes da porta serial
 serial_port = '/dev/ttyUSB0'  # Substitua pelo nome da sua porta serial
-baud_rate = 9600  # Taxa de transmissão da porta serial
+baud_rate = 9600  # Taxa de transmissao da porta serial
 
-# Configurações do servidor TCP
+# Configuracoes do servidor TCP
 tcp_ip = '0.0.0.0'  # Escuta em todas as interfaces de rede
 tcp_port = 8101
 
-# Configuração do log
+# Configuracao do log
 log_file = '/var/log/serial_tcp.log'
 logging.basicConfig(
     filename=log_file,
@@ -21,12 +23,12 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-# Função para registrar logs
+# Funcao para registrar logs
 def log_message(direction, data):
     direction_str = 'TX' if direction == 'send' else 'RX'
     logging.info(f'{direction_str}: {data.strip().decode(errors="replace")}')
 
-# Função para ler da porta serial e enviar para o cliente TCP
+# Funcao para ler da porta serial e enviar para o cliente TCP
 def serial_to_tcp(client_socket, ser):
     while True:
         data = ser.read(ser.in_waiting or 1)
@@ -34,7 +36,7 @@ def serial_to_tcp(client_socket, ser):
             log_message('recv', data)  # Log de RX
             client_socket.sendall(data)
 
-# Função para ler do cliente TCP e enviar para a porta serial
+# Funcao para ler do cliente TCP e enviar para a porta serial
 def tcp_to_serial(client_socket, ser):
     while True:
         data = client_socket.recv(1024)
@@ -52,16 +54,16 @@ def main():
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind((tcp_ip, tcp_port))
         server_socket.listen(1)
-        logging.info(f'Servidor TCP aguardando conexões na porta {tcp_port}...')
+        logging.info(f'Servidor TCP aguardando conexoes na porta {tcp_port}...')
         
         client_socket, addr = server_socket.accept()
-        logging.info(f'Conexão estabelecida com {addr}')
+        logging.info(f'Conexao estabelecida com {addr}')
 
-        # Cria threads para comunicação bidirecional
+        # Cria threads para comunicacao bidirecional
         threading.Thread(target=serial_to_tcp, args=(client_socket, ser), daemon=True).start()
         threading.Thread(target=tcp_to_serial, args=(client_socket, ser), daemon=True).start()
 
-        # Mantém o script em execução
+        # Mantem o script em execucao
         while True:
             pass
     except Exception as e:

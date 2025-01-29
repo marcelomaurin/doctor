@@ -6,6 +6,10 @@ xinput set-prop 'eGalax Inc. USB TouchController' 'Coordinate Transformation Mat
 /usr/bin/srvfalar &
 /usr/bin/srvouve.py &
 /usr/bin/srvcmptexto2.py &
+/usr/bin/srvprinter.py &
+/usr/bin/srvport.py &
+
+
 
 usleep 1000
 #start das aplicacoes

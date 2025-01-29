@@ -1,18 +1,21 @@
+#!/usr/bin/python3
+
+
 import socket
 import threading
 from escpos.printer import Serial
 from PIL import Image
 import logging
 
-# Configurações da porta serial para a impressora térmica
-serial_port = '/dev/ttyACM0  # Substitua pela porta serial da impressora
-baud_rate = 9600  # Taxa de transmissão da porta serial
+# Configuracoes da porta serial para a impressora termica
+serial_port = '/dev/ttyACM0'  # Substitua pela porta serial da impressora
+baud_rate = 9600  # Taxa de transmissao da porta serial
 
-# Configurações do servidor TCP
+# Configuracoes do servidor TCP
 tcp_ip = '0.0.0.0'
 tcp_port = 8102
 
-# Configuração do log
+# Configuracao do log
 log_file = '/var/log/thermal_printer.log'
 logging.basicConfig(
     filename=log_file,
@@ -21,7 +24,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-# Função para ajustar texto ao número de colunas
+# Funcao para ajustar texto ao numero de colunas
 def format_text(text, columns, align='left'):
     if align == 'left':
         return text.ljust(columns)[:columns]
@@ -32,7 +35,7 @@ def format_text(text, columns, align='left'):
     else:
         return text.ljust(columns)[:columns]
 
-# Função para processar os comandos ESC/POS
+# Funcao para processar os comandos ESC/POS
 def process_command(command, printer):
     try:
         if command.startswith("TEXT:"):
@@ -68,16 +71,16 @@ def process_command(command, printer):
             elif cut_type == "FULL":
                 printer.cut(mode='FULL')
             else:
-                logging.warning(f"Tipo de corte inválido: {cut_type}")
+                logging.warning(f"Tipo de corte invalido: {cut_type}")
         else:
-            logging.warning(f"Comando não reconhecido: {command}")
+            logging.warning(f"Comando nao reconhecido: {command}")
         
-        printer.set()  # Reseta configurações após cada comando
+        printer.set()  # Reseta configuracoes apos cada comando
         logging.info(f'Comando processado: {command}')
     except Exception as e:
         logging.error(f'Erro ao processar comando: {command} - {e}')
 
-# Função para gerenciar conexões TCP
+# Funcao para gerenciar conexoes TCP
 def handle_client(client_socket, printer):
     try:
         while True:
@@ -88,14 +91,14 @@ def handle_client(client_socket, printer):
             for command in commands:
                 process_command(command, printer)
     except Exception as e:
-        logging.error(f'Erro na conexão com cliente: {e}')
+        logging.error(f'Erro na conexao com cliente: {e}')
     finally:
         client_socket.close()
 
-# Função principal
+# Funcao principal
 def main():
     try:
-        # Inicializa a impressora térmica via porta serial
+        # Inicializa a impressora termica via porta serial
         printer = Serial(serial_port, baudrate=baud_rate, timeout=1)
         logging.info("Impressora inicializada com sucesso.")
 
@@ -103,11 +106,11 @@ def main():
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind((tcp_ip, tcp_port))
         server_socket.listen(1)
-        logging.info(f'Servidor TCP aguardando conexões na porta {tcp_port}...')
+        logging.info(f'Servidor TCP aguardando conexoes na porta {tcp_port}...')
         
         while True:
             client_socket, addr = server_socket.accept()
-            logging.info(f'Conexão estabelecida com {addr}')
+            logging.info(f'Conexao estabelecida com {addr}')
             threading.Thread(target=handle_client, args=(client_socket, printer), daemon=True).start()
     except Exception as e:
         logging.error(f'Erro no servidor principal: {e}')

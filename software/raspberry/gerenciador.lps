@@ -289,6 +289,20 @@
         <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
+        <Filename Value="receitas.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmreceitas"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="42"/>
+        <CursorPos X="5" Y="54"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
         <Filename Value="C:\fpcupdeluxe\lazarus\lcl\include\customform.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2366"/>
@@ -393,11 +407,10 @@
       <Unit>
         <Filename Value="d:\lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1807"/>
         <CursorPos X="23" Y="1819"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="d:\usr\share\fpcsrc\3.2.2\rtl\inc\systemh.inc"/>
@@ -467,36 +480,21 @@
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="receitas.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="frmreceitas"/>
-        <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="37"/>
-        <CursorPos X="5" Y="54"/>
-        <UsageCount Value="21"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="d:\lazarus\lcl\include\custommemo.inc"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="30"/>
         <CursorPos Y="42"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="d:\lazarus\lcl\include\customform.inc"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="2289"/>
         <CursorPos Y="2300"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="27">
       <Position>
         <Filename Value="banco.pas"/>
         <Caret Line="93" TopLine="74"/>
@@ -585,10 +583,6 @@
         <Filename Value="receitas.pas"/>
       </Position>
       <Position>
-        <Filename Value="receitas.pas"/>
-        <Caret Line="9" Column="3" TopLine="15"/>
-      </Position>
-      <Position>
         <Filename Value="brobotico.pas"/>
         <Caret Line="328" Column="3" TopLine="316"/>
       </Position>
@@ -607,10 +601,6 @@
       <Position>
         <Filename Value="log.pas"/>
         <Caret Line="14" Column="57"/>
-      </Position>
-      <Position>
-        <Filename Value="d:\lazarus\lcl\include\custommemo.inc"/>
-        <Caret Line="42" TopLine="30"/>
       </Position>
       <Position>
         <Filename Value="receitas.pas"/>
