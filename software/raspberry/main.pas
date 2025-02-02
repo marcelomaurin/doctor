@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   setmain, Toolsfalar, config, banco, bloqueio, OpAmostragem, imp, LazSerial,
-  ToolsOuvir, Etiquetar, splash, brobotico, log, aguarde,
+  ToolsOuvir, Etiquetar, splash, brobotico, log, aguarde, toolprinter,
   SdpoSerial;
 
 type
@@ -25,7 +25,6 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    LazSerial1: TSdpoSerial;
     procedure FormChangeBounds(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -210,6 +209,7 @@ begin
 
   Application.ProcessMessages;
   try
+    (*
     //Application.ProcessMessages;
     LazSerial1.Device:= FSetMain.ComPrinter;
     LazSerial1.BaudRate:= br__9600;
@@ -217,6 +217,7 @@ begin
     LazSerial1.FlowControl := fcNone;
     LazSerial1.StopBits:= sbOne;
     LazSerial1.Open;
+
     Fimp := TImp.create(LazSerial1);
     if( not LazSerial1.Active) then
     begin
@@ -226,7 +227,8 @@ begin
       //Application.Terminate;
 
     end;
-
+    *)
+     Fimp := TImp.create();
   finally
 
       Application.ProcessMessages;
@@ -278,6 +280,12 @@ begin
         //Application.ProcessMessages;
         //Finalizando o Setup
         frmToolsfalar.Falar('Equipamento pronto para operar');
+
+        //Conexao com impressora
+        frmtoolprinter := Tfrmtoolprinter.create(self);
+        frmtoolprinter.show;
+        frmtoolprinter.Conectar();
+
         //Application.ProcessMessages;
         BloqueioAcesso();
         //dmbanco.LazSerial2.OnRxData:= @LazSerial2RxData;

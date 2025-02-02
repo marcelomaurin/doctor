@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, imp_generico, imp_elgini9, imp_qr203,LazSerial, funcoes,
-  SdpoSerial;
+  SdpoSerial, toolprinter;
 
 
 
@@ -22,7 +22,8 @@ type CTypeText = (TT_NORMAL, TT_DOUBLE, TT_BOLD, TT_UNDERLINE ); (*Tipo do Texto
 type TImp = class(tobject)
     private
       FDevice: string;
-          LazSerial1: TSdpoSerial;
+          //LazSerial1: TSdpoSerial;
+
           FSetDevice : string;
           Ftipoimp : CTipoIMP;
           Fmodeloimp: CModeloIMP;
@@ -31,7 +32,7 @@ type TImp = class(tobject)
           procedure SetTipoimp(value : CTipoIMP);
           procedure Setmodeloimp(value : CModeloIMP);
     public
-          constructor create(PLazSerial1: TSdpoSerial);
+          constructor create();
           destructor destroy();
           procedure DefaultSerial();
           function FormatacaoString(info: string;tam: integer; Formatacao:CFormat; margin: integer): TStringList;
@@ -61,7 +62,7 @@ implementation
 procedure TImp.SetDevice(value: string);
 begin
   FDevice := value;
-  LazSerial1.device := FDevice;
+  //LazSerial1.device := FDevice;
 end;
 
 procedure TImp.SetTipoimp(value: CTipoIMP);
@@ -74,9 +75,9 @@ begin
   Fmodeloimp := value;
 end;
 
-constructor TImp.create(PLazSerial1: TSdpoSerial);
+constructor TImp.create();
 begin
-  LazSerial1:= PLazSerial1;
+  //LazSerial1:= PLazSerial1;
   DefaultSerial();
 end;
 
@@ -87,11 +88,12 @@ end;
 
 procedure TImp.DefaultSerial();
 begin
+  (*
   LazSerial1.BaudRate:= br__9600;
   LazSerial1.DataBits:=db8bits;
   LazSerial1.FlowControl := fcNone;
   LazSerial1.StopBits:= sbOne;
-
+  *)
 end;
 
 
@@ -216,8 +218,10 @@ begin
        tmp := impElginI9.Barra1D(info,$1D,$48,$2);
        impElginI9.destroy();
   end;
-  LazSerial1.WriteData(tmp);
+  //LazSerial1.WriteData(tmp);
+  frmtoolprinter.CallCMD('BARCODE:'+info);
   //TextoSerial(info,FCenter,TT_BOLD);
+
 end;
 
 procedure TImp.TextoSerial(info: string);
@@ -238,7 +242,8 @@ begin
        tmp := impElginI9.LineText(info);
        impElginI9.destroy();
   end;
-  LazSerial1.WriteData(tmp);
+  //LazSerial1.WriteData(tmp);
+  frmtoolprinter.CallCMD('TEXT:'+tmp);
 end;
 
 procedure TImp.EjetarCUPOM();
@@ -280,27 +285,30 @@ begin
        tmp := impElginI9.NewLine();
        impElginI9.free();
   end;
-  LazSerial1.WriteData(tmp);
+  //LazSerial1.WriteData(tmp);
+  frmtoolprinter.CallCMD('TEXT:'+tmp);
   //frmcupom.mecupom.Lines.Append('');
   sleep(200);
 end;
 
 procedure TImp.close();
 begin
-  LazSerial1.close();
+  //LazSerial1.close();
 end;
 
 procedure TImp.open;
 begin
-  LazSerial1.open;
+  //LazSerial1.open;
 end;
 
 procedure TImp.Guilhotina();
-var
+//var
+  (*
   impElginI9 : TIMP_ELGINI9;
   tmp : string;
-
+  *)
 begin
+  (*
   if modeloimp = MI_ELGINI9 then
   begin
        impElginI9 := TIMP_ELGINI9.create();
@@ -314,8 +322,9 @@ begin
        tmp := impElginI9.Guilhotina();
        impElginI9.free();
   end;
-
-  LazSerial1.WriteData(tmp);
+  *)
+  //LazSerial1.WriteData(tmp);
+  frmtoolprinter.CallCMD('PICCUT:FULL');
   //frmcupom.mecupom.Lines.Append('');
   sleep(200);
 end;
@@ -339,7 +348,8 @@ begin
        impElginI9.free();
   end;
 
-  LazSerial1.WriteData(tmp);
+  //LazSerial1.WriteData(tmp);
+  frmtoolprinter.CallCMD('TEXT:'+tmp);
   //frmcupom.mecupom.Lines.Append('');
   sleep(200);
 end;
@@ -363,7 +373,8 @@ begin
        impElginI9.free();
   end;
 
-  LazSerial1.WriteData(tmp);
+  //LazSerial1.WriteData(tmp);
+  frmtoolprinter.CallCMD('TEXT:'+tmp);
   //frmcupom.mecupom.Lines.Append('');
   sleep(200);
 end;

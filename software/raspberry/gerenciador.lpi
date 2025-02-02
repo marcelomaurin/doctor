@@ -232,6 +232,13 @@
         <Filename Value="receitas.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmreceitas"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="toolprinter.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmtoolprinter"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>

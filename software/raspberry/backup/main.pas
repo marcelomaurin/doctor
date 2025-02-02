@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
   setmain, Toolsfalar, config, banco, bloqueio, OpAmostragem, imp, LazSerial,
-  ToolsOuvir, Etiquetar, splash, brobotico, log, aguarde,
+  ToolsOuvir, Etiquetar, splash, brobotico, log, aguarde, toolprinter,
   SdpoSerial;
 
 type
@@ -25,7 +25,6 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    LazSerial1: TSdpoSerial;
     procedure FormChangeBounds(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -210,6 +209,7 @@ begin
 
   Application.ProcessMessages;
   try
+    (*
     //Application.ProcessMessages;
     LazSerial1.Device:= FSetMain.ComPrinter;
     LazSerial1.BaudRate:= br__9600;
@@ -217,6 +217,7 @@ begin
     LazSerial1.FlowControl := fcNone;
     LazSerial1.StopBits:= sbOne;
     LazSerial1.Open;
+
     Fimp := TImp.create(LazSerial1);
     if( not LazSerial1.Active) then
     begin
@@ -226,71 +227,78 @@ begin
       //Application.Terminate;
 
     end;
+    *)
 
   finally
 
-  Application.ProcessMessages;
-  frmToolsfalar :=   TfrmToolsfalar.create(self);
-  frmToolsfalar.Show;
-  frmlog := Tfrmlog.create(self); //Cria o log de eventos
-  frmlog.show;
-  Application.ProcessMessages;
-  try
-    dmbanco.LazSerial2.Device:= FSetMain.SerialPort;
-    dmbanco.LazSerial2.open;
-    AguardeInicializar();
-    dmbanco.CalibrarModulo1();
-  except
-     frmbrobotico := Tfrmbrobotico.create(self);
-     ShowMessage('Necessário configurar porta do equipamento');
-     frmbrobotico.show();
-     Application.ProcessMessages;
-  end;
+      Application.ProcessMessages;
+      frmToolsfalar :=   TfrmToolsfalar.create(self);
+      frmToolsfalar.Show;
+      frmlog := Tfrmlog.create(self); //Cria o log de eventos
+      frmlog.show;
+      Application.ProcessMessages;
+      try
+        dmbanco.LazSerial2.Device:= FSetMain.SerialPort;
+        dmbanco.LazSerial2.open;
+        AguardeInicializar();
+        dmbanco.CalibrarModulo1();
+      except
+         frmbrobotico := Tfrmbrobotico.create(self);
+         ShowMessage('Necessário configurar porta do equipamento');
+         frmbrobotico.show();
+         Application.ProcessMessages;
+      end;
 
-  //Application.ProcessMessages;
-  if dmbanco.ZConnection1.Connected then
-  begin
+      //Application.ProcessMessages;
+      if dmbanco.ZConnection1.Connected then
+      begin
 
-    frmToolsOuvir := TfrmToolsOuvir.create(self);
-    Application.ProcessMessages;
+        frmToolsOuvir := TfrmToolsOuvir.create(self);
+        Application.ProcessMessages;
 
-    frmToolsOuvir.Show;
-    Application.ProcessMessages;
+        frmToolsOuvir.Show;
+        Application.ProcessMessages;
 
-    frmToolsfalar.edIP.text :=  Fsetmain.IPFALAR;
-    frmToolsOuvir.edIP.text :=  Fsetmain.IPFALAR;
-    //Application.ProcessMessages;
-    //Sleep(1000);
+        frmToolsfalar.edIP.text :=  Fsetmain.IPFALAR;
+        frmToolsOuvir.edIP.text :=  Fsetmain.IPFALAR;
+        //Application.ProcessMessages;
+        //Sleep(1000);
 
-    frmToolsfalar.Conectar();
-    frmToolsOuvir.Conectar();
-    //Application.ProcessMessages;
-    //dmbanco.LazSerial2.OnRxData:= nil;
-    frmlog.close;
-    frmLog.free;
-    frmlog := nil;
+        frmToolsfalar.Conectar();
+        frmToolsOuvir.Conectar();
+        //Application.ProcessMessages;
+        //dmbanco.LazSerial2.OnRxData:= nil;
+        frmlog.close;
+        frmLog.free;
+        frmlog := nil;
 
 
-    frmToolsfalar.Falar('Iniciando o servidor do Doctor, aguarde');
-    Application.ProcessMessages;
-    //Sleep(10000);
-    //frmToolsfalar.Hide;
-    //Application.ProcessMessages;
-    //Finalizando o Setup
-    frmToolsfalar.Falar('Equipamento pronto para operar');
-    //Application.ProcessMessages;
-    BloqueioAcesso();
-    //dmbanco.LazSerial2.OnRxData:= @LazSerial2RxData;
-  end
-  else
-  begin
-    frmToolsfalar.Falar('Atenção, houve um problema na conexão com o banco de dados, mude as configurações do servidor');
-    Application.ProcessMessages;
+        frmToolsfalar.Falar('Iniciando o servidor do Doctor, aguarde');
+        Application.ProcessMessages;
+        //Sleep(10000);
+        //frmToolsfalar.Hide;
+        //Application.ProcessMessages;
+        //Finalizando o Setup
+        frmToolsfalar.Falar('Equipamento pronto para operar');
 
-    Application.Terminate;
+        //Conexao com impressora
+        frmtoolprinter := Tfrmtoolprinter.create(self);
+        frmtoolprinter.show;
+        frmtoolprinter.Conectar();
 
-  end;
-  Application.ProcessMessages;
+        //Application.ProcessMessages;
+        BloqueioAcesso();
+        //dmbanco.LazSerial2.OnRxData:= @LazSerial2RxData;
+      end
+      else
+      begin
+        frmToolsfalar.Falar('Atenção, houve um problema na conexão com o banco de dados, mude as configurações do servidor');
+        Application.ProcessMessages;
+
+        Application.Terminate;
+
+      end;
+      Application.ProcessMessages;
 
   end;
 end;
