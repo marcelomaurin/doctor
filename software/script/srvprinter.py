@@ -8,7 +8,7 @@ from PIL import Image
 import logging
 
 # Configuracoes da porta serial para a impressora termica
-serial_port = '/dev/ttyACM0'  # Substitua pela porta serial da impressora
+serial_port = '/dev/ttyUSB0'  # Substitua pela porta serial da impressora
 baud_rate = 9600  # Taxa de transmissao da porta serial
 
 # Configuracoes do servidor TCP
@@ -46,12 +46,12 @@ def process_command(command, printer):
             formatted_text = format_text(text, columns, align)
             printer.set(align='left')
             printer.text(formatted_text + "\n")
-        elif command.startswith("BIGTEXT:"):
-            text = command[len("BIGTEXT:"):].strip()
+        elif command.startswith("BIGTXT:"):
+            text = command[len("BIGTXT:"):].strip()
             printer.set(text_type='B', align='center', width=2, height=2)
             printer.text(text + "\n")
-        elif command.startswith("MICROTEXT:"):
-            text = command[len("MICROTEXT:"):].strip()
+        elif command.startswith("MICROTXT:"):
+            text = command[len("MICROTXT:"):].strip()
             printer.set(text_type='NORMAL', align='left', width=1, height=1)
             printer.text(text + "\n")
         elif command.startswith("BARCODE:"):
@@ -85,6 +85,7 @@ def handle_client(client_socket, printer):
     try:
         while True:
             data = client_socket.recv(1024).decode().strip()
+            print(f"{data}")
             if not data:
                 break
             commands = data.split("/n")
