@@ -7,15 +7,15 @@ object frmToolsfalar: TfrmToolsfalar
   Caption = 'Serviço de Sintetização de Voz'
   ClientHeight = 130
   ClientWidth = 404
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '2.2.6.0'
   object btFalar: TButton
     Left = 296
     Height = 35
     Top = 93
     Width = 104
     Caption = 'Speak'
-    TabOrder = 0
     OnClick = btFalarClick
+    TabOrder = 0
   end
   object Shape1: TShape
     Left = 0
@@ -26,15 +26,15 @@ object frmToolsfalar: TfrmToolsfalar
   end
   object Label1: TLabel
     Left = 8
-    Height = 15
+    Height = 22
     Top = 6
-    Width = 13
+    Width = 17
     Caption = 'IP:'
     ParentColor = False
   end
   object edIP: TEdit
     Left = 27
-    Height = 23
+    Height = 32
     Top = 3
     Width = 192
     TabOrder = 1
@@ -42,20 +42,20 @@ object frmToolsfalar: TfrmToolsfalar
   end
   object Label2: TLabel
     Left = 240
-    Height = 15
+    Height = 22
     Top = 8
-    Width = 25
+    Width = 33
     Caption = 'Port:'
     ParentColor = False
   end
   object edPort: TEdit
     Left = 273
-    Height = 23
+    Height = 32
     Top = 3
     Width = 80
+    OnChange = edPortChange
     TabOrder = 2
     Text = '8096'
-    OnChange = edPortChange
   end
   object btConect: TButton
     Left = 176
@@ -63,8 +63,8 @@ object frmToolsfalar: TfrmToolsfalar
     Top = 40
     Width = 75
     Caption = 'Conect'
-    TabOrder = 3
     OnClick = btConectClick
+    TabOrder = 3
   end
   object btDisconect: TButton
     Left = 264
@@ -72,22 +72,23 @@ object frmToolsfalar: TfrmToolsfalar
     Top = 40
     Width = 75
     Caption = 'Disconect'
-    TabOrder = 4
     OnClick = btDisconectClick
+    TabOrder = 4
   end
   object Label3: TLabel
-    Left = 10
-    Height = 15
-    Top = 78
-    Width = 34
+    Left = 8
+    Height = 22
+    Top = 72
+    Width = 47
     Caption = 'Speak:'
     ParentColor = False
   end
   object edFalar: TEdit
     Left = 8
-    Height = 23
+    Height = 32
     Top = 95
     Width = 280
+    OnKeyPress = edFalarKeyPress
     TabOrder = 5
     Text = 'Wellcome to ToolsFalar'
   end

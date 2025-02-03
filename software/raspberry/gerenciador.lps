@@ -9,7 +9,7 @@
         <Filename Value="gerenciador.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="127"/>
       </Unit>
       <Unit>
         <Filename Value="main.pas"/>
@@ -18,9 +18,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="7"/>
+        <TopLine Value="197"/>
         <CursorPos X="22" Y="207"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="127"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -30,7 +30,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="164"/>
         <CursorPos X="32" Y="165"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="127"/>
       </Unit>
       <Unit>
         <Filename Value="toolsfalar.pas"/>
@@ -39,9 +39,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="88"/>
-        <CursorPos Y="68"/>
-        <UsageCount Value="126"/>
+        <TopLine Value="15"/>
+        <CursorPos X="3" Y="59"/>
+        <UsageCount Value="127"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -51,7 +51,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="591"/>
         <CursorPos X="118" Y="604"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="127"/>
       </Unit>
       <Unit>
         <Filename Value="config.pas"/>
@@ -62,7 +62,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="105"/>
         <CursorPos X="25" Y="115"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="127"/>
       </Unit>
       <Unit>
         <Filename Value="banco.pas"/>
@@ -73,7 +73,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="52"/>
         <CursorPos X="10" Y="57"/>
-        <UsageCount Value="126"/>
+        <UsageCount Value="127"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -86,7 +86,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="29"/>
         <CursorPos X="32" Y="45"/>
-        <UsageCount Value="122"/>
+        <UsageCount Value="123"/>
       </Unit>
       <Unit>
         <Filename Value="cfgbanco.pas"/>
@@ -98,7 +98,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="18"/>
         <CursorPos Y="33"/>
-        <UsageCount Value="120"/>
+        <UsageCount Value="121"/>
       </Unit>
       <Unit>
         <Filename Value="bloqueio.pas"/>
@@ -109,7 +109,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="18"/>
         <CursorPos Y="37"/>
-        <UsageCount Value="116"/>
+        <UsageCount Value="117"/>
       </Unit>
       <Unit>
         <Filename Value="opamostragem.pas"/>
@@ -120,7 +120,7 @@
         <UnitName Value="OpAmostragem"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="10" Y="5"/>
-        <UsageCount Value="114"/>
+        <UsageCount Value="115"/>
       </Unit>
       <Unit>
         <Filename Value="imp.pas"/>
@@ -128,7 +128,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="299"/>
         <CursorPos X="3" Y="305"/>
-        <UsageCount Value="113"/>
+        <UsageCount Value="114"/>
       </Unit>
       <Unit>
         <Filename Value="imp_elgini9.pas"/>
@@ -137,14 +137,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="69"/>
         <CursorPos X="32" Y="69"/>
-        <UsageCount Value="113"/>
+        <UsageCount Value="114"/>
       </Unit>
       <Unit>
         <Filename Value="imp_generico.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="32"/>
-        <UsageCount Value="113"/>
+        <UsageCount Value="114"/>
       </Unit>
       <Unit>
         <Filename Value="imp_qr203.pas"/>
@@ -153,7 +153,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="113"/>
+        <UsageCount Value="114"/>
       </Unit>
       <Unit>
         <Filename Value="cfgimp.pas"/>
@@ -165,7 +165,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="27"/>
         <CursorPos X="6" Y="39"/>
-        <UsageCount Value="110"/>
+        <UsageCount Value="111"/>
       </Unit>
       <Unit>
         <Filename Value="etiquetar.pas"/>
@@ -177,7 +177,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="4"/>
         <CursorPos X="17" Y="9"/>
-        <UsageCount Value="108"/>
+        <UsageCount Value="109"/>
       </Unit>
       <Unit>
         <Filename Value="pesqpacientes.pas"/>
@@ -188,7 +188,7 @@
         <UnitName Value="PesqPacientes"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="9"/>
-        <UsageCount Value="106"/>
+        <UsageCount Value="107"/>
       </Unit>
       <Unit>
         <Filename Value="pesqtipoexames.pas"/>
@@ -200,7 +200,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="37"/>
         <CursorPos X="3" Y="51"/>
-        <UsageCount Value="105"/>
+        <UsageCount Value="106"/>
       </Unit>
       <Unit>
         <Filename Value="chatgpt.pas"/>
@@ -209,7 +209,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="102"/>
+        <UsageCount Value="103"/>
       </Unit>
       <Unit>
         <Filename Value="toolsouvir.pas"/>
@@ -219,9 +219,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ToolsOuvir"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="142"/>
+        <TopLine Value="83"/>
         <CursorPos X="23" Y="83"/>
-        <UsageCount Value="102"/>
+        <UsageCount Value="103"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -232,7 +232,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="8"/>
-        <UsageCount Value="102"/>
+        <UsageCount Value="103"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -244,9 +244,9 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="173"/>
-        <CursorPos X="3" Y="172"/>
-        <UsageCount Value="75"/>
+        <TopLine Value="174"/>
+        <CursorPos Y="177"/>
+        <UsageCount Value="76"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -259,7 +259,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="45"/>
         <CursorPos Y="61"/>
-        <UsageCount Value="74"/>
+        <UsageCount Value="75"/>
       </Unit>
       <Unit>
         <Filename Value="log.pas"/>
@@ -270,7 +270,7 @@
         <EditorIndex Value="6"/>
         <TopLine Value="4"/>
         <CursorPos X="47" Y="10"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="52"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -281,7 +281,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <CursorPos X="29" Y="9"/>
-        <UsageCount Value="50"/>
+        <UsageCount Value="51"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -294,7 +294,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="44"/>
         <CursorPos X="5" Y="54"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="26"/>
       </Unit>
       <Unit>
         <Filename Value="toolprinter.pas"/>
@@ -305,7 +305,7 @@
         <EditorIndex Value="5"/>
         <TopLine Value="99"/>
         <CursorPos X="7" Y="109"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -509,116 +509,126 @@
         <UsageCount Value="12"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="27">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="216" Column="15" TopLine="197"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="217" Column="15" TopLine="198"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="218" Column="15" TopLine="199"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="219" Column="15" TopLine="200"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="220" Column="15" TopLine="201"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="222" Column="35" TopLine="203"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="223" Column="23" TopLine="204"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="21" Column="51" TopLine="17"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="221" Column="9" TopLine="216"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="231" Column="26" TopLine="210"/>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="170" TopLine="167"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="341" TopLine="331"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="224" Column="43" TopLine="222"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="207" Column="10" TopLine="198"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="main.pas"/>
-        <Caret Line="207" Column="10" TopLine="198"/>
+        <Caret Line="171" TopLine="168"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="132" Column="24" TopLine="131"/>
+        <Caret Line="172" TopLine="169"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret TopLine="10"/>
+        <Caret Line="173" TopLine="170"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="125" Column="10" TopLine="125"/>
+        <Caret Line="172" TopLine="169"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="135" Column="10" TopLine="126"/>
+        <Caret Line="173" TopLine="170"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="144" Column="12" TopLine="135"/>
+        <Caret Line="172" TopLine="169"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="145" Column="10" TopLine="136"/>
+        <Caret Line="173" TopLine="170"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="154" Column="10" TopLine="145"/>
+        <Caret Line="174" TopLine="171"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="166" Column="10" TopLine="157"/>
+        <Caret Line="175" TopLine="172"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="174" Column="15" TopLine="172"/>
+        <Caret Line="176" TopLine="173"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="175" Column="13" TopLine="172"/>
+        <Caret Line="177" TopLine="174"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="5" Column="35"/>
+        <Caret Line="176" TopLine="173"/>
       </Position>
       <Position>
         <Filename Value="brobotico.pas"/>
-        <Caret Line="125" Column="10" TopLine="116"/>
+        <Caret Line="175" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="174" TopLine="171"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="173" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="174" TopLine="171"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="175" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="174" TopLine="171"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="175" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="176" TopLine="173"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="177" TopLine="174"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="176" TopLine="173"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="175" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="174" TopLine="171"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="173" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="172" TopLine="169"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="171" TopLine="168"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="170" TopLine="167"/>
+      </Position>
+      <Position>
+        <Filename Value="brobotico.pas"/>
+        <Caret Line="169" TopLine="166"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -640,7 +650,7 @@
         <WatchScope Value="wpsLocal"/>
         <WatchKind Value="wpkWrite"/>
         <Source Value="brobotico.pas"/>
-        <Line Value="166"/>
+        <Line Value="200"/>
       </Item>
     </BreakPoints>
   </Debugging>

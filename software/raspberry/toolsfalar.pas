@@ -28,6 +28,7 @@ type
     procedure btConectClick(Sender: TObject);
     procedure btDisconectClick(Sender: TObject);
     procedure btFalarClick(Sender: TObject);
+    procedure edFalarKeyPress(Sender: TObject; var Key: char);
     procedure edPortChange(Sender: TObject);
     procedure LTCPComponent1Accept(aSocket: TLSocket);
     procedure LTCPComponent1Connect(aSocket: TLSocket);
@@ -65,12 +66,15 @@ end;
 
 procedure TfrmToolsfalar.btFalarClick(Sender: TObject);
 begin
-  if(Fsetmain.IPFALAR <> edIP.text) then
-  begin
-    Fsetmain.IPFALAR := edIP.text ;
-    Fsetmain.SalvaContexto(false);
-  end;
   Falar();
+end;
+
+procedure TfrmToolsfalar.edFalarKeyPress(Sender: TObject; var Key: char);
+begin
+  if key = #13 then
+  begin
+    Falar();
+  end;
 end;
 
 procedure TfrmToolsfalar.edPortChange(Sender: TObject);
@@ -118,6 +122,19 @@ procedure TfrmToolsfalar.Falar();
 var
    pergunta: string;
 begin
+  if(Fsetmain.IPFALAR <> edIP.text) then
+  begin
+    if( LTCPComponent1.Connected) then
+    begin
+      Disconectar();
+    end;
+    Fsetmain.IPFALAR := edIP.text ;
+    Fsetmain.SalvaContexto(false);
+  end;
+  if(not LTCPComponent1.Connected) then
+  begin
+      Conectar();
+  end;
   pergunta := edFalar.text;
   if(pergunta<>'') then
   begin

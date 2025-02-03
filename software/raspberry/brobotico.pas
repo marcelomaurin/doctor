@@ -39,13 +39,21 @@ type
     Image1: TImage;
     Image2: TImage;
     Label1: TLabel;
+    Label10: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     lbPosicao: TLabel;
     lbPOSFIMESTEIRA: TLabel;
+    ledEixo1: TLEDNumber;
+    ledEixo2: TLEDNumber;
+    ledEixo3: TLEDNumber;
+    ledEixo4: TLEDNumber;
     LEDTEMP: TLEDNumber;
     LEDHUM: TLEDNumber;
     lstMov: TListBox;
@@ -103,6 +111,8 @@ type
   public
     { public declarations }
     posicaoanterior : integer;
+    procedure Conectar();
+    procedure Desconectar();
   end; 
 
 var
@@ -145,6 +155,30 @@ begin
   dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
+end;
+
+procedure Tfrmbrobotico.Conectar;
+begin
+    if(not dmbanco.LazSerial2.Active) then
+  begin
+    dmbanco.LazSerial2.close;
+    dmbanco.LazSerial2.Device :=  edPorta.text;
+    fsetmain.SerialPort :=  edPorta.text;
+    FSetMain.SalvaContexto(false);
+    dmbanco.LazSerial2.Open;
+    //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
+    PageControl1.PageIndex := 0;
+    Application.ProcessMessages;
+  end;
+end;
+
+procedure Tfrmbrobotico.Desconectar;
+begin
+  if(dmbanco.LazSerial2.Active) then
+  begin
+    dmbanco.LazSerial2.close;
+    dmbanco.LazSerial2.Device :=  edPorta.text;
+  end;
 end;
 
 
@@ -239,26 +273,12 @@ end;
 
 procedure Tfrmbrobotico.Button13Click(Sender: TObject);
 begin
-  if(not dmbanco.LazSerial2.Active) then
-  begin
-    dmbanco.LazSerial2.close;
-    dmbanco.LazSerial2.Device :=  edPorta.text;
-    fsetmain.SerialPort :=  edPorta.text;
-    FSetMain.SalvaContexto(false);
-    dmbanco.LazSerial2.Open;
-    //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-    PageControl1.PageIndex := 0;
-    Application.ProcessMessages;
-  end;
+     Conectar();
 end;
 
 procedure Tfrmbrobotico.Button14Click(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
-  begin
-    dmbanco.LazSerial2.close;
-    dmbanco.LazSerial2.Device :=  edPorta.text;
-  end;
+     Desconectar();
 end;
 
 procedure Tfrmbrobotico.btDirForteClick(Sender: TObject);
