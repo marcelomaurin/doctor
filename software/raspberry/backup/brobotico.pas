@@ -206,7 +206,7 @@ begin
   if(dmbanco.LazSerial2.Active) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-       dmbanco.LazSerial2.WriteData('DESATIVABRACO'+#10);
+       dmbanco.LazSerial2.WriteData('BRACOOFF'+#10);
   end;
 end;
 

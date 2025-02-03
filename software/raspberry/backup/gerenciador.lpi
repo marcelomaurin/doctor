@@ -198,6 +198,7 @@
         <Filename Value="toolsver.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmToolsver"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
@@ -239,6 +240,7 @@
         <Filename Value="toolprinter.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmtoolprinter"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>

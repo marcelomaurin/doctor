@@ -108,7 +108,7 @@ begin
   begin
     // Extrai o valor da humidade e substitui vírgulas por pontos
     humidade := copy(linha, posHumidade + 9, pos(#32, linha + ' ', posHumidade + 9) - posHumidade - 9);
-    humidade := StringReplace(humidade, '.', '.', [rfReplaceAll]); // Substitui vírgulas por pontos
+    humidade := StringReplace(humidade, '.', ',', [rfReplaceAll]); // Substitui vírgulas por pontos
 
     // Remove o caractere `#0D` se estiver presente
     if (Length(humidade) > 0) and (humidade[Length(humidade)] = #13) then

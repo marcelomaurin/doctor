@@ -1,15 +1,15 @@
 object frmLog: TfrmLog
-  Left = 159
-  Height = 344
-  Top = 345
+  Left = 166
+  Height = 107
+  Top = 547
   Width = 606
   Caption = 'Log de serial'
-  ClientHeight = 344
+  ClientHeight = 107
   ClientWidth = 606
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '2.2.6.0'
   object meLog: TMemo
     Left = 0
-    Height = 344
+    Height = 107
     Top = 0
     Width = 606
     Align = alClient

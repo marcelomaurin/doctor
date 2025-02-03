@@ -1,20 +1,20 @@
 object frmtoolprinter: Tfrmtoolprinter
-  Left = 268
+  Left = 481
   Height = 147
-  Top = 250
+  Top = 494
   Width = 450
   Caption = 'Tool Printer'
   ClientHeight = 147
   ClientWidth = 450
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '2.2.6.0'
   object btcmd: TButton
     Left = 296
     Height = 35
     Top = 93
     Width = 104
     Caption = 'CMD'
-    TabOrder = 0
     OnClick = btcmdClick
+    TabOrder = 0
   end
   object Shape1: TShape
     Left = 0
@@ -25,15 +25,15 @@ object frmtoolprinter: Tfrmtoolprinter
   end
   object Label1: TLabel
     Left = 8
-    Height = 15
+    Height = 22
     Top = 6
-    Width = 13
+    Width = 17
     Caption = 'IP:'
     ParentColor = False
   end
   object edIP: TEdit
     Left = 27
-    Height = 23
+    Height = 32
     Top = 3
     Width = 192
     TabOrder = 1
@@ -41,15 +41,15 @@ object frmtoolprinter: Tfrmtoolprinter
   end
   object Label2: TLabel
     Left = 240
-    Height = 15
+    Height = 22
     Top = 8
-    Width = 25
+    Width = 33
     Caption = 'Port:'
     ParentColor = False
   end
   object edPort: TEdit
     Left = 273
-    Height = 23
+    Height = 32
     Top = 3
     Width = 80
     TabOrder = 2
@@ -61,8 +61,8 @@ object frmtoolprinter: Tfrmtoolprinter
     Top = 40
     Width = 75
     Caption = 'Conect'
-    TabOrder = 3
     OnClick = btConectClick
+    TabOrder = 3
   end
   object btDisconect: TButton
     Left = 264
@@ -70,8 +70,8 @@ object frmtoolprinter: Tfrmtoolprinter
     Top = 40
     Width = 75
     Caption = 'Disconect'
-    TabOrder = 4
     OnClick = btDisconectClick
+    TabOrder = 4
   end
   object AdvLed1: TAdvLed
     Left = 32
@@ -81,15 +81,15 @@ object frmtoolprinter: Tfrmtoolprinter
   end
   object Label3: TLabel
     Left = 10
-    Height = 15
+    Height = 22
     Top = 78
-    Width = 56
+    Width = 72
     Caption = 'Comando:'
     ParentColor = False
   end
   object edcmd: TEdit
     Left = 8
-    Height = 23
+    Height = 32
     Top = 95
     Width = 280
     TabOrder = 5
