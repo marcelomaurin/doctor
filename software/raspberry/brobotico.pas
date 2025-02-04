@@ -208,7 +208,7 @@ end;
 
 procedure Tfrmbrobotico.btPosFimServaClick(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.WriteData('POSFIMSERVA'+#10);
        dmbanco.SendData('POSFIMSERVA'+#10);
@@ -221,7 +221,7 @@ end;
 
 procedure Tfrmbrobotico.btCalibrarClick(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
        //dmbanco.LazSerial2.WriteData('CALIBRACAO'+#10);
@@ -238,7 +238,7 @@ end;
 
 procedure Tfrmbrobotico.btdesativabracoChange(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
        //dmbanco.LazSerial2.WriteData('BRACOOFF'+#10);
@@ -248,7 +248,7 @@ end;
 
 procedure Tfrmbrobotico.btAtivaBracoClick(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
        //dmbanco.LazSerial2.WriteData('ATIVABRACO'+#10);

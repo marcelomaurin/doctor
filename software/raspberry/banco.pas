@@ -5,15 +5,15 @@ unit banco;
 interface
 
 uses
-  Classes, SysUtils, ZConnection, ZDataset, SdpoSerial, Toolsfalar, log,
-  setmain, brobotico;
+  Classes, SysUtils, ZConnection, ZDataset, SdpoSerial, lNetComponents,
+  Toolsfalar, log, setmain, brobotico, lNet;
 
 type
 
   { Tdmbanco }
 
   Tdmbanco = class(TDataModule)
-    LazSerial2: TSdpoSerial;
+    LTCPComponent1: TLTCPComponent;
     ZConnection1: TZConnection;
     zqryExames: TZQuery;
     zqryreadaux: TZReadOnlyQuery;
@@ -22,6 +22,9 @@ type
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
     procedure LazSerial2RxData(Sender: TObject);
+    procedure LTCPComponent1Connect(aSocket: TLSocket);
+    procedure LTCPComponent1Disconnect(aSocket: TLSocket);
+    procedure LTCPComponent1Receive(aSocket: TLSocket);
   private
 
   public
@@ -55,6 +58,7 @@ type
     procedure SendData( Info : string);
     procedure ConectarSerial();
     procedure DisconectarSerial();
+    procedure RecebeDadosSerial(info : string);
 
   end;
 
@@ -228,7 +232,7 @@ begin
   end;
   frmlog.show();
 
-  dmbanco.LazSerial2.WriteData('SENDMSG=1,CALIBRAR'+#10);
+  SendData('SENDMSG=1,CALIBRAR'+#10);
 
 end;
 
@@ -236,14 +240,14 @@ procedure Tdmbanco.CalibrarModulo2;
 begin
   frmToolsfalar.Falar('Iniciando módulo de calibragem 2 '); //Ola
 
-  dmbanco.LazSerial2.WriteData('SENDMSG=2,CALIBRAR'+#10);
+  SendData('SENDMSG=2,CALIBRAR'+#10);
 end;
 
 procedure Tdmbanco.RetornarBracoRobototico;
 begin
   frmToolsfalar.Falar('Iniciando braço robótico '); //Ola
 
-  dmbanco.LazSerial2.WriteData('RETORNOCARRO'+#10);
+  SendData('RETORNOCARRO'+#10);
 end;
 
 procedure Tdmbanco.TelaReceita;
@@ -255,7 +259,7 @@ procedure Tdmbanco.CalibrarEquipamento;
 begin
   frmToolsfalar.Falar('Iniciando Calibração do equipamento '); //Ola
 
-  dmbanco.LazSerial2.WriteData('CALIBRACAO'+#10);
+  SendData('CALIBRACAO'+#10);
 end;
 
 
@@ -263,7 +267,7 @@ procedure Tdmbanco.PHFimCurso;
 begin
   frmToolsfalar.Falar('Posicionando PH na posicao de leitura '); //Ola
 
-  dmbanco.LazSerial2.WriteData('SENDMSG=1,MOVERFIMCURSOESQ'+#10);
+  SendData('SENDMSG=1,MOVERFIMCURSOESQ'+#10);
 end;
 
 procedure Tdmbanco.DataModuleCreate(Sender: TObject);
@@ -297,39 +301,32 @@ end;
 
 procedure Tdmbanco.DataModuleDestroy(Sender: TObject);
 begin
-  dmbanco.LazSerial2.close;
+  //dmbanco.LazSerial2.close;
+  LTCPComponent1.Disconnect(false);
 
 end;
 
 procedure Tdmbanco.LazSerial2RxData(Sender: TObject);
-var
-    info, linha: string;
-    posicaoLF: integer;
 begin
-    if LazSerial2.DataAvailable then
-    begin
-      info := LazSerial2.ReadData;
-      buffer := buffer + info; // Adiciona os dados ao buffer
 
-      repeat
-        posicaoLF := pos(#10, buffer); // Procura por \n (Line Feed)
-        if posicaoLF > 0 then
-        begin
-          linha := copy(buffer, 1, posicaoLF - 1); // Texto antes do \n
-          buffer := copy(buffer,posicaoLF+1,Length(buffer));
-          // Chama a rotina AnalisarBuffer com a linha extraída
-          AnalisarBuffer(linha);
-          if (frmlog <> nil) then
-          begin
-            frmlog.melog.Append(linha);
-            frmlog.melog.SelStart := Length(frmlog.melog.Text); // Move o cursor para o final
-            frmlog.melog.SelLength := 0; // Remove qualquer seleção de texto visível
-            //frmlog.melog.SetFocus; // Opcional: garante o foco no TMemo
-          end;
-        end;
-      until posicaoLF = 0;
-    end;
-    //Application.ProcessMessages;
+end;
+
+procedure Tdmbanco.LTCPComponent1Connect(aSocket: TLSocket);
+begin
+  //showmessage('Conectou');
+end;
+
+procedure Tdmbanco.LTCPComponent1Disconnect(aSocket: TLSocket);
+begin
+  //showmessage('Desconectou');
+end;
+
+procedure Tdmbanco.LTCPComponent1Receive(aSocket: TLSocket);
+var
+  info : string;
+begin
+  aSocket.GetMessage(info);
+  RecebeDadosSerial(info);
 end;
 
 function Tdmbanco.BuscaChavePessoa(chave: string): boolean;
@@ -525,19 +522,56 @@ end;
 
 procedure Tdmbanco.SendData(Info: string);
 begin
-  LazSerial2.WriteData(info);
+  //LazSerial2.WriteData(info);
+  LTCPComponent1.SendMessage(info);
 
 end;
 
 procedure Tdmbanco.ConectarSerial;
 begin
-    LazSerial2.Device:= FSetMain.SerialPort;
-    LazSerial2.open;
+    //LazSerial2.Device:= FSetMain.SerialPort;
+    //LazSerial2.open;
+  //FSetMain.SerialPort := '192.168.100.12';
+  //FSetMain.SalvaContexto(true);
+  //LTCPComponent1.Connect(FSetMain.SerialPort,8101);
+  LTCPComponent1.Connect('192.168.100.12',8101);
 end;
 
 procedure Tdmbanco.DisconectarSerial;
 begin
-  LazSerial2.close;
+  //LazSerial2.close;
+  LTCPComponent1.Disconnect(false);
+end;
+
+procedure Tdmbanco.RecebeDadosSerial(info: string);
+var
+    linha: string;
+    posicaoLF: integer;
+begin
+    if (info <> '') then
+    begin
+      //info := LazSerial2.ReadData;
+      buffer := buffer + info; // Adiciona os dados ao buffer
+
+      repeat
+        posicaoLF := pos(#10, buffer); // Procura por \n (Line Feed)
+        if posicaoLF > 0 then
+        begin
+          linha := copy(buffer, 1, posicaoLF - 1); // Texto antes do \n
+          buffer := copy(buffer,posicaoLF+1,Length(buffer));
+          // Chama a rotina AnalisarBuffer com a linha extraída
+          AnalisarBuffer(linha);
+          if (frmlog <> nil) then
+          begin
+            frmlog.melog.Append(linha);
+            frmlog.melog.SelStart := Length(frmlog.melog.Text); // Move o cursor para o final
+            frmlog.melog.SelLength := 0; // Remove qualquer seleção de texto visível
+            //frmlog.melog.SetFocus; // Opcional: garante o foco no TMemo
+          end;
+        end;
+      until posicaoLF = 0;
+    end;
+    //Application.ProcessMessages;
 end;
 
 end.

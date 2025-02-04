@@ -8,7 +8,7 @@ object frmbrobotico: Tfrmbrobotico
   ClientWidth = 620
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.4.0.0'
   object PageControl1: TPageControl
     Left = 0
     Height = 407
@@ -20,8 +20,8 @@ object frmbrobotico: Tfrmbrobotico
     TabOrder = 0
     object tsEsteira: TTabSheet
       Caption = 'Esteira'
-      ClientHeight = 359
-      ClientWidth = 610
+      ClientHeight = 379
+      ClientWidth = 612
       object tbMov: TTrackBar
         Left = 8
         Height = 52
@@ -33,33 +33,33 @@ object frmbrobotico: Tfrmbrobotico
       end
       object Label5: TLabel
         Left = 264
-        Height = 22
+        Height = 15
         Top = 360
-        Width = 101
+        Width = 75
         Caption = 'Posição Atual:'
         ParentColor = False
       end
       object lbPosicao: TLabel
         Left = 346
-        Height = 22
+        Height = 15
         Top = 360
-        Width = 9
+        Width = 6
         Caption = '0'
         ParentColor = False
       end
       object Label6: TLabel
         Left = 472
-        Height = 22
+        Height = 15
         Top = 360
-        Width = 99
+        Width = 72
         Caption = 'Posição Final:'
         ParentColor = False
       end
       object lbPOSFIMESTEIRA: TLabel
         Left = 560
-        Height = 22
+        Height = 15
         Top = 360
-        Width = 9
+        Width = 6
         Caption = '0'
         ParentColor = False
       end
@@ -69,8 +69,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 24
         Width = 112
         Caption = 'Retornar'
-        OnClick = btInicioEsteiraClick
         TabOrder = 1
+        OnClick = btInicioEsteiraClick
       end
       object btCalibrar: TButton
         Left = 256
@@ -78,8 +78,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 24
         Width = 112
         Caption = 'Calibrar Esteira'
-        OnClick = btCalibrarClick
         TabOrder = 2
+        OnClick = btCalibrarClick
       end
       object Image1: TImage
         Left = 8
@@ -18101,8 +18101,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 24
         Width = 112
         Caption = 'Final da Esteira'
-        OnClick = btFinalEsteiraClick
         TabOrder = 3
+        OnClick = btFinalEsteiraClick
       end
       object AdvLed1: TAdvLed
         Left = 24
@@ -18122,8 +18122,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 296
         Width = 112
         Caption = 'Mover'
-        OnClick = btMoverClick
         TabOrder = 4
+        OnClick = btMoverClick
       end
       object btPosFimServa: TButton
         Left = 480
@@ -18131,14 +18131,14 @@ object frmbrobotico: Tfrmbrobotico
         Top = 294
         Width = 112
         Caption = 'PosFimServa'
-        OnClick = btPosFimServaClick
         TabOrder = 5
+        OnClick = btPosFimServaClick
       end
     end
     object tsBraco: TTabSheet
       Caption = 'Braço robótico:'
-      ClientHeight = 359
-      ClientWidth = 610
+      ClientHeight = 379
+      ClientWidth = 612
       object Shape3: TShape
         Left = 13
         Height = 66
@@ -18157,8 +18157,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 303
         Width = 75
         Caption = '>'
-        OnClick = btDirForteClick
         TabOrder = 0
+        OnClick = btDirForteClick
       end
       object btEsqForte: TButton
         Left = 32
@@ -18166,8 +18166,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 303
         Width = 75
         Caption = '<<'
-        OnClick = btEsqForteClick
         TabOrder = 1
+        OnClick = btEsqForteClick
       end
       object btEsqFraco: TButton
         Left = 155
@@ -18175,8 +18175,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 303
         Width = 75
         Caption = '<-'
-        OnClick = btEsqFracoClick
         TabOrder = 2
+        OnClick = btEsqFracoClick
       end
       object btDirFraco: TButton
         Left = 392
@@ -18184,8 +18184,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 303
         Width = 75
         Caption = '->'
-        OnClick = btDirFracoClick
         TabOrder = 3
+        OnClick = btDirFracoClick
       end
       object btBraco: TButton
         Left = 24
@@ -18193,8 +18193,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 104
         Width = 75
         Caption = 'Braço'
-        OnClick = btBracoClick
         TabOrder = 4
+        OnClick = btBracoClick
       end
       object btPunho: TButton
         Left = 24
@@ -18202,8 +18202,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 168
         Width = 75
         Caption = 'Braco2'
-        OnClick = btPunhoClick
         TabOrder = 5
+        OnClick = btPunhoClick
       end
       object btGirar: TButton
         Left = 24
@@ -18211,8 +18211,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 32
         Width = 75
         Caption = 'Girar'
-        OnClick = btGirarClick
         TabOrder = 6
+        OnClick = btGirarClick
       end
       object btGarra: TButton
         Left = 24
@@ -18220,8 +18220,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 232
         Width = 75
         Caption = 'Garra'
-        OnClick = btGarraClick
         TabOrder = 7
+        OnClick = btGarraClick
       end
       object tbposicao: TTrackBar
         Left = 136
@@ -18264,8 +18264,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 88
         Width = 128
         Caption = 'Ativa Braço'
-        OnClick = btAtivaBracoClick
         TabOrder = 12
+        OnClick = btAtivaBracoClick
       end
       object btdesativabraco: TToggleBox
         Left = 480
@@ -18273,8 +18273,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 133
         Width = 128
         Caption = 'Desativa Braço'
-        OnChange = btdesativabracoChange
         TabOrder = 13
+        OnChange = btdesativabracoChange
       end
       object btdesativabraco1: TToggleBox
         Left = 480
@@ -18282,19 +18282,19 @@ object frmbrobotico: Tfrmbrobotico
         Top = 183
         Width = 128
         Caption = 'Close Open'
-        OnChange = btdesativabraco1Change
         TabOrder = 14
+        OnChange = btdesativabraco1Change
       end
     end
     object tsMovimento: TTabSheet
       Caption = 'Movimentos'
-      ClientHeight = 359
-      ClientWidth = 610
+      ClientHeight = 379
+      ClientWidth = 612
       object Label3: TLabel
         Left = 12
-        Height = 22
+        Height = 15
         Top = 8
-        Width = 171
+        Width = 127
         Caption = 'Relação de Movimentos'
         ParentColor = False
       end
@@ -18305,7 +18305,6 @@ object frmbrobotico: Tfrmbrobotico
         Width = 272
         ItemHeight = 0
         TabOrder = 0
-        TopIndex = -1
       end
       object Button10: TButton
         Left = 288
@@ -18313,8 +18312,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 32
         Width = 104
         Caption = 'Limpar'
-        OnClick = Button10Click
         TabOrder = 1
+        OnClick = Button10Click
       end
       object Button11: TButton
         Left = 288
@@ -18322,8 +18321,8 @@ object frmbrobotico: Tfrmbrobotico
         Top = 96
         Width = 104
         Caption = 'Salvar'
-        OnClick = Button11Click
         TabOrder = 2
+        OnClick = Button11Click
       end
       object Button12: TButton
         Left = 288
@@ -18331,19 +18330,19 @@ object frmbrobotico: Tfrmbrobotico
         Top = 152
         Width = 104
         Caption = 'Carregar'
-        OnClick = Button12Click
         TabOrder = 3
+        OnClick = Button12Click
       end
     end
     object tsMonitor: TTabSheet
       Caption = 'Monitor'
-      ClientHeight = 359
-      ClientWidth = 610
+      ClientHeight = 379
+      ClientWidth = 612
       object Label1: TLabel
         Left = 18
-        Height = 22
+        Height = 15
         Top = 32
-        Width = 93
+        Width = 69
         Caption = 'Temperatura:'
         ParentColor = False
       end
@@ -18356,9 +18355,9 @@ object frmbrobotico: Tfrmbrobotico
       end
       object Label2: TLabel
         Left = 18
-        Height = 22
+        Height = 15
         Top = 96
-        Width = 76
+        Width = 59
         Caption = 'Humidade:'
         ParentColor = False
       end
@@ -18371,9 +18370,9 @@ object frmbrobotico: Tfrmbrobotico
       end
       object Label7: TLabel
         Left = 224
-        Height = 22
+        Height = 15
         Top = 56
-        Width = 47
+        Width = 36
         Caption = 'Aixo 1:'
         ParentColor = False
       end
@@ -18387,9 +18386,9 @@ object frmbrobotico: Tfrmbrobotico
       end
       object Label8: TLabel
         Left = 224
-        Height = 22
+        Height = 15
         Top = 80
-        Width = 47
+        Width = 36
         Caption = 'Aixo 2:'
         ParentColor = False
       end
@@ -18403,9 +18402,9 @@ object frmbrobotico: Tfrmbrobotico
       end
       object Label10: TLabel
         Left = 440
-        Height = 22
+        Height = 15
         Top = 80
-        Width = 47
+        Width = 36
         Caption = 'Aixo 4:'
         ParentColor = False
       end
@@ -18419,9 +18418,9 @@ object frmbrobotico: Tfrmbrobotico
       end
       object Label9: TLabel
         Left = 440
-        Height = 22
+        Height = 15
         Top = 56
-        Width = 47
+        Width = 36
         Caption = 'Aixo 3:'
         ParentColor = False
       end

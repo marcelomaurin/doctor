@@ -51,15 +51,20 @@ end;
 
 procedure Tfrmreceitas.FormDestroy(Sender: TObject);
 begin
-
+    if (frmlog <> nil) then
+    begin
+        frmlog.close;
+        frmlog.free;
+        frmlog := nil;
+    end;
 end;
 
 procedure Tfrmreceitas.Button1Click(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-       dmbanco.LazSerial2.WriteData('SENDMSG='+cbmodulo.Items[cbmodulo.ItemIndex]+','+cbcomando.Items[cbcomando.ItemIndex]+#10);
+       dmbanco('SENDMSG='+cbmodulo.Items[cbmodulo.ItemIndex]+','+cbcomando.Items[cbcomando.ItemIndex]+#10);
   end;
 end;
 

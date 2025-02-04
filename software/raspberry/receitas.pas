@@ -61,10 +61,10 @@ end;
 
 procedure Tfrmreceitas.Button1Click(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-       dmbanco.LazSerial2.WriteData('SENDMSG='+cbmodulo.Items[cbmodulo.ItemIndex]+','+cbcomando.Items[cbcomando.ItemIndex]+#10);
+       dmbanco.SendData('SENDMSG='+cbmodulo.Items[cbmodulo.ItemIndex]+','+cbcomando.Items[cbcomando.ItemIndex]+#10);
   end;
 end;
 

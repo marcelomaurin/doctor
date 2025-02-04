@@ -118,7 +118,7 @@ var
 implementation
 
 {$R *.lfm}
-uses ;
+
 { Tfrmbrobotico }
 
 uses main, banco;
@@ -130,7 +130,7 @@ begin
   posicao := referencia;
   lstMov.Items.Add('MOVESERVO='+inttostr(ope)+','+inttostr(referencia));
   //dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(referencia)+#10);
-  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(referencia)+#10);
+  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(referencia)+#13);
   Application.ProcessMessages;
 end;
 
@@ -141,7 +141,7 @@ begin
   if (posicao < 0) then posicao := 0;
   //frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
   //dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
-  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
+  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
@@ -152,7 +152,7 @@ begin
   if (posicao > 255) then posicao := 255;
   //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
   //dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
-  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
+  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#13);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
@@ -172,7 +172,7 @@ procedure Tfrmbrobotico.btInicioEsteiraClick(Sender: TObject);
 begin
   //LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
   //dmbanco.LazSerial2.WriteData('RETORNOCARRO'+#10);
-  dmbanco.SendData('RETORNOCARRO'+#10);
+  dmbanco.SendData('RETORNOCARRO'+#13);
   application.ProcessMessages;
 
 end;
@@ -186,7 +186,7 @@ procedure Tfrmbrobotico.btFinalEsteiraClick(Sender: TObject);
 begin
   //frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
   //dmbanco.LazSerial2.WriteData('POSFIMCARRO'+#10);
-  dmbanco.SendData('POSFIMCARRO'+#10);
+  dmbanco.SendData('POSFIMCARRO'+#13);
   application.ProcessMessages;
 
 end;
@@ -197,7 +197,7 @@ begin
   begin
      //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
      //dmbanco.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
-     dmbanco.SendData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
+     dmbanco.SendData('MOVEPASSO='+inttostr(tbMov.Position)+#13);
      posicaoanterior :=  tbMov.Position;
      Image2.left := trunc(tbMov.Position*0.28);
      lbPosicao.Caption:= inttostr(tbMov.Position);
@@ -208,10 +208,10 @@ end;
 
 procedure Tfrmbrobotico.btPosFimServaClick(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.WriteData('POSFIMSERVA'+#10);
-       dmbanco.SendData('POSFIMSERVA'+#10);
+       dmbanco.SendData('POSFIMSERVA'+#13);
   end
   else
   begin
@@ -221,11 +221,11 @@ end;
 
 procedure Tfrmbrobotico.btCalibrarClick(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
        //dmbanco.LazSerial2.WriteData('CALIBRACAO'+#10);
-       dmbanco.SendData('CALIBRACAO'+#10);
+       dmbanco.SendData('CALIBRACAO'+#13);
        application.ProcessMessages;
   end;
 end;
@@ -238,21 +238,21 @@ end;
 
 procedure Tfrmbrobotico.btdesativabracoChange(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
        //dmbanco.LazSerial2.WriteData('BRACOOFF'+#10);
-       dmbanco.SendData('BRACOOFF'+#10);
+       dmbanco.SendData('BRACOOFF'+#13);
   end;
 end;
 
 procedure Tfrmbrobotico.btAtivaBracoClick(Sender: TObject);
 begin
-  if(dmbanco.LazSerial2.Active) then
+  if(dmbanco.LTCPComponent1.Connected) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
        //dmbanco.LazSerial2.WriteData('ATIVABRACO'+#10);
-       dmbanco.SendData('ATIVABRACO'+#10);
+       dmbanco.SendData('ATIVABRACO'+#13);
   end;
 end;
 

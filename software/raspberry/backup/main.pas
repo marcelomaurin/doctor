@@ -202,7 +202,8 @@ begin
   FSetMain := TSetMain.create();
   FSetMain.CarregaContexto();
   dmbanco := Tdmbanco.Create(self);
-  dmbanco.ConectarSerial()
+  dmbanco.ConectarSerial();
+  Application.ProcessMessages;
   sleep(1000);
 
 

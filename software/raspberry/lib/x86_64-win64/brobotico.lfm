@@ -1,23 +1,22 @@
 object frmbrobotico: Tfrmbrobotico
-  Left = 350
+  Left = 354
   Height = 407
-  Top = 167
+  Top = 152
   Width = 620
   Caption = 'Gravador de Movimento Braço Robotico'
   ClientHeight = 407
   ClientWidth = 620
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  Position = poMainFormCenter
   LCLVersion = '3.4.0.0'
   object PageControl1: TPageControl
     Left = 0
     Height = 407
     Top = 0
     Width = 620
-    ActivePage = tsBraco
+    ActivePage = tsEsteira
     Align = alClient
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object tsEsteira: TTabSheet
       Caption = 'Esteira'
@@ -26,7 +25,7 @@ object frmbrobotico: Tfrmbrobotico
       object tbMov: TTrackBar
         Left = 8
         Height = 52
-        Top = 296
+        Top = 240
         Width = 592
         Max = 2000
         Position = 0
@@ -85,7 +84,7 @@ object frmbrobotico: Tfrmbrobotico
       object Image1: TImage
         Left = 8
         Height = 48
-        Top = 248
+        Top = 192
         Width = 600
         Picture.Data = {
           07544269746D6170F6B10500424DF6B105000000000036000000280000001003
@@ -11757,9 +11756,9 @@ object frmbrobotico: Tfrmbrobotico
         Stretch = True
       end
       object Image2: TImage
-        Left = 24
+        Left = 16
         Height = 95
-        Top = 168
+        Top = 96
         Width = 88
         Picture.Data = {
           07544269746D61703A170300424D3A170300000000003600000028000000E100
@@ -18108,28 +18107,28 @@ object frmbrobotico: Tfrmbrobotico
       object AdvLed1: TAdvLed
         Left = 24
         Height = 24
-        Top = 264
+        Top = 208
         Width = 24
       end
       object AdvLed2: TAdvLed
         Left = 560
         Height = 24
-        Top = 264
+        Top = 208
         Width = 24
       end
       object btMover: TButton
-        Left = 256
+        Left = 243
         Height = 41
-        Top = 193
+        Top = 296
         Width = 112
         Caption = 'Mover'
         TabOrder = 4
         OnClick = btMoverClick
       end
       object btPosFimServa: TButton
-        Left = 488
+        Left = 480
         Height = 43
-        Top = 192
+        Top = 294
         Width = 112
         Caption = 'PosFimServa'
         TabOrder = 5
@@ -18143,7 +18142,7 @@ object frmbrobotico: Tfrmbrobotico
       object Shape3: TShape
         Left = 13
         Height = 66
-        Top = 278
+        Top = 288
         Width = 577
       end
       object Shape1: TShape
@@ -18226,7 +18225,7 @@ object frmbrobotico: Tfrmbrobotico
       end
       object tbposicao: TTrackBar
         Left = 136
-        Height = 40
+        Height = 52
         Top = 96
         Width = 282
         Max = 180
@@ -18243,7 +18242,7 @@ object frmbrobotico: Tfrmbrobotico
       end
       object tbposicao1: TTrackBar
         Left = 136
-        Height = 40
+        Height = 52
         Top = 168
         Width = 282
         Max = 180
@@ -18252,7 +18251,7 @@ object frmbrobotico: Tfrmbrobotico
       end
       object tbposicao2: TTrackBar
         Left = 136
-        Height = 40
+        Height = 52
         Top = 232
         Width = 282
         Max = 180
@@ -18263,7 +18262,7 @@ object frmbrobotico: Tfrmbrobotico
         Left = 480
         Height = 41
         Top = 88
-        Width = 75
+        Width = 128
         Caption = 'Ativa Braço'
         TabOrder = 12
         OnClick = btAtivaBracoClick
@@ -18272,10 +18271,19 @@ object frmbrobotico: Tfrmbrobotico
         Left = 480
         Height = 37
         Top = 133
-        Width = 75
+        Width = 128
         Caption = 'Desativa Braço'
         TabOrder = 13
         OnChange = btdesativabracoChange
+      end
+      object btdesativabraco1: TToggleBox
+        Left = 480
+        Height = 37
+        Top = 183
+        Width = 128
+        Caption = 'Close Open'
+        TabOrder = 14
+        OnChange = btdesativabraco1Change
       end
     end
     object tsMovimento: TTabSheet
@@ -18326,46 +18334,6 @@ object frmbrobotico: Tfrmbrobotico
         OnClick = Button12Click
       end
     end
-    object tsConfig: TTabSheet
-      Caption = 'Configuração'
-      ClientHeight = 379
-      ClientWidth = 612
-      object Label4: TLabel
-        Left = 21
-        Height = 15
-        Top = 16
-        Width = 135
-        Caption = 'Porta Arduino Transporte:'
-        ParentColor = False
-      end
-      object edPorta: TEdit
-        Left = 21
-        Height = 23
-        Top = 40
-        Width = 171
-        TabOrder = 0
-        Text = 'COM6'
-        OnKeyPress = edPortaKeyPress
-      end
-      object Button13: TButton
-        Left = 216
-        Height = 47
-        Top = 16
-        Width = 75
-        Caption = 'Conectar'
-        TabOrder = 1
-        OnClick = Button13Click
-      end
-      object Button14: TButton
-        Left = 320
-        Height = 47
-        Top = 16
-        Width = 75
-        Caption = 'Desconectar'
-        TabOrder = 2
-        OnClick = Button14Click
-      end
-    end
     object tsMonitor: TTabSheet
       Caption = 'Monitor'
       ClientHeight = 379
@@ -18399,6 +18367,70 @@ object frmbrobotico: Tfrmbrobotico
         Top = 120
         Width = 170
         Caption = '0'
+      end
+      object Label7: TLabel
+        Left = 224
+        Height = 15
+        Top = 56
+        Width = 36
+        Caption = 'Aixo 1:'
+        ParentColor = False
+      end
+      object ledEixo1: TLEDNumber
+        Left = 272
+        Height = 30
+        Top = 48
+        Width = 102
+        Caption = '0'
+        Columns = 6
+      end
+      object Label8: TLabel
+        Left = 224
+        Height = 15
+        Top = 80
+        Width = 36
+        Caption = 'Aixo 2:'
+        ParentColor = False
+      end
+      object ledEixo2: TLEDNumber
+        Left = 272
+        Height = 30
+        Top = 80
+        Width = 102
+        Caption = '0'
+        Columns = 6
+      end
+      object Label10: TLabel
+        Left = 440
+        Height = 15
+        Top = 80
+        Width = 36
+        Caption = 'Aixo 4:'
+        ParentColor = False
+      end
+      object ledEixo4: TLEDNumber
+        Left = 491
+        Height = 30
+        Top = 80
+        Width = 102
+        Caption = '0'
+        Columns = 6
+      end
+      object Label9: TLabel
+        Left = 440
+        Height = 15
+        Top = 56
+        Width = 36
+        Caption = 'Aixo 3:'
+        ParentColor = False
+      end
+      object ledEixo3: TLEDNumber
+        Left = 491
+        Height = 30
+        Top = 48
+        Width = 102
+        Caption = '0'
+        Columns = 6
       end
     end
   end

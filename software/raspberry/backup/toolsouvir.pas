@@ -80,7 +80,7 @@ end;
 
 procedure TfrmToolsOuvir.LTCPComponent1Connect(aSocket: TLSocket);
 begin
-  AdvLed1.Blink:=fal;
+  AdvLed1.Blink:=false;
   AdvLed1.State:= lsOn;
 
 end;

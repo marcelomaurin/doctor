@@ -60,17 +60,15 @@ object dmbanco: Tdmbanco
     Left = 72
     Top = 118
   end
-  object LazSerial2: TSdpoSerial
-    Active = False
-    BaudRate = br__9600
-    AltBaudRate = 0
-    DataBits = db8bits
-    Parity = pNone
-    FlowControl = fcNone
-    StopBits = sbOne
-    Device = '/dev/ttyS0'
-    OnRxData = LazSerial2RxData
-    Left = 208
+  object LTCPComponent1: TLTCPComponent
+    Host = '192.168.100.12'
+    Port = 8101
+    OnReceive = LTCPComponent1Receive
+    OnDisconnect = LTCPComponent1Disconnect
+    OnConnect = LTCPComponent1Connect
+    Timeout = 0
+    ReuseAddress = False
+    Left = 72
     Top = 189
   end
 end

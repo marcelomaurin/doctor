@@ -73,7 +73,7 @@ procedure TfrmToolsfalar.edFalarKeyPress(Sender: TObject; var Key: char);
 begin
   if key = #13 then
   begin
-    F
+    Falar();
   end;
 end;
 
