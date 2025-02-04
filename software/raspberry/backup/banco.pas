@@ -5,7 +5,8 @@ unit banco;
 interface
 
 uses
-  Classes, SysUtils, ZConnection, ZDataset, SdpoSerial, Toolsfalar, log;
+  Classes, SysUtils, ZConnection, ZDataset, SdpoSerial, Toolsfalar, log,
+  setmain, ;
 
 type
 
@@ -19,6 +20,7 @@ type
     zqryCliente: TZQuery;
     zqryEtiqueta: TZQuery;
     procedure DataModuleCreate(Sender: TObject);
+    procedure DataModuleDestroy(Sender: TObject);
     procedure LazSerial2RxData(Sender: TObject);
   private
 
@@ -50,6 +52,9 @@ type
     procedure SairSistema;
     procedure StatusSistema;
     procedure RecebeuAssociacao(Associacao: string);
+    procedure SendData( Info : string);
+    procedure ConectarSerial();
+    procedure DisconectarSerial();
 
   end;
 
@@ -62,7 +67,7 @@ implementation
 
 { Tdmbanco }
 
-uses main, brobotico, etiquetar;
+uses main, etiquetar;
 
 procedure Tdmbanco.AnalisarBuffer(const linha: string);
 var
@@ -222,8 +227,7 @@ begin
        frmlog := Tfrmlog.create(self);
   end;
   frmlog.show();
-  //SENDMSG=   1, CALIBRAR
-  //LazSerial2.OnRxData:= @LazSerial2RxData;
+
   dmbanco.LazSerial2.WriteData('SENDMSG=1,CALIBRAR'+#10);
 
 end;
@@ -231,14 +235,14 @@ end;
 procedure Tdmbanco.CalibrarModulo2;
 begin
   frmToolsfalar.Falar('Iniciando módulo de calibragem 2 '); //Ola
-  //LazSerial2.OnRxData:= @LazSerial2RxData;
+
   dmbanco.LazSerial2.WriteData('SENDMSG=2,CALIBRAR'+#10);
 end;
 
 procedure Tdmbanco.RetornarBracoRobototico;
 begin
   frmToolsfalar.Falar('Iniciando braço robótico '); //Ola
-  //LazSerial2.OnRxData:= @LazSerial2RxData;
+
   dmbanco.LazSerial2.WriteData('RETORNOCARRO'+#10);
 end;
 
@@ -250,7 +254,7 @@ end;
 procedure Tdmbanco.CalibrarEquipamento;
 begin
   frmToolsfalar.Falar('Iniciando Calibração do equipamento '); //Ola
-  //LazSerial2.OnRxData:= @LazSerial2RxData;
+
   dmbanco.LazSerial2.WriteData('CALIBRACAO'+#10);
 end;
 
@@ -258,7 +262,7 @@ end;
 procedure Tdmbanco.PHFimCurso;
 begin
   frmToolsfalar.Falar('Posicionando PH na posicao de leitura '); //Ola
-  //LazSerial2.OnRxData:= @LazSerial2RxData;
+
   dmbanco.LazSerial2.WriteData('SENDMSG=1,MOVERFIMCURSOESQ'+#10);
 end;
 
@@ -287,10 +291,14 @@ begin
         ZConnection1.LibraryLocation := 'D:\projetos\maurinsoft\doctor\software\raspberry\libs\mysql\win64\libmysql64.dll';
     {$ENDIF}
     ZConnection1.Connect;
-
-
   finally
   end;
+end;
+
+procedure Tdmbanco.DataModuleDestroy(Sender: TObject);
+begin
+  dmbanco.LazSerial2.close;
+
 end;
 
 procedure Tdmbanco.LazSerial2RxData(Sender: TObject);
@@ -513,6 +521,23 @@ begin
         frmToolsfalar.Falar('Comando não encontrado '); //Comando nao encontrado
   end;
 
+end;
+
+procedure Tdmbanco.SendData(Info: string);
+begin
+  LazSerial2.WriteData(info);
+
+end;
+
+procedure Tdmbanco.ConectarSerial;
+begin
+    LazSerial2.Device:= FSetMain.SerialPort;
+    LazSerial2.open;
+end;
+
+procedure Tdmbanco.DisconectarSerial;
+begin
+  LazSerial2.close;
 end;
 
 end.

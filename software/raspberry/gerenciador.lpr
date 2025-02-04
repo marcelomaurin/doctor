@@ -14,7 +14,7 @@ uses
   LazSerialPort, pkg_gifanim, sdposeriallaz, zcomponent, config, banco,
   cfgspeak, cfgBanco, bloqueio, OpAmostragem, imp, imp_ELGINI9, imp_generico,
   imp_qr203, cfgImp, Etiquetar, PesqPacientes, PesqTipoExames, chatgpt,
-  ToolsOuvir, toolsver, splash, log, toolprinter
+  ToolsOuvir, toolsver, splash, log, toolprinter, brobotico
   { you can add units after this };
 
 {$R *.res}
@@ -25,6 +25,7 @@ begin
   Application.Initialize;
   Application.CreateForm(Tfrmmain, frmmain);
   Application.CreateForm(TfrmLog, frmLog);
+  Application.CreateForm(Tfrmbrobotico, frmbrobotico);
   Application.Run;
 end.
 

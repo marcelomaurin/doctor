@@ -11,9 +11,9 @@ xinput set-prop 'eGalax Inc. USB TouchController' 'Coordinate Transformation Mat
 
 
 
-usleep 1000
+usleep 2000
 #start das aplicacoes
-/usr/bin/gerenciador &
+#/usr/bin/gerenciador &
 
 
 

@@ -1,80 +1,110 @@
-#!/usr/bin/python3
-
 import socket
-import serial
 import threading
+import serial
 import logging
-from datetime import datetime
 
-# Configuracoes da porta serial
-serial_port = '/dev/ttyUSB0'  # Substitua pelo nome da sua porta serial
-baud_rate = 9600  # Taxa de transmissao da porta serial
+# Configurações do arquivo de log
+LOG_FILE = '/var/log/serial_tcp.log'
 
-# Configuracoes do servidor TCP
-tcp_ip = '0.0.0.0'  # Escuta em todas as interfaces de rede
-tcp_port = 8101
-
-# Configuracao do log
-log_file = '/var/log/serial_tcp.log'
+# Configuração do logging: registra mensagens no arquivo e na saída padrão.
 logging.basicConfig(
-    filename=log_file,
     level=logging.INFO,
-    format='%(asctime)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler()
+    ]
 )
 
-# Funcao para registrar logs
-def log_message(direction, data):
-    direction_str = 'TX' if direction == 'send' else 'RX'
-    logging.info(f'{direction_str}: {data.strip().decode(errors="replace")}')
+# Configurações da porta serial
+SERIAL_PORT = '/dev/ttyACM0'
+BAUD_RATE = 9600
 
-# Funcao para ler da porta serial e enviar para o cliente TCP
-def serial_to_tcp(client_socket, ser):
-    while True:
-        data = ser.read(ser.in_waiting or 1)
-        if data:
-            log_message('recv', data)  # Log de RX
-            client_socket.sendall(data)
+# Lista de clientes conectados e lock para acesso seguro
+clients = []
+clients_lock = threading.Lock()
 
-# Funcao para ler do cliente TCP e enviar para a porta serial
-def tcp_to_serial(client_socket, ser):
-    while True:
-        data = client_socket.recv(1024)
-        if data:
-            log_message('send', data)  # Log de TX
-            ser.write(data)
+# Inicializa a porta serial
+try:
+    ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0)
+    logging.info(f"Porta serial {SERIAL_PORT} aberta com sucesso!")
+except Exception as e:
+    logging.error(f"Erro ao abrir a porta serial {SERIAL_PORT}: {e}")
+    exit(1)
 
-def main():
+def client_handler(conn, addr):
+    """
+    Trata a comunicação com cada cliente.
+    Recebe dados do cliente e os encaminha para a porta serial.
+    """
+    logging.info(f"Cliente conectado: {addr}")
     try:
-        # Inicializa a porta serial
-        ser = serial.Serial(serial_port, baud_rate, timeout=1)
-        logging.info("Porta serial inicializada com sucesso.")
-
-        # Inicializa o servidor TCP
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind((tcp_ip, tcp_port))
-        server_socket.listen(1)
-        logging.info(f'Servidor TCP aguardando conexoes na porta {tcp_port}...')
-        
-        client_socket, addr = server_socket.accept()
-        logging.info(f'Conexao estabelecida com {addr}')
-
-        # Cria threads para comunicacao bidirecional
-        threading.Thread(target=serial_to_tcp, args=(client_socket, ser), daemon=True).start()
-        threading.Thread(target=tcp_to_serial, args=(client_socket, ser), daemon=True).start()
-
-        # Mantem o script em execucao
         while True:
-            pass
+            data = conn.recv(1024)
+            if not data:
+                # Cliente desconectou
+                break
+            logging.info(f"Recebido {len(data)} bytes do cliente {addr}. Encaminhando para a porta serial.")
+            ser.write(data)
     except Exception as e:
-        logging.error(f'Erro: {e}')
+        logging.error(f"Erro com o cliente {addr}: {e}")
     finally:
-        logging.info('Encerrando servidor...')
-        if ser.is_open:
-            ser.close()
-        if client_socket:
-            client_socket.close()
-        server_socket.close()
+        logging.info(f"Cliente desconectado: {addr}")
+        with clients_lock:
+            if conn in clients:
+                clients.remove(conn)
+        conn.close()
 
-if __name__ == '__main__':
-    main()
+def serial_reader():
+    """
+    Lê continuamente os dados da porta serial e os envia para todos os clientes conectados.
+    """
+    while True:
+        try:
+            if ser.in_waiting:
+                # Lê todos os bytes disponíveis
+                data = ser.read(ser.in_waiting)
+                if data:
+                    logging.info(f"Recebidos {len(data)} bytes da porta serial. Encaminhando para clientes.")
+                    with clients_lock:
+                        for client in list(clients):  # Usa uma cópia da lista para evitar problemas durante remoção
+                            try:
+                                client.sendall(data)
+                            except Exception as e:
+                                logging.error(f"Erro ao enviar dados para um cliente: {e}")
+                                clients.remove(client)
+        except Exception as e:
+            logging.error(f"Erro na leitura da porta serial: {e}")
+
+def tcp_server():
+    """
+    Inicia o servidor TCP, aceita conexões e cria uma thread para cada cliente.
+    """
+    host = ''  # Aceita conexões em todas as interfaces
+    port = 8101
+    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Permite reusar o endereço para evitar "address already in use"
+    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        server_sock.bind((host, port))
+    except Exception as e:
+        logging.error(f"Erro ao vincular o socket na porta {port}: {e}")
+        return
+    server_sock.listen(5)
+    logging.info(f"Servidor TCP ouvindo na porta {port}...")
+    
+    while True:
+        conn, addr = server_sock.accept()
+        with clients_lock:
+            clients.append(conn)
+        # Cria uma thread para tratar o cliente (thread normal, não daemon)
+        t = threading.Thread(target=client_handler, args=(conn, addr))
+        t.start()
+
+if __name__ == "__main__":
+    # Inicia a thread de leitura da porta serial (thread normal, não daemon)
+    t_serial = threading.Thread(target=serial_reader)
+    t_serial.start()
+    
+    # Inicia o servidor TCP (executado na thread principal)
+    tcp_server()

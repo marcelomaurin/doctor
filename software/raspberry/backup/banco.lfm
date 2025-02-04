@@ -1,9 +1,10 @@
 object dmbanco: Tdmbanco
   OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 249
-  HorizontalOffset = 289
-  VerticalOffset = 229
+  HorizontalOffset = 843
+  VerticalOffset = 210
   Width = 296
   object ZConnection1: TZConnection
     ControlsCodePage = cCP_UTF8

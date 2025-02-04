@@ -1,5 +1,6 @@
 object dmbanco: Tdmbanco
   OnCreate = DataModuleCreate
+  OnDestroy = DataModuleDestroy
   OldCreateOrder = False
   Height = 249
   HorizontalOffset = 843

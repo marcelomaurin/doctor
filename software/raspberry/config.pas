@@ -95,10 +95,14 @@ end;
 
 procedure Tfrmconfig.Image4Click(Sender: TObject);
 begin
-  frmbrobotico := Tfrmbrobotico.create(self);
-  frmbrobotico.showmodal;
+  if(frmbrobotico=nil) then
+  begin
+       frmbrobotico := Tfrmbrobotico.create(self);
+  end;
+  frmbrobotico.show;
 
-  frmbrobotico.free;
+  //frmbrobotico.free;
+  //frmbrobotico := nil;
 end;
 
 procedure Tfrmconfig.Image4MouseEnter(Sender: TObject);

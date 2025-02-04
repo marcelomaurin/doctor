@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ComCtrls, ExtCtrls, synaser, setmain, LazSerial, MKnob, LedNumber,
-  indGnouMeter, AdvLed, log, banco;
+  indGnouMeter, AdvLed, log;
 
 type
 
@@ -16,6 +16,7 @@ type
   Tfrmbrobotico = class(TForm)
     AdvLed1: TAdvLed;
     AdvLed2: TAdvLed;
+    btdesativabraco1: TToggleBox;
     btInicioEsteira: TButton;
     btCalibrar: TButton;
     btFinalEsteira: TButton;
@@ -25,8 +26,6 @@ type
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
-    Button13: TButton;
-    Button14: TButton;
     btDirForte: TButton;
     btEsqForte: TButton;
     btEsqFraco: TButton;
@@ -35,17 +34,23 @@ type
     btPunho: TButton;
     btGirar: TButton;
     btGarra: TButton;
-    edPorta: TEdit;
     Image1: TImage;
     Image2: TImage;
     Label1: TLabel;
+    Label10: TLabel;
     Label2: TLabel;
     Label3: TLabel;
-    Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     lbPosicao: TLabel;
     lbPOSFIMESTEIRA: TLabel;
+    ledEixo1: TLEDNumber;
+    ledEixo2: TLEDNumber;
+    ledEixo3: TLEDNumber;
+    ledEixo4: TLEDNumber;
     LEDTEMP: TLEDNumber;
     LEDHUM: TLEDNumber;
     lstMov: TListBox;
@@ -63,10 +68,10 @@ type
     tbposicao1: TTrackBar;
     tbposicao2: TTrackBar;
     tsBraco: TTabSheet;
-    tsConfig: TTabSheet;
     tbposicao: TTrackBar;
     procedure btAtivaBracoClick(Sender: TObject);
     procedure btCalibrarClick(Sender: TObject);
+    procedure btdesativabraco1Change(Sender: TObject);
     procedure btdesativabracoChange(Sender: TObject);
     procedure btFinalEsteiraClick(Sender: TObject);
     procedure btMoverClick(Sender: TObject);
@@ -113,10 +118,10 @@ var
 implementation
 
 {$R *.lfm}
-
+uses ;
 { Tfrmbrobotico }
 
-uses main;
+uses main, banco;
 
 //Define o operador correto
 procedure Tfrmbrobotico.setservo( ope : integer; referencia : integer);
@@ -124,8 +129,9 @@ begin
   operador := ope;
   posicao := referencia;
   lstMov.Items.Add('MOVESERVO='+inttostr(ope)+','+inttostr(referencia));
-  dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(referencia)+#10);
-
+  //dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(referencia)+#10);
+  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(referencia)+#10);
+  Application.ProcessMessages;
 end;
 
 procedure Tfrmbrobotico.moverigth(forca : integer);
@@ -134,7 +140,8 @@ begin
   Posicao:= posicao -forca;
   if (posicao < 0) then posicao := 0;
   //frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-  dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
+  //dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
+  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
@@ -144,40 +151,29 @@ begin
   Posicao:= trunc(posicao +forca);
   if (posicao > 255) then posicao := 255;
   //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-  dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
+  //dmbanco.LazSerial2.WriteData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
+  dmbanco.SendData('MOVESERVO='+inttostr(operador)+','+inttostr(posicao)+#10);
   tbposicao.Position:= posicao;
   lstMov.Items.Add('MOVESERVO='+inttostr(operador)+','+inttostr(posicao));
 end;
 
 procedure Tfrmbrobotico.Conectar;
 begin
-    if(not dmbanco.LazSerial2.Active) then
-  begin
-    dmbanco.LazSerial2.close;
-    dmbanco.LazSerial2.Device :=  edPorta.text;
-    fsetmain.SerialPort :=  edPorta.text;
-    FSetMain.SalvaContexto(false);
-    dmbanco.LazSerial2.Open;
-    //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-    PageControl1.PageIndex := 0;
-    Application.ProcessMessages;
-  end;
+
 end;
 
 procedure Tfrmbrobotico.Desconectar;
 begin
-  if(dmbanco.LazSerial2.Active) then
-  begin
-    dmbanco.LazSerial2.close;
-    dmbanco.LazSerial2.Device :=  edPorta.text;
-  end;
+
 end;
 
 
 procedure Tfrmbrobotico.btInicioEsteiraClick(Sender: TObject);
 begin
   //LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-  dmbanco.LazSerial2.WriteData('RETORNOCARRO'+#10);
+  //dmbanco.LazSerial2.WriteData('RETORNOCARRO'+#10);
+  dmbanco.SendData('RETORNOCARRO'+#10);
+  application.ProcessMessages;
 
 end;
 
@@ -189,7 +185,9 @@ end;
 procedure Tfrmbrobotico.btFinalEsteiraClick(Sender: TObject);
 begin
   //frmmain.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-  dmbanco.LazSerial2.WriteData('POSFIMCARRO'+#10);
+  //dmbanco.LazSerial2.WriteData('POSFIMCARRO'+#10);
+  dmbanco.SendData('POSFIMCARRO'+#10);
+  application.ProcessMessages;
 
 end;
 
@@ -198,10 +196,12 @@ begin
   if (tbMov.Position<> posicaoanterior) then
   begin
      //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-     dmbanco.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
+     //dmbanco.LazSerial2.WriteData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
+     dmbanco.SendData('MOVEPASSO='+inttostr(tbMov.Position)+#10);
      posicaoanterior :=  tbMov.Position;
      Image2.left := trunc(tbMov.Position*0.28);
      lbPosicao.Caption:= inttostr(tbMov.Position);
+     application.ProcessMessages;
 
   end;
 end;
@@ -210,7 +210,8 @@ procedure Tfrmbrobotico.btPosFimServaClick(Sender: TObject);
 begin
   if(dmbanco.LazSerial2.Active) then
   begin
-       dmbanco.LazSerial2.WriteData('POSFIMSERVA'+#10);
+       //dmbanco.LazSerial2.WriteData('POSFIMSERVA'+#10);
+       dmbanco.SendData('POSFIMSERVA'+#10);
   end
   else
   begin
@@ -223,8 +224,16 @@ begin
   if(dmbanco.LazSerial2.Active) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-       dmbanco.LazSerial2.WriteData('CALIBRACAO'+#10);
+       //dmbanco.LazSerial2.WriteData('CALIBRACAO'+#10);
+       dmbanco.SendData('CALIBRACAO'+#10);
+       application.ProcessMessages;
   end;
+end;
+
+procedure Tfrmbrobotico.btdesativabraco1Change(Sender: TObject);
+begin
+   dmbanco.DisconectarSerial();
+   dmbanco.ConectarSerial();
 end;
 
 procedure Tfrmbrobotico.btdesativabracoChange(Sender: TObject);
@@ -232,7 +241,8 @@ begin
   if(dmbanco.LazSerial2.Active) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-       dmbanco.LazSerial2.WriteData('BRACOOFF'+#10);
+       //dmbanco.LazSerial2.WriteData('BRACOOFF'+#10);
+       dmbanco.SendData('BRACOOFF'+#10);
   end;
 end;
 
@@ -241,7 +251,8 @@ begin
   if(dmbanco.LazSerial2.Active) then
   begin
        //dmbanco.LazSerial2.OnRxData:= @frmmain.LazSerial2RxData;
-       dmbanco.LazSerial2.WriteData('ATIVABRACO'+#10);
+       //dmbanco.LazSerial2.WriteData('ATIVABRACO'+#10);
+       dmbanco.SendData('ATIVABRACO'+#10);
   end;
 end;
 
@@ -265,12 +276,12 @@ end;
 
 procedure Tfrmbrobotico.Button13Click(Sender: TObject);
 begin
-     Conectar();
+
 end;
 
 procedure Tfrmbrobotico.Button14Click(Sender: TObject);
 begin
-     Desconectar();
+
 end;
 
 procedure Tfrmbrobotico.btDirForteClick(Sender: TObject);
@@ -296,6 +307,7 @@ end;
 procedure Tfrmbrobotico.btBracoClick(Sender: TObject);
 begin
   setservo(2, tbposicao.Position);
+  //application.ProcessMessages;
 end;
 
 procedure Tfrmbrobotico.btPunhoClick(Sender: TObject);
@@ -307,6 +319,7 @@ procedure Tfrmbrobotico.btGirarClick(Sender: TObject);
 begin
   //setservo(1, tbposicao.Position);
   setservo(1, mKnob1.Position);
+  //application.ProcessMessages;
 end;
 
 procedure Tfrmbrobotico.btGarraClick(Sender: TObject);
@@ -321,17 +334,14 @@ end;
 
 procedure Tfrmbrobotico.edPortaKeyPress(Sender: TObject; var Key: char);
 begin
-   if(key = #13) then
-   begin
-       FSetMain.SerialPort := edPorta.text;
-   end;
+
 end;
 
 procedure Tfrmbrobotico.FormCreate(Sender: TObject);
 begin
   operador := 1;
   posicaoanterior := 0;
-  edPorta.text := FSetMain.SerialPort ;
+  //edPorta.text := FSetMain.SerialPort ;
   PageControl1.ActivePage := tsEsteira;
   if (frmlog = nil) then
   begin
@@ -348,7 +358,7 @@ end;
 
 procedure Tfrmbrobotico.FormDestroy(Sender: TObject);
 begin
-    //frmmain.LazSerial2.Close;
+
 
     if (frmlog <> nil) then
     begin

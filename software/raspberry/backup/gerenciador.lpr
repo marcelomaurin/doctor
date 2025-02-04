@@ -25,7 +25,7 @@ begin
   Application.Initialize;
   Application.CreateForm(Tfrmmain, frmmain);
   Application.CreateForm(TfrmLog, frmLog);
-  Application.CreateForm(Tfrmtoolprinter, frmtoolprinter);
+  Application.CreateForm(Tfrmbrobotico, frmbrobotico);
   Application.Run;
 end.
 

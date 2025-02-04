@@ -42,7 +42,7 @@ type
     procedure Image5DblClick(Sender: TObject);
     procedure Image5MouseEnter(Sender: TObject);
 
-    procedure LazSerial2RxData(Sender: TObject);
+
 
     procedure SdpoSerial1RxData(Sender: TObject);
   private
@@ -187,10 +187,7 @@ begin
 end;
 
 
-procedure Tfrmmain.LazSerial2RxData(Sender: TObject);
-begin
 
-end;
 
 
 
@@ -205,7 +202,9 @@ begin
   FSetMain := TSetMain.create();
   FSetMain.CarregaContexto();
   dmbanco := Tdmbanco.Create(self);
+  dmbanco.ConectarSerial()
   sleep(1000);
+
 
   Application.ProcessMessages;
   try
@@ -228,7 +227,7 @@ begin
 
     end;
     *)
-
+     Fimp := TImp.create();
   finally
 
       Application.ProcessMessages;
@@ -238,8 +237,6 @@ begin
       frmlog.show;
       Application.ProcessMessages;
       try
-        dmbanco.LazSerial2.Device:= FSetMain.SerialPort;
-        dmbanco.LazSerial2.open;
         AguardeInicializar();
         dmbanco.CalibrarModulo1();
       except
@@ -266,8 +263,6 @@ begin
 
         frmToolsfalar.Conectar();
         frmToolsOuvir.Conectar();
-        //Application.ProcessMessages;
-        //dmbanco.LazSerial2.OnRxData:= nil;
         frmlog.close;
         frmLog.free;
         frmlog := nil;
@@ -287,8 +282,8 @@ begin
         frmtoolprinter.Conectar();
 
         //Application.ProcessMessages;
-        BloqueioAcesso();
-        //dmbanco.LazSerial2.OnRxData:= @LazSerial2RxData;
+        //BloqueioAcesso();
+
       end
       else
       begin
