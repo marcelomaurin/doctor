@@ -1,0 +1,172 @@
+object frmconfig: Tfrmconfig
+  Left = 503
+  Height = 278
+  Top = 319
+  Width = 408
+  Caption = 'Configurações'
+  ClientHeight = 278
+  ClientWidth = 408
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  LCLVersion = '3.4.0.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 50
+    Top = 228
+    Width = 408
+    Align = alBottom
+    ClientHeight = 50
+    ClientWidth = 408
+    TabOrder = 0
+    object btSalvar: TButton
+      Left = 315
+      Height = 32
+      Top = 8
+      Width = 75
+      Caption = 'Salvar'
+      TabOrder = 0
+      OnClick = btSalvarClick
+    end
+  end
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 228
+    Top = 0
+    Width = 408
+    ActivePage = TabSheet2
+    Align = alClient
+    TabIndex = 2
+    TabOrder = 1
+    object tsServidor: TTabSheet
+      Caption = 'Serial'
+      ClientHeight = 200
+      ClientWidth = 400
+      object Label2: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 104
+        Caption = 'Serial ou TCP/Serial:'
+      end
+      object edTCPSERIAL: TEdit
+        Left = 8
+        Height = 23
+        Top = 23
+        Width = 120
+        TabOrder = 0
+        Text = 'edTCPSERIAL'
+      end
+      object Label3: TLabel
+        Left = 8
+        Height = 15
+        Top = 56
+        Width = 101
+        Caption = 'Modelo Impressão:'
+      end
+      object cbTipoImp: TComboBox
+        Left = 9
+        Height = 23
+        Top = 72
+        Width = 156
+        ItemHeight = 15
+        ItemIndex = 1
+        Items.Strings = (
+          'TI_DRIVER'
+          'TI_SERIAL'
+          'TI_BLUETOOTH'
+        )
+        TabOrder = 1
+        Text = 'TI_SERIAL'
+      end
+    end
+    object TabSheet1: TTabSheet
+      Caption = 'Equipamento'
+      ClientHeight = 200
+      ClientWidth = 400
+      object Label1: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 46
+        Caption = 'Servidor:'
+      end
+      object edServidor: TIPEdit
+        Left = 8
+        Height = 23
+        Top = 24
+        Width = 112
+        TabOrder = 0
+        Text = '  0.  0.  0.  0'
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Banco de Dados'
+      ClientHeight = 200
+      ClientWidth = 400
+      object Label4: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 60
+        Caption = 'HostName:'
+      end
+      object edHostname: TEdit
+        Left = 8
+        Height = 23
+        Top = 24
+        Width = 208
+        TabOrder = 0
+        Text = 'localhost'
+        TextHint = 'Hostname de acesso ao banco de dados'
+      end
+      object Label5: TLabel
+        Left = 8
+        Height = 15
+        Top = 56
+        Width = 36
+        Caption = 'Banco:'
+      end
+      object edbanco: TEdit
+        Left = 8
+        Height = 23
+        Top = 72
+        Width = 208
+        TabOrder = 1
+        Text = 'doctordb'
+        TextHint = 'Nome do Banco de dados'
+      end
+      object Label6: TLabel
+        Left = 8
+        Height = 15
+        Top = 104
+        Width = 43
+        Caption = 'Usuario:'
+      end
+      object edUsuario: TEdit
+        Left = 8
+        Height = 23
+        Top = 120
+        Width = 208
+        TabOrder = 2
+        Text = 'doctordb'
+        TextHint = 'Nome do usuario do banco'
+      end
+      object Label7: TLabel
+        Left = 8
+        Height = 15
+        Top = 152
+        Width = 35
+        Caption = 'Senha:'
+      end
+      object edPassword: TEdit
+        Left = 8
+        Height = 23
+        Top = 168
+        Width = 208
+        TabOrder = 3
+        Text = 'doctordb'
+        TextHint = 'Senha do Usuario'
+      end
+    end
+  end
+end

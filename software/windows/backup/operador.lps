@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="operador.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="8"/>
+        <CursorPos Y="27"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmmain"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="57"/>
+        <CursorPos Y="73"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="pesqtipoexames.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmPesqTipoExames"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PesqTipoExames"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="pesqpacientes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmPesqPacientes"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PesqPacientes"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="opamostragem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmOpAmostragem"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="OpAmostragem"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="30"/>
+        <CursorPos X="3" Y="56"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="imp_qr203.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="imp_generico.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="imp_elgini9.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="imp_ELGINI9"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="imp.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="53"/>
+        <CursorPos Y="70"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="brobotico.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmbrobotico"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="39" Y="340"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="bloqueio.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmBloqueio"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="banco.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="dmbanco"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="52"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="setmain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="39"/>
+        <CursorPos X="13" Y="49"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="funcoes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="53" Y="11"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="etiquetar.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmEtiquetar"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Etiquetar"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="44"/>
+        <CursorPos X="4" Y="104"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="receitas.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmreceitas"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="38"/>
+        <CursorPos X="4" Y="50"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="d:\lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1579"/>
+        <CursorPos X="26" Y="1590"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\Users\marce\AppData\Local\lazarus\onlinepackagemanager\packages\synapse40.1\synaser.pas"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="2186"/>
+        <CursorPos Y="2216"/>
+        <UsageCount Value="14"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="config.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmconfig"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="40"/>
+        <CursorPos X="41" Y="61"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="d:\lazarus\lcl\include\customform.inc"/>
+        <EditorIndex Value="15"/>
+        <TopLine Value="3193"/>
+        <CursorPos Y="3213"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\Users\marce\AppData\Local\lazarus\onlinepackagemanager\packages\Sdpo\SdpoSerial\sdposerial.pas"/>
+        <UnitName Value="SdpoSerial"/>
+        <EditorIndex Value="12"/>
+        <TopLine Value="222"/>
+        <CursorPos Y="239"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="d:\lazarus\lcl\include\application.inc"/>
+        <EditorIndex Value="14"/>
+        <TopLine Value="2256"/>
+        <CursorPos Y="2273"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\Users\marce\AppData\Local\lazarus\onlinepackagemanager\packages\zeosdbo\src\dbc\ZDbcMySql.pas"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="1249"/>
+        <CursorPos Y="1265"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="349" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="350" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="351" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="352" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="353" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="369" TopLine="342"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="371" TopLine="343"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="372" TopLine="344"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="373" TopLine="345"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="374" TopLine="346"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="375" TopLine="347"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="376" TopLine="349"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="378" TopLine="350"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="376" Column="5" TopLine="350"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="63" Column="33" TopLine="36"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="373" Column="23" TopLine="347"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="350" TopLine="343"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="75" TopLine="66"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="80" Column="39" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="73" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="74" Column="3" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="73" Column="25" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="74" Column="3" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="350" TopLine="343"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="73" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="80" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="main.pas"/>
+        <Caret Line="73" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="631" TopLine="614"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="350" TopLine="333"/>
+      </Position>
+      <Position>
+        <Filename Value="banco.pas"/>
+        <Caret Line="629" Column="43" TopLine="614"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>
