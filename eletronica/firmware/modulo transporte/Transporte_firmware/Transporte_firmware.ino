@@ -4,7 +4,7 @@
 #include <SD.h>
 #include <SoftwareSerial.h>
 
-//#include "NextionHandler.h"  // Inclus�o do header para o Nextion
+//#include "NextionHandler.h"  // Inclus?o do header para o Nextion
 #include <stdio.h>
 #include <string.h>
 #include "DHT.h"
@@ -17,7 +17,7 @@
 //*************** Descricao do Produto *********************
 //Versao do produto 
 #define Versao  "0"  //Controle de Versao do Firmware
-#define Release "6" //Controle Revisao do Firmware
+#define Release "10" //Controle Revisao do Firmware
 char Produto[20] = { "Doctor - Betha"};
 
 #define MAXCICLO 90000
@@ -75,14 +75,22 @@ int posBracoDestino[4] = {90, 90, 90, 90}; // Posições finais desejadas
 #define pinSDA 20 //Pino SDA para I2C
 #define pinSCL 21 //Pino SCL para I2C
 
-#define pinLoc01 22 //Pino de localiza��o
-#define pinLoc02 23 //Pino de localiza��o
-#define pinLoc03 24 //Pino de localiza��o
-#define pinLoc04 25 //Pino de localiza��o
-#define pinLoc05 26 //Pino de localiza��o
-#define pinLoc06 27 //Pino de localiza��o
-#define pinLoc07 28 //Pino de localiza��o
-#define pinLoc08 29 //Pino de localiza��o
+#define pinLoc01 22 //Pino de localiza??o
+#define pinLoc02 23 //Pino de localiza??o
+#define pinLoc03 24 //Pino de localiza??o
+#define pinLoc04 25 //Pino de localiza??o
+#define pinLoc05 26 //Pino de localiza??o
+#define pinLoc06 27 //Pino de localiza??o
+#define pinLoc07 28 //Pino de localiza??o
+#define pinLoc08 29 //Pino de localiza??o
+
+#define pinSerialRXMod2 11 //Pino software serial
+#define pinSerialTXMod2 10 //Pno software serial
+
+#define MAXBUFFER 150
+
+// Cria um objeto SoftwareSerial
+SoftwareSerial SerialMod2(pinSerialRXMod2, pinSerialTXMod2); // Formato: (RX, TX)
 
 //http://www.aranacorp.com/en/control-a-stepper-motor-with-arduino/
 double stepsPerRevolution = 128;
@@ -92,9 +100,11 @@ bool OperflgLeitura = false;
 byte flgEscape = 0; //Controla Escape
 byte flgEnter = 0; //Controla Escape
 byte flgTempo = 0; //Controle de Tempo e Temperatura
+
 // Variável para controlar o estado do motor
 bool flgmotorAtivo = false;
 bool flgComando = false; // Flag que indica se um comando está em execução
+bool flgModulo = false; //Controla resposta do modulo
 
 //Buffer do Teclado
 char customKey;
@@ -170,8 +180,11 @@ bool flgBeep = false; //Aviso sonoro de temperatura
 byte names[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 int tones[] = { 1915, 1700, 1519, 1432, 1275, 1136, 1014, 956};
 
+
 //Buffer
-char Buffer[500]; //Buffer de Teclado
+char Buffer[MAXBUFFER]; //Buffer de Teclado
+char bufferserial2[MAXBUFFER]; // Buffer local para armazenar os dados recebidos
+char bufferserialMod2[MAXBUFFER]; // Buffer local para armazenar os dados recebidos
 
 /*Estrutura de etiqueta*/
 typedef struct ETIQUETA {
@@ -211,7 +224,7 @@ float Reset();
 void LstDir(File dir, int numTabs);
 void MAN();
 void DeleteFile(File root, char *sMSG1); //Deleta arquivo do SD
-void LOAD(File root, char *sMSG1); //Carrega a aplica��o para o SD
+void LOAD(File root, char *sMSG1); //Carrega a aplica??o para o SD
 int LOADLoop(File root, char *Info);
 void LOADLeituras();
 void LOADLEARQUIVO(char *Arquivo);
@@ -233,7 +246,7 @@ void NextionFieldText(char *field,char *value);
 void NextionMensage(String info);
 void NextionMensageStop(String info);
 void RetConsole();
-//void NextionWAITESC();
+void NextionWAITESC();
 //void NextionMensageSTOP(String info);
 void showPageId(); 
 void Rele01(bool Value);
@@ -257,6 +270,8 @@ void ImprimeAvanco();
 void Report(); //Imprime relatorio
 void retirac(char *nome, char *nova, char tira);
 void Le_FimCurso();
+void AguardaRetornoSerial2();
+void FinalizaCOMANDO();
 
 
 //SoftwareSerial mySerial(RX_PIN, TX_PIN); // Declare SoftwareSerial obj first
@@ -269,8 +284,13 @@ Adafruit_Thermal printer(&Serial3);     // Pass addr to printer constructor
 
 //Adafruit_Thermal printer(&Serial1);      // Or Serial2, Serial1, etc.
 
-// -----------------------------------------------------------------------
-
+// --------------------------f---------------------------------------------
+void FinalizaCOMANDO()
+{
+  flgComando = false;
+  Serial.println("flgComando=false");
+  
+}
 
 // Função para ativar os motores
 void ativaMotores() 
@@ -331,10 +351,20 @@ void Start_RELES()
 
 void Start_Serial()
 {
+  // Inicializa os buffers dos seriais respectivos
+  Buffer[0] = '\0';         // Buffer de Teclado
+  bufferserial2[0] = '\0';  // Buffer para dados lidos do Serial2
   Serial.begin(9600); 
   
   Serial2.begin(9600); // Inicializa a Serial2 para comunicação
   Serial2.println('MAN');
+}
+
+void Start_SerialMod2()
+{
+  // Inicializa o buffer como string vazia
+  bufferserialMod2[0] = '\0';
+  SerialMod2.begin(9600);  
 }
 
 
@@ -655,7 +685,7 @@ void Start_I2C()
 void setup() {
    
   // Inicializa a flag de comando como falsa
-  flgComando = false;
+  FinalizaCOMANDO();
   Start_Serial();
   Serial.println("Starting modules...");
   Start_Nextion();
@@ -665,6 +695,7 @@ void setup() {
   Speak_Start();  
   Beep(); 
   Start_Printer();
+  Start_SerialMod2();
   Start_FIMDECURSO();
  
 
@@ -679,30 +710,30 @@ void setup() {
   Start_SD();
   
   
-  Start_I2C(); //Start de comunica��o I2C
+  Start_I2C(); //Start de comunica??o I2C
   Start_Servos();
   
 
   // Font options
-  //MovePasso01();
+  MovePasso01();
   //ImprimeEtiqueta();
   Le_DHT22();
   Reset();
   NextionShow("CALIB");  
   delay(100);
-  Calibracao(); /*Calibra��o do equipamento*/
+  //Calibracao(); /*Calibra??o do equipamento*/
   
-  Calibra_Servos();
+  //Calibra_Servos();
   
   delay(100);
   NextionShow("Menu");
-  desativaMotores();
+  //desativaMotores();
   ImprimeStart();
   Sound('a');
   Sound('b');
   Sound('c');
   WellComeConsole(); 
-  desativaMotores();
+  //desativaMotores();
 }
 
 void sendStringToI2C(int address, char* data) {
@@ -842,7 +873,8 @@ void ImprimeEtiqueta()
   ImprimeBarra(etiqueta.barra);
   ImprimeAvanco();
   // Inicializa a flag de comando como falsa
-  flgComando = false;
+  //flgComando = false;
+  FinalizaCOMANDO();
 }
 
 void ImprimeHello() 
@@ -853,7 +885,8 @@ void ImprimeHello()
   ImprimeMedio(etiqueta.linha02);  
   //ImprimeBarra(etiqueta.barra);
   // Inicializa a flag de comando como falsa
-  flgComando = false;
+  //flgComando = false;
+  FinalizaCOMANDO();
 }
 
 void Report()
@@ -866,10 +899,11 @@ void Report()
   ImprimeEtiqueta();
   //ImprimeAvanco();
   // Inicializa a flag de comando como falsa
-  flgComando = false;
+  //flgComando = false;
+  FinalizaCOMANDO();
 }
 
-// Fun��o para definir o modo de impress�o (normal ou de teste)
+// Fun??o para definir o modo de impress?o (normal ou de teste)
 void setPrintMode(uint8_t mode) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
   if (mode == 1) {
@@ -879,31 +913,31 @@ void setPrintMode(uint8_t mode) {
   }
 }
 
-// Fun��o para definir o tamanho do papel (largura e altura em pontos)
+// Fun??o para definir o tamanho do papel (largura e altura em pontos)
 void setPaperSize(uint8_t width, uint8_t height) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
-  printer.setSize('M'); // Configurar o tamanho da fonte para m�dio
-  printer.feed(1); // Avan�ar uma linha
+  printer.setSize('M'); // Configurar o tamanho da fonte para m?dio
+  printer.feed(1); // Avan?ar uma linha
  // printer.writeBytes(27, 87, width, height, 0); // Enviar comando para definir o tamanho do papel
 }
 
-// Fun��o para cortar o papel (parcial ou totalmente)
+// Fun??o para cortar o papel (parcial ou totalmente)
 void cutPaper(uint8_t mode) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
   if (mode == 1) {
     //printer.partialCut(); // Cortar parcialmente
   } else {
-    printer.feed(3); // Avan�ar tr�s linhas
+    printer.feed(3); // Avan?ar tr?s linhas
    // printer.fullCut(); // Cortar completamente
   }
 }
 
-// Fun��o para imprimir um c�digo QR (tamanho em pontos, n�vel de corre��o de erro, dados)
+// Fun??o para imprimir um c?digo QR (tamanho em pontos, n?vel de corre??o de erro, dados)
 void printQR(uint8_t size, uint8_t correction, const char* data) {
   printer.sleep(); // Colocar a impressora em modo de espera antes de enviar os comandos
-  printer.setSize('M'); // Configurar o tamanho da fonte para m�dio
-  printer.feed(1); // Avan�ar uma linha
- // printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o c�digo QR
+  printer.setSize('M'); // Configurar o tamanho da fonte para m?dio
+  printer.feed(1); // Avan?ar uma linha
+ // printer.printBarcode(data, QR, size, correction); // Enviar comando para imprimir o c?digo QR
 }
 
 //Posicao absoluta
@@ -926,7 +960,7 @@ void MovePasso(int passo)
 /*Rotina que posiciona o equipamento no local correto*/
 void Calibracao()
 {
-  Serial.println("Iniciando Calibra��o");
+  Serial.println("Iniciando Calibra??o");
   RetornoCarro();
   
 
@@ -936,7 +970,8 @@ void Calibracao()
   Serial.println("Fim de calibracao");
   
   // Inicializa a flag de comando como falsa
-  flgComando = false;
+  //flgComando = false;
+  FinalizaCOMANDO();
   
 }
 
@@ -944,7 +979,7 @@ void Calibracao()
 void RetornoCarro()
 {
 
-  NextionShow("CALIB"); //Chamando tela calibra��o
+  NextionShow("CALIB"); //Chamando tela calibra??o
 
   Serial.println("Retornando carro");
   
@@ -956,7 +991,8 @@ void RetornoCarro()
   posSERVA = 0;
   Serial.println("posSERVA=0");
   // Inicializa a flag de comando como falsa
-  flgComando = false;
+  //flgComando = false;
+  FinalizaCOMANDO();
 }
 
 //Posicao posicao relativa
@@ -1039,7 +1075,7 @@ int analise_DEFMOD(int modulo, char linha[])
   } 
 }
 
-/*Carrega configura��o do modulo local*/
+/*Carrega configura??o do modulo local*/
 long int fLOCAL_DEFMOD(int modulo)
 {
   File arquivo;
@@ -1152,7 +1188,7 @@ void fDEFMOD(int modulo,char *MSG1)
   Serial.println(local);
 }
 
-//Carrega a aplica��o para o SD
+//Carrega a aplica??o para o SD
 void LOAD(File root, char *sMSG1)
 {
  
@@ -1160,7 +1196,7 @@ void LOAD(File root, char *sMSG1)
   Serial.println("Carregando APP..");
   NextionShow("LOAD");
  
-  //Realiza opera��o de Loop
+  //Realiza opera??o de Loop
   LOADLoop(root, sMSG1);
   NextionShow("Menu");
 
@@ -1174,7 +1210,7 @@ void DeleteFile(File root, char *sMSG1)
   Serial.println("DeleteFile..");
   NextionShow("LOAD");
  
-  //Realiza opera��o de Loop
+  //Realiza opera??o de Loop
   LOADLoop(root, sMSG1);
   NextionShow("Menu");
   if (SD.exists(sMSG1)) 
@@ -1185,7 +1221,8 @@ void DeleteFile(File root, char *sMSG1)
     Serial.println("Alert! File not exist!");
   }
   // Inicializa a flag de comando como falsa
-  flgComando = false;
+  //flgComando = false;
+  FinalizaCOMANDO();
   
 
 }
@@ -1219,7 +1256,8 @@ void LOADLEARQUIVO(char *Arquivo)
     }
     Serial.println("Fechou");
     // Inicializa a flag de comando como falsa
-    flgComando = false;
+    //flgComando = false;
+    FinalizaCOMANDO();
     arquivo.close();
   }
   
@@ -1279,7 +1317,7 @@ int LOADLoop(File root, char *Info)
     while (!flgEscape)
     {
       LOADLeituras();
-      //Realiza analise das informa��es encontradas
+      //Realiza analise das informa??es encontradas
       LOADAnalisa(&farquivo);      
       //arquivo.println("Leitura Potenciometro: ");
     }
@@ -1355,7 +1393,8 @@ void LOADRename(String filename)
     FDestino.close();
     SD.remove("temp.out");
     // Inicializa a flag de comando como falsa
-    flgComando = false;
+    //flgComando = false;
+    FinalizaCOMANDO();
   }
 }
 
@@ -1711,18 +1750,18 @@ void Chk_Beep()
 /*Captura a pagina em que o nextion esta*/
 void showPageId() {
   char pageId[10];
-  Serial1.print("sendme\n"); // Enviar o comando "sendme" para solicitar o ID da p�gina atual
+  Serial1.print("sendme\n"); // Enviar o comando "sendme" para solicitar o ID da p?gina atual
   delay(10);
-  while (Serial1.available() > 0) { // Esperar at� que haja dados dispon�veis na serial
+  while (Serial1.available() > 0) { // Esperar at? que haja dados dispon?veis na serial
     char c = Serial1.read();
-    if (c == 0xFF) { // Verificar se � um byte de in�cio de mensagem
+    if (c == 0xFF) { // Verificar se ? um byte de in?cio de mensagem
       int i = 0;
-      while (Serial1.available() > 0 && i < sizeof(pageId) - 1) { // Ler o ID da p�gina at� o final da mensagem
+      while (Serial1.available() > 0 && i < sizeof(pageId) - 1) { // Ler o ID da p?gina at? o final da mensagem
         c = Serial1.read();
-        if (c == 0xFF) { // Verificar se � um byte de in�cio de mensagem (pode ocorrer dentro da mensagem)
+        if (c == 0xFF) { // Verificar se ? um byte de in?cio de mensagem (pode ocorrer dentro da mensagem)
           i = 0;
-        } else if (c == '\n') { // Verificar se � o final da mensagem
-          pageId[i] = '\0'; // Adicionar terminador de string ao final do ID da p�gina
+        } else if (c == '\n') { // Verificar se ? o final da mensagem
+          pageId[i] = '\0'; // Adicionar terminador de string ao final do ID da p?gina
           break;
         } else {
           pageId[i] = c;
@@ -1767,10 +1806,48 @@ void NextionFieldText(char *field,char *value)
   Serial1.print(cmd);  
 }
 
-void NextionWAITESC()
-{
-  
+void NextionWAITESC() {
+    while (true) { // Loop infinito até detectar um botão pressionado
+        if (Serial1.available()) { // Verifica se há dados na Serial1
+            String response = ""; // Armazena os dados recebidos
+            
+            Serial.print("Recebido do Nextion (HEX): ");
+            while (Serial1.available()) {
+                uint8_t c = Serial1.read(); // Lê um byte da Serial1
+                response += (char)c; // Adiciona ao buffer de resposta
+                
+                // Exibe o byte recebido em hexadecimal
+                Serial.print("0x");
+                if (c < 0x10) Serial.print("0"); // Formata com zero à esquerda se necessário
+                Serial.print(c, HEX);
+                Serial.print(" ");
+                
+                delay(2); // Pequeno delay para evitar perda de caracteres
+            }
+            Serial.println(); // Nova linha para organização
+
+            // Verifica se foi pressionado um botão (Nextion retorna "65 ID PageID" ao pressionar um botão)
+            if (response.indexOf(0x65) != -1) { 
+                Serial.println("Botão pressionado!");
+
+                // Obtém o ID do botão pressionado
+                int pos1 = response.indexOf(0x65) + 1; // Posição do ID do botão
+                uint8_t buttonID = response[pos1]; // Obtém o ID do botão
+
+                Serial.print("ID do botão: 0x");
+                if (buttonID < 0x10) Serial.print("0"); // Formata com zero à esquerda
+                Serial.println(buttonID, HEX);
+
+                // Sai do loop ao detectar um botão pressionado
+                break;
+            }
+        } else {
+          //Serial.print(".");
+        }
+    }
 }
+
+
 
 void NextionMensage(String info)
 {
@@ -1791,7 +1868,7 @@ void NextionMensageSTOP(String info)
   delay(100);
   String cmd;
   
-  cmd = "MSGtxt.txt=\""+info+"\" "+String(strFF)+String(strFF)+String(strFF);
+  cmd = "MSGtxt.txt=\""+info+"\""+String(strFF)+String(strFF)+String(strFF);
   Serial.println(cmd);  
   Serial1.print(cmd);
   NextionWAITESC();
@@ -1799,7 +1876,7 @@ void NextionMensageSTOP(String info)
 
 
 
-//Reseta todas as entradas para o valor padr�o
+//Reseta todas as entradas para o valor padr?o
 float Reset()
 {
   memset(Buffer,'\0',sizeof(Buffer));
@@ -1812,7 +1889,7 @@ float Reset()
   LOCAL_DEFMOD4=0;
   Serial.println('Reset rodou');
   flgBeep = false;
-  /* incluir sub comandos de inicializa��o*/
+  /* incluir sub comandos de inicializa??o*/
   passoA = 10;
   passoB = 10;
   passoC = 10;
@@ -1901,9 +1978,11 @@ void MAN()
   Serial.println(F("   DEV: Dispositivo (1 = Serial2)"));
   Serial.println(F("   MSG: Mensagem a ser enviada, termina antes do '\\n'"));  
   Serial.println(F("MENSAGEM=[MENSAGEM] - Mostra mensagem"));
+  Serial.println(F("IMPRIME=[MENSAGEM] - Imprime Normal"));
+  Serial.println(F("IMPINV=[MENSAGEM] - Inprime Invertido"));
+  Serial.println(F("IMPBAR=[MENSAGEM] - Inprime BARRA"));
   Serial.println(F("RESET - RESETA O AMBIENTE"));
   Serial.println(F("MOPERACAO - MODO OPERACIONAL"));
-  Serial.println(F("MOPERACAO - MODO CONFIG"));
   Serial.println(F("RELE01 - ACIONAMENTO RELE01"));
   Serial.println(F("RELE02 - ACIONAMENTO RELE02"));
   Serial.println(F("DELFILE - REMOVE ARQUIVO"));
@@ -1918,6 +1997,7 @@ void MAN()
   Serial.println(F("ATIVABRACO - Faz a ativacao do braço robotico "));    
   Serial.println(F("CALIBRACAO - Calibracao "));
   Serial.println(" ");
+  FinalizaCOMANDO();
 }
 
 
@@ -1935,7 +2015,7 @@ float Run(String Arquivo)
   while (dataFile.available())
   {
     Info = dataFile.read();
-    //Adicionando informa��o ao Info
+    //Adicionando informa??o ao Info
     sprintf(Linha, "%s%c", Linha, Info);
 
     //Verifica se o ultimo foi enter ai analisa a linha
@@ -1962,28 +2042,32 @@ void KeyCMD()
   if (strchr(Buffer,'\n') != 0)
   {
     Serial.print("Comando:");
-    Serial.println(Buffer);  
+    Serial.print(Buffer);  
+    Serial.println('!');  
 
     //Inicio
-    if (strcmp( Buffer, "BEGIN\n") == 0)
+    if (strcmp( Buffer, "INICIO\n") == 0)
     {
       flgComando = true;
-      Serial.println("BEGIN");
+      Serial.println("INICIO");
       Reset();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     //FIM
-    if (strcmp( Buffer, "END\n") == 0)
+    if (strcmp( Buffer, "FIM\n") == 0)
     {
       flgComando = true;
-      Serial.println("END");
+      Serial.println("FIM");
+      ImprimeAvanco();
       Reset();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     //RESET
@@ -1994,7 +2078,8 @@ void KeyCMD()
       Reset();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     //Beep
@@ -2005,7 +2090,8 @@ void KeyCMD()
       flgBeep = true;
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     
@@ -2020,7 +2106,8 @@ void KeyCMD()
       Sound('c');
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     //Beep
@@ -2031,7 +2118,8 @@ void KeyCMD()
       flgBeep = false;
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
 
@@ -2049,7 +2137,8 @@ void KeyCMD()
 
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     //MAN
@@ -2060,7 +2149,8 @@ void KeyCMD()
       MAN();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
     
     //BRACOOFF
@@ -2071,7 +2161,8 @@ void KeyCMD()
       desativaMotores();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     //ATIVABRACO
@@ -2082,7 +2173,8 @@ void KeyCMD()
       ativaMotores();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }   
     
 
@@ -2095,7 +2187,8 @@ void KeyCMD()
       Report();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     // MOVEPASSO=NRO_PASSOS
@@ -2113,7 +2206,8 @@ void KeyCMD()
         Serial.println(posSERVA);        
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     // MOVEDIR=NRO_PASSOS
@@ -2132,7 +2226,8 @@ void KeyCMD()
         Serial.println(" passos para a direita.");
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     // MOVEESQ=NRO_PASSOS
@@ -2151,7 +2246,8 @@ void KeyCMD()
         Serial.println(" passos para a esquerda.");
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     // Comando MOVESERVO
@@ -2183,7 +2279,8 @@ void KeyCMD()
             }
         }
         // Inicializa a flag de comando como falsa
-        flgComando = false;
+        //flgComando = false;
+        FinalizaCOMANDO();
     }
 
 
@@ -2214,7 +2311,8 @@ void KeyCMD()
 
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     //DELETEFILE - Deleta arquivo do SD
@@ -2244,7 +2342,8 @@ void KeyCMD()
 
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
 
     //DEFMOD1=
@@ -2283,11 +2382,9 @@ void KeyCMD()
         resp = false;
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
-
-
-
     if (strstr( Buffer, "SHOW=") != 0)
     {
       flgComando = true;
@@ -2313,9 +2410,9 @@ void KeyCMD()
         resp = true;
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
-
     //NextionFieldText
     if (strstr( Buffer, "NTFLD:") != 0)
     {
@@ -2351,9 +2448,9 @@ void KeyCMD()
         resp = true;
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
-
     // Implementação do comando SENDMSG
     if (strstr(Buffer, "SENDMSG=") != NULL) 
     {
@@ -2373,10 +2470,14 @@ void KeyCMD()
               int dispositivo = atoi(dev);
 
               if (dispositivo == 1) {
-                  EnviaParaSerial2(mensagem);
+                  EnviaParaSerialMod1(mensagem);
                   //EnviaParaSerial2("\n");
                   resp = true;
-              } else 
+              } else if(dispositivo==2){
+                  EnviaParaSerialMod2(mensagem);
+                  //EnviaParaSerial2("\n");
+                  resp = true;
+              } else
               {
                   Serial.println(F("Dispositivo inválido ou não implementado!"));
               }
@@ -2386,66 +2487,221 @@ void KeyCMD()
           }
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      //FinalizaCOMANDO();
     }
-
-    if (strstr( Buffer, "MENSAGEM=") != 0)
+    if (strstr(Buffer, "MENSAGEM=") != NULL) // Garante que "MENSAGEM=" existe no buffer
     {
-      flgComando = true;
-      char sMSG1[20];
-      char sMSG2[20];
-      char posequ[20];
-      memset(posequ,'\0',sizeof(posequ));
-      Serial.println("Achou MENSAGEM");
-      // Encontrar o caractere '=' em Buffer
-      char *posicao = strstr(Buffer, "=");
-      if (posicao != NULL) {
-        // Copiar a partir de '=' para posequ
-        strcpy(posequ, posicao);
-        Serial.println("Valor copiado para posequ:");
-        Serial.println(posequ);
-        Serial.print("sMSG1=");
-        Serial.println(posequ);
-        NextionMensage(String(posequ));
-        NextionShow('MSG');
-        delay(100);
-        NextionFieldText('MSGtxt',posequ);
-        resp = true;
-      } else {
-        // Caso não encontre '='
-        posequ[0] = '\0'; // Inicializa como string vazia
-        Serial.println("Caractere '=' não encontrado no Buffer.");
-        resp = false;
-      } 
-      // Inicializa a flag de comando como falsa
-      flgComando = false;
-    }
+        flgComando = true;
+        char posequ[20];  // Variável para armazenar o conteúdo após '='
+        memset(posequ, '\0', sizeof(posequ)); // Garante que a string começa vazia
+        
+        Serial.println("Achou MENSAGEM");
     
-    if (strstr( Buffer, "MSGSTOP=") != 0)
+        // Encontrar a posição do caractere '=' em Buffer
+        char *posicao = strstr(Buffer, "MENSAGEM="); 
+        if (posicao != NULL) {
+            posicao += 9; // Move o ponteiro para depois de "MENSAGEM=" (9 caracteres)
+    
+            // Copia com segurança no limite da variável posequ
+            strncpy(posequ, posicao, sizeof(posequ) - 1);
+            posequ[sizeof(posequ) - 1] = '\0'; // Garante que a string sempre termina corretamente
+    
+            Serial.println("Valor copiado para posequ:");
+            Serial.println(posequ);
+            
+            Serial.print("sMSG1=");
+            Serial.println(posequ);
+    
+            // Corrige as chamadas Nextion com aspas duplas
+            NextionMensage(String(posequ));
+            NextionShow("MSG");
+            delay(100);
+            NextionFieldText("MSGtxt", posequ);
+    
+            resp = true;
+            Serial.println("Mensagem finalizada");
+        } 
+        else 
+        {
+            // Caso "MENSAGEM=" não esteja no buffer
+            posequ[0] = '\0'; // Inicializa como string vazia
+            Serial.println("Caractere '=' não encontrado no Buffer.");
+            resp = false;
+        }
+    
+        // Inicializa a flag de comando como falsa
+        // flgComando = false;
+        FinalizaCOMANDO();
+    }    
+    if (strstr(Buffer, "IMPRIME=") != NULL) // Garante que "MENSAGEM=" existe no buffer
     {
-      flgComando = true;
-      char sMSG1[20];
-      char sMSG2[20];
-      Serial.println(F("Achou MENSAGEM"));
-      char *posequ = strstr( Buffer, "=");
-      Serial.print("POSEQU=");
-      Serial.println(posequ);
-      if(posequ != 0)
-      {
-        posequ ++;
-        memset(sMSG1,'\0',sizeof(sMSG1));
-        strcpy(sMSG1, posequ);
-        Serial.print("sMSG1=");
-        Serial.println(posequ);
-        NextionMensageSTOP(String(posequ));
+        flgComando = true;
+        char posequ[20];  // Variável para armazenar o conteúdo após '='
+        memset(posequ, '\0', sizeof(posequ)); // Garante que a string começa vazia
         
-        resp = true;
+        Serial.println("Achou IMPRIME");
+    
+        // Encontrar a posição do caractere '=' em Buffer
+        char *posicao = strstr(Buffer, "IMPRIME="); 
+        if (posicao != NULL) {
+            posicao += 8; // Move o ponteiro para depois de "MENSAGEM=" (9 caracteres)
+    
+            // Copia com segurança no limite da variável posequ
+            strncpy(posequ, posicao, sizeof(posequ) - 1);
+            posequ[sizeof(posequ) - 1] = '\0'; // Garante que a string sempre termina corretamente
+    
+            Serial.println("Valor copiado para posequ:");
+            Serial.println(posequ);
+            
+            Serial.print("IMPRIME=");
+            Serial.println(posequ);
+    
+            // Corrige as chamadas Nextion com aspas duplas
+            //NextionMensage(String(posequ));
+            //NextionShow("MSG");
+            ImprimeMedio(posequ); 
+            delay(100);
+            NextionFieldText("MSGtxt", posequ);
+    
+            resp = true;
+            Serial.println("Mensagem finalizada");
+        } 
+        else 
+        {
+            // Caso "MENSAGEM=" não esteja no buffer
+            posequ[0] = '\0'; // Inicializa como string vazia
+            Serial.println("Caractere '=' não encontrado no Buffer.");
+            resp = false;
+        }
+    
+        // Inicializa a flag de comando como falsa
+        // flgComando = false;
+        FinalizaCOMANDO();
+    }   
+    if (strstr(Buffer, "IMPINV=") != NULL) // Garante que "MENSAGEM=" existe no buffer
+    {
+        flgComando = true;
+        char posequ[20];  // Variável para armazenar o conteúdo após '='
+        memset(posequ, '\0', sizeof(posequ)); // Garante que a string começa vazia
         
-      }
-      // Inicializa a flag de comando como falsa
-      flgComando = false;
+        Serial.println("Achou IMPINV");
+    
+        // Encontrar a posição do caractere '=' em Buffer
+        char *posicao = strstr(Buffer, "IMPINV="); 
+        if (posicao != NULL) {
+            posicao += 8; // Move o ponteiro para depois de "MENSAGEM=" (9 caracteres)
+    
+            // Copia com segurança no limite da variável posequ
+            strncpy(posequ, posicao, sizeof(posequ) - 1);
+            posequ[sizeof(posequ) - 1] = '\0'; // Garante que a string sempre termina corretamente
+    
+            Serial.println("Valor copiado para posequ:");
+            Serial.println(posequ);
+            
+            Serial.print("IMPRIME=");
+            Serial.println(posequ);
+    
+            // Corrige as chamadas Nextion com aspas duplas
+            //NextionMensage(String(posequ));
+            //NextionShow("MSG");
+            ImprimeInvertido(posequ); 
+            delay(100);
+            NextionFieldText("MSGtxt", posequ);
+    
+            resp = true;
+            Serial.println("Mensagem finalizada");
+        } 
+        else 
+        {
+            // Caso "MENSAGEM=" não esteja no buffer
+            posequ[0] = '\0'; // Inicializa como string vazia
+            Serial.println("Caractere '=' não encontrado no Buffer.");
+            resp = false;
+        }
+    
+        // Inicializa a flag de comando como falsa
+        // flgComando = false;
+        FinalizaCOMANDO();
+    }  
+    if (strstr(Buffer, "IMPBAR=") != NULL) // Garante que "MENSAGEM=" existe no buffer
+    {
+        flgComando = true;
+        char posequ[20];  // Variável para armazenar o conteúdo após '='
+        memset(posequ, '\0', sizeof(posequ)); // Garante que a string começa vazia
+        
+        Serial.println("Achou IMPBAR");
+    
+        // Encontrar a posição do caractere '=' em Buffer
+        char *posicao = strstr(Buffer, "IMPBAR="); 
+        if (posicao != NULL) {
+            posicao += 8; // Move o ponteiro para depois de "MENSAGEM=" (9 caracteres)
+    
+            // Copia com segurança no limite da variável posequ
+            strncpy(posequ, posicao, sizeof(posequ) - 1);
+            posequ[sizeof(posequ) - 1] = '\0'; // Garante que a string sempre termina corretamente
+    
+            Serial.println("Valor copiado para posequ:");
+            Serial.println(posequ);
+            
+            Serial.print("IMPBAR=");
+            Serial.println(posequ);
+    
+            // Corrige as chamadas Nextion com aspas duplas
+            //NextionMensage(String(posequ));
+            //NextionShow("MSG");
+            ImprimeBarra(posequ); 
+            delay(100);
+            NextionFieldText("MSGtxt", posequ);
+    
+            resp = true;
+            Serial.println("Mensagem finalizada");
+        } 
+        else 
+        {
+            // Caso "MENSAGEM=" não esteja no buffer
+            posequ[0] = '\0'; // Inicializa como string vazia
+            Serial.println("Caractere '=' não encontrado no Buffer.");
+            resp = false;
+        }
+    
+        // Inicializa a flag de comando como falsa
+        // flgComando = false;
+        FinalizaCOMANDO();
+    }  
+    if (strstr(Buffer, "MSGSTOP=") != nullptr) {
+        flgComando = true;
+        char sMSG1[20]; // Buffer para armazenar a mensagem
+        memset(sMSG1, '\0', sizeof(sMSG1)); // Garante que a string está zerada
+    
+        Serial.println(F("Achou MENSAGEM"));
+    
+        // Encontra o '=' na string e avança um caractere
+        char *posequ = strstr(Buffer, "=");
+        
+        if (posequ != nullptr) { // Verifica se encontrou '=' antes de acessar a memória
+            posequ++; // Avança para o conteúdo após '='
+    
+            // Copia o conteúdo para sMSG1 sem ultrapassar seu tamanho máximo
+            strncpy(sMSG1, posequ, sizeof(sMSG1) - 1);
+            sMSG1[sizeof(sMSG1) - 1] = '\0'; // Garante terminação segura da string
+    
+            Serial.print(F("sMSG1="));
+            Serial.println(sMSG1);
+    
+            // Chama a função NextionMensageSTOP passando a mensagem extraída
+            NextionMensageSTOP(String(sMSG1));
+    
+            Serial.println(F("Mensagem finalizada"));
+            resp = true;
+        } else {
+            Serial.println(F("Erro: '=' não encontrado na mensagem"));
+            resp = false;
+        }
+    
+        // Finaliza o comando
+        FinalizaCOMANDO();
     }
-
     //Run(String Arquivo)c
     //Roda o script
     if (strcmp( Buffer, "RUN(") == 0)
@@ -2463,9 +2719,9 @@ void KeyCMD()
         resp = true;
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
-
     if (strncmp("RELE01=", Buffer, 6) == 0)
     {
       flgComando = true;
@@ -2487,9 +2743,9 @@ void KeyCMD()
       }
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
-    }
-    
+      //flgComando = false;
+      FinalizaCOMANDO();
+    }    
     if (strncmp("RELE02=", Buffer, 6) == 0)
     {
       flgComando = true;
@@ -2511,9 +2767,9 @@ void KeyCMD()
       }
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
-
     //SENSOR
     if(strstr( Buffer, "SENSOR\n")!= 0)
     {
@@ -2521,11 +2777,9 @@ void KeyCMD()
       MostraTemperatura();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
-
- 
-
     //BeepMsg
     if (strcmp( Buffer, "BEEPMSG=") == 0)
     {
@@ -2535,7 +2789,6 @@ void KeyCMD()
       Serial.println(";");
       resp = true;
     }
-
     //RETORNOCARRO - INICIO de curso posicao
     if (strcmp( Buffer, "RETORNOCARRO\n") == 0)
     {
@@ -2544,7 +2797,6 @@ void KeyCMD()
       RetornoCarro();
       resp = true;
     }
-
     //Calibracao - INICIO de curso posicao
     if (strcmp( Buffer, "CALIBRACAO\n") == 0)
     {
@@ -2553,8 +2805,6 @@ void KeyCMD()
       Calibracao();
       resp = true;
     }
-
-
     //POSFIMCARRO - Final de curso posicao do carro
     if (strcmp( Buffer, "POSFIMCARRO\n") == 0)
     {
@@ -2562,11 +2812,7 @@ void KeyCMD()
       Serial.println("POSFIMCARRO");      
       PosFimCarro();
       resp = true;
-    }
-    
-
-
-
+    } 
     //POSFIMSERVA - FIM de curso posicao
     if (strcmp( Buffer, "POSFIMSERVA\n") == 0)
     {
@@ -2575,8 +2821,6 @@ void KeyCMD()
       Serial.println(posFIMSERVA);
       resp = true;
     }
-   
-
     //BeepMsg
     if (strstr( Buffer, "READ=") != 0)
     {
@@ -2608,11 +2852,9 @@ void KeyCMD()
         resp = true;
       }
       // Inicializa a flag de comando como falsa
-      flgComando = false;
-      
+      //flgComando = false;
+      FinalizaCOMANDO();      
     }
-
-
     //MOPERACAO
     if (strcmp( Buffer, "MOPERACAO\n") == 0)
     {
@@ -2620,9 +2862,9 @@ void KeyCMD()
       MOPERACAO();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;      
+      //flgComando = false;    
+      FinalizaCOMANDO();  
     }
-
     //MCONFIG Menu de Setup
     if (strcmp( Buffer, "MCONFIG\n") == 0)
     {
@@ -2630,7 +2872,8 @@ void KeyCMD()
       MCONFIG();
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
+      //flgComando = false;
+      FinalizaCOMANDO();
     }
     //MDEFAULT
     if (strcmp( Buffer, "MDEFAULT\n") == 0)
@@ -2641,11 +2884,9 @@ void KeyCMD()
       //Imprime(3, "Ja em Default");
       resp = true;
       // Inicializa a flag de comando como falsa
-      flgComando = false;
-    }
-
-   
-
+      //flgComando = false;
+      FinalizaCOMANDO();
+    }  
     //Verifica se houve comando valido
     if (resp == false)
     {
@@ -2660,9 +2901,9 @@ void KeyCMD()
     {
       //strcpy(BufferKeypad,'\0');
       memset(Buffer, 0, sizeof(Buffer));
+      Serial.println("Comando processado");
     }
   }
-
 }
 
 //Analisa Entrada de Informacoes de Entrada
@@ -2678,17 +2919,16 @@ void Le_Serial()
   while (Serial.available() > 0)
   {
     key = Serial.read();
+    //Serial.print(key);
 
     if (key != 0)
     {
-      Serial.print(key);
+      //Serial.print(key);
       //BufferKeypad += key;
       sprintf(Buffer, "%s%c", Buffer, key);
     }
   }
 }
-
-
 
 void Le_Serial1() {
     char key;
@@ -2701,16 +2941,16 @@ void Le_Serial1() {
         // Armazena os bytes lidos no buffer
         buffer[index++] = key;
 
-        // Verifica se recebemos a sequ�ncia completa (3 bytes iniciais + ID da p�gina + 3 bytes finais)
+        // Verifica se recebemos a sequencia completa (3 bytes iniciais + ID da p?gina + 3 bytes finais)
         if (index >= 7) {
-            // Verifica se a mensagem corresponde � mudan�a de p�gina
+            // Verifica se a mensagem corresponde a mudanca de pagina
             if (buffer[0] == 0x00 && buffer[1] == 0x00 && buffer[2] != 0xFF) {
-                // Extra�mos o ID da p�gina (4� byte)
+                // Extra?mos o ID da p?gina (4? byte)
                 int pageId = buffer[2];
                 Serial.print("Tela mudada para ID: ");
                 Serial.println(pageId);
 
-                // Se voc� quiser exibir o nome da tela, pode associar o ID da p�gina ao nome
+                // Se voc? quiser exibir o nome da tela, pode associar o ID da p?gina ao nome
                 switch (pageId) {
                     case 0:
                         Serial.println(F("Tela: Home"));
@@ -2718,100 +2958,137 @@ void Le_Serial1() {
                     case 1:
                         Serial.println(F("Tela: Configuracoes"));
                         break;
-                    // Adicione outros casos para suas telas conforme necess�rio
+                    // Adicione outros casos para suas telas conforme necess?rio
                     default:
                         Serial.println(F("Tela: Desconhecida"));
                         break;
                 }
             }
-
-            // Reinicia o �ndice do buffer para capturar a pr�xima mensagem
+            // Reinicia o ?ndice do buffer para capturar a pr?xima mensagem
             index = 0;
         }
     }
 }
 
+// Função que analisa a mensagem recebida do módulo
+bool AnalisaModulo1() {
+  char *ptrFimLinha = strchr(bufferserial2, '\n'); // Verifica se há uma nova linha no buffer
 
+  if (ptrFimLinha != NULL) {
+    *ptrFimLinha = '\0'; // Termina a string na posição do '\n'
+   
+    // Copia a linha para uma variável temporária
+    char linha[128]; // Ajuste o tamanho conforme necessário
+    strncpy(linha, bufferserial2, sizeof(linha) - 1);
+    linha[sizeof(linha) - 1] = '\0'; // Garante que a string é terminada corretamente
+    Serial.print("MODULO1:");
+    Serial.println(linha);
+    // Remove a linha processada do buffer, deixando apenas o que ainda não foi processado
+    memmove(bufferserial2, ptrFimLinha + 1, strlen(ptrFimLinha + 1) + 1);
 
+    // Verifica se a linha contém "flgComando=false"
+    if (strstr(linha, "flgComando=false") != NULL) {
+      flgModulo = false;
+      Serial.println("Achou flgModulo = false");
+      FinalizaCOMANDO();
+      return true;
+    }
+  }
 
-// Função para enviar mensagem para Serial2
-void EnviaParaSerial2(const char* mensagem) 
-{
-    Serial.print("mensagem:");
-    Serial.println(mensagem);
-    Serial2.println(mensagem);
-    //Serial2.print("\n\r");
+  return false;
+}
+
+bool AnalisaModulo2() {
+  char *ptrFimLinha = strchr(bufferserialMod2, '\n'); // Verifica se há uma nova linha no buffer
+
+  if (ptrFimLinha != NULL) {
+    *ptrFimLinha = '\0'; // Termina a string na posição do '\n'
+   
+    // Copia a linha para uma variável temporária
+    char linha[128]; // Ajuste o tamanho conforme necessário
+    strncpy(linha, bufferserialMod2, sizeof(linha) - 1);
+    linha[sizeof(linha) - 1] = '\0'; // Garante que a string é terminada corretamente
+    Serial.print("MODULO2:");
+    Serial.println(linha);
+    // Remove a linha processada do buffer, deixando apenas o que ainda não foi processado
+    memmove(bufferserialMod2, ptrFimLinha + 1, strlen(ptrFimLinha + 1) + 1);
+
+    // Verifica se a linha contém "flgComando=false"
+    if (strstr(linha, "flgComando=false") != NULL) {
+      flgModulo = false;
+      Serial.println("Achou flgModulo = false");
+      FinalizaCOMANDO();
+      return true;
+    }
+  }
+
+  return false;
 }
 
 
 void Le_Serial2() 
 {
-  // Buffer local, fica dentro da função.
-  // A cada vez que você entra na função, ele inicia vazio.
-  char bufferprint[1000];  // Ajuste o tamanho conforme necessário
-  size_t pos = 0;         // Índice de escrita
-
-  // Enquanto houver dados na Serial2, faça a leitura
-  while (Serial2.available() > 0) 
+  char key;
+  while (Serial2.available() > 0)
   {
-    char key = Serial2.read();
-    Serial.print(key);
-    // Ignora '\r' (caractere de retorno de carro).
-    // Em muitos casos (Windows), as quebras de linha chegam como "\r\n"
-    if (key == '\r') {
-      continue; 
-    }
+    key = Serial2.read();
+    
 
-    // Se chegar '\n', significa que finalizamos uma linha
-    if (key == '\n') {
-      // Finaliza a string em C, colocando \0
-      bufferprint[pos] = '\0';
-      
-      // Chama a função que espera um char*
-      //ImprimeMedio(bufferprint);
-      //ImprimePequeno(bufferprint);
-
-      // Exemplos de debug:
-      Serial.println();
-      Serial.print("MODULO1:");
-      //Serial.println(bufferprint);
-
-      // Zera o índice do buffer para começar uma nova linha
-      pos = 0;
-    }
-    else 
+    if (key != 0)
     {
-     
-      // Se ainda houver espaço no buffer
-      if (pos < (sizeof(bufferprint) - 1)) {
-        bufferprint[pos] = key;  // Armazena o caractere
-        pos++;
-        
-        // Opcional: imprimir no Serial
-        //Serial.print(key); 
-      } 
-      else 
-      {
-        // Caso o buffer esteja cheio, trate como achar melhor.
-        // Aqui, vamos: 
-        // 1) Fechar a string
-        // 2) Enviar para ImprimeMedio
-        // 3) Avisar overflow
-        // 4) Resetar o buffer
-        
-//MODULO1:pH calculado: 0
-
-//MODULO1:Temperatura (Etemp): 5
-
-        ImprimePequeno(bufferprint);
-        bufferprint[pos] = '\0';
-        Serial.println(F("\n[WARN] Buffer cheio, resetando..."));
-        pos = 0;
-      }
+      //Serial.print(key);
+      //BufferKeypad += key;
+      sprintf(bufferserial2, "%s%c", bufferserial2, key);
     }
   }
 }
 
+void Le_SerialMod2() {
+  char key;
+  while (SerialMod2.available() > 0) {
+    key = SerialMod2.read();
+    
+    if (key != 0) {
+      // Acumula os caracteres lidos no buffer
+      sprintf(bufferserialMod2, "%s%c", bufferserialMod2, key);
+    }
+  }
+}
+
+
+/*
+void AguardaRetornoSerial2()
+{
+    while(flgModulo == true)
+    {      
+      Le_Serial2();      
+    }
+    //Serial2.print("\n\r");
+    Serial.print("Finalizou o bloco!");
+}
+*/
+
+// Função para enviar mensagem para Serial2
+void EnviaParaSerialMod1(const char* mensagem) 
+{
+    Serial.print("mensagem:");
+    Serial.println(mensagem);
+    Serial2.println(mensagem);
+    flgModulo = true;  // Certifique-se de que flgModulo está declarado globalmente
+    //delay(100);
+    //AguardaRetornoSerial2();  
+}
+
+// Função para enviar mensagem para Serial2
+void EnviaParaSerialMod2(const char* mensagem) 
+{
+    Serial.print("mensagem:");
+    Serial.println(mensagem);
+    SerialMod2.println(mensagem);
+    flgModulo = true;  // Certifique-se de que flgModulo está declarado globalmente
+    //delay(100);
+    //AguardaRetornoSerial2();  
+}
 
 
 void Le_DHT22()
@@ -2864,25 +3141,36 @@ void Le_DHT22()
 
 void Le_FimCurso()
 {  
-  flgFIMA1 = digitalRead(pinFIMA1)!=HIGH?HIGH:LOW;  
-  flgFIMA2 = digitalRead(pinFIMA2)!=HIGH?HIGH:LOW;
-  flgFIMB1 = digitalRead(pinFIMB1)!=HIGH?HIGH:LOW;
-  flgFIMB2 = digitalRead(pinFIMB2)!=HIGH?HIGH:LOW;
-  flgFIMC1 = digitalRead(pinFIMC1)!=HIGH?HIGH:LOW;
-  flgFIMC2 = digitalRead(pinFIMC2)!=HIGH?HIGH:LOW;  
-  if(lastflgFIMA1!=flgFIMA1)
+  flgFIMA1 = digitalRead(pinFIMA1) != HIGH ? HIGH : LOW;  
+  flgFIMA2 = digitalRead(pinFIMA2) != HIGH ? HIGH : LOW;
+  flgFIMB1 = digitalRead(pinFIMB1) != HIGH ? HIGH : LOW;
+  flgFIMB2 = digitalRead(pinFIMB2) != HIGH ? HIGH : LOW;
+  flgFIMC1 = digitalRead(pinFIMC1) != HIGH ? HIGH : LOW;
+  flgFIMC2 = digitalRead(pinFIMC2) != HIGH ? HIGH : LOW;  
+
+  if (lastflgFIMA1 != flgFIMA1)
   {
      Serial.print("flgFIMA1=");  
-     Serial.println(flgFIMA1==HIGH?"ON":"OFF");
-     posSERVA = 0;
-     Serial.print("posSERVA=");
+     Serial.println(flgFIMA1 == HIGH ? "ON" : "OFF");
+
+     // Apenas zera o posSERVA se ele estiver em um valor alto, garantindo que ele não seja resetado erroneamente
+     if (flgFIMA1 == HIGH && posSERVA > 50) 
+     {
+        posSERVA = 0;  
+        Serial.println("posSERVA RESETADO!");
+     }
+
+     Serial.print("POSSERVA=");
      Serial.println(posSERVA);
      lastflgFIMA1 = flgFIMA1;
   }
-  if(lastflgFIMA2!=flgFIMA2)
+
+  if (lastflgFIMA2 != flgFIMA2)
   {
-    Serial.print("flgFIMA2=");  Serial.println(flgFIMA2==HIGH?"ON":"OFF");
-    posFIMSERVA = posSERVA;
+    Serial.print("FLGFIMA2=");  
+    Serial.println(flgFIMA2 == HIGH ? "ON" : "OFF");
+    
+    posFIMSERVA = posSERVA; // Isso pode estar causando erro, pois pode salvar um valor inconsistente
     Serial.print("POSFIMSERVA=");
     Serial.println(posFIMSERVA);
     lastflgFIMA2 = flgFIMA2;
@@ -2900,6 +3188,7 @@ void Leituras()
   Le_Serial();
   Le_Serial1();
   Le_Serial2();
+  Le_SerialMod2();
   
   Le_DHT22();
   Le_FimCurso();
@@ -2918,7 +3207,7 @@ void MostraTemperatura()
 //Imprime Retorno de Console
 void RetConsole()
 {
-  //Serial ÃƒÂ© padrao para todos os retornos
+  //Serial  padrao para todos os retornos
   Serial.println("$>");
 }
 
@@ -2927,6 +3216,8 @@ void loop()
   Leituras();
   Move_Servo_Incremental(); // Executa movimentos incrementais para todos os servos
   Analisa();
+  AnalisaModulo1(); //Modulo 1
+  AnalisaModulo2(); //Modulo 2
   contciclo = contciclo+1;
   
   if  (contciclo > MAXCICLO) //Modulo de contagem de ciclos
