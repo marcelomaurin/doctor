@@ -3,6 +3,15 @@
 #include <DallasTemperature.h>
 #include <OneWire.h>
 #include <SoftwareSerial.h>
+#include <EEPROM.h>
+
+// Definição dos endereços na EEPROM para cada valor (cada float ocupa 4 bytes)
+#define EEPROM_ADDR_PH7   0
+#define EEPROM_ADDR_PH4   4
+#define EEPROM_ADDR_PH10  8
+
+#define TEMPODELAY 5000
+
 
 // Mapa de pinos
 #define pin_IN1 A0       // Pino IN1 do ULN2003
@@ -10,35 +19,40 @@
 #define pin_IN3 A2       // Pino IN3 do ULN2003
 #define pin_IN4 A3       // Pino IN4 do ULN2003
 #define pin_FIMCURSO 5   // Pino do sensor de fim de curso
+#define pin_TEMP A4
+#define  pin_PH A5
+#define OFFSET 0.8
+
 
 // Definição dos pinos para a SoftwareSerial
 #define RX_PIN 9
 #define TX_PIN 11
 
-// Sensores
-#define pin_PH A5        // Pino do sensor de pH
-#define pin_TEMP A6      // Pino do sensor de temperatura
+
+
+
 #define pin_ONEWIRE A4   // Pino para o barramento 1-Wire (temperatura)
 
 //2048
 #define PASSOS_POR_VOLTA 128 // Número total de passos para o motor de passo ULN2003
 
-#define VERSAO "0.7"          // Versão do módulo
-
-
+#define VERSAO "0.9"          // Versão do módulo
 
 #define TEMPO_DEBOUNCE 50     // Tempo para debounce (em ms)
+
+OneWire oneWire(pin_TEMP);
+DallasTemperature sensors(&oneWire);
 
 
 // Instância da SoftwareSerial
 SoftwareSerial serialSoftware(RX_PIN, TX_PIN);
 
-long NUM_PASSOS = 50;         // Número de passos por comando
-long FIM_CURSO = 17000;       //Posicao final do curso
+long NUM_PASSOS = 400;         // Número de passos por comando
+long FIM_CURSO = 9800;       //Posicao final do curso
 
 
 char buffer[300] ={0};           // Buffer para dados recebidos da serial
-size_t buffer_pos = 0; // Posição atual no buffer
+size_t buffer_pos = 0; // Posição atuRETCARRO al no buffer
 
 //Flags de controle
 bool flagMoverLong = false;    // Controle de movimento Longo
@@ -46,6 +60,8 @@ bool flagMoverDir = false;    // Controle de movimento para a direita
 bool flagMoverEsq = false;    // Controle de movimento para a esquerda
 bool flagRetCarro = false; // Controle de retorno do carro
 bool flagMoverFimCursoEsq = false; // Novo flag para o comando MOVERFIMCURSOESQ
+
+bool flgComando = false; // Flag que indica se um comando está em execução
 
 int estadoAtualFimCurso = -1;
 
@@ -61,13 +77,18 @@ int flgCallModulo = 0; //Chamada de modulo de CallModulo
 float Etemp = 0; //Temperatura
 float pHValue = 0; //PH
 
-// Instâncias
-OneWire oneWire(pin_ONEWIRE);
-DallasTemperature sensors(&oneWire);
+
 
 // Cria uma instância do motor de passo
 Stepper motor(PASSOS_POR_VOLTA, pin_IN1, pin_IN3, pin_IN2, pin_IN4);
 
+
+const float VREF = 5.0;  // Tensão de referência do Arduino
+const int ADC_RES = 1023; // Resolução do ADC (10 bits)
+
+float calibracao_ph7 = 4.15;   // Tensão obtida em solução de calibração pH 7
+float calibracao_ph4 = 4.71;   // Tensão obtida em solução de calibração pH 4
+float calibracao_ph10 = 3.75;  // Tensão obtida em solução de calibração pH 10
 
 //Funcoes
 void MoverLongEsq();
@@ -78,30 +99,81 @@ void MoverRetCarro();
 void MoverFimCursoEsq();
 void WaitModulo();
 void RetModulo();
+void FinalizaCOMANDO();
+void salvarCalibracoes();
+void carregarCalibracoes();
 
 
+// -----------------------------------------------------------------------
+
+// Função para salvar os valores de calibração na EEPROM
+void salvarCalibracoes() {
+  EEPROM.put(EEPROM_ADDR_PH7, calibracao_ph7);
+  EEPROM.put(EEPROM_ADDR_PH4, calibracao_ph4);
+  EEPROM.put(EEPROM_ADDR_PH10, calibracao_ph10);
+  EnviarSerialLn("Calibrações salvas na EEPROM.");
+}
+
+// Função para carregar os valores de calibração da EEPROM
+void carregarCalibracoes() {
+  EEPROM.get(EEPROM_ADDR_PH7, calibracao_ph7);
+  EEPROM.get(EEPROM_ADDR_PH4, calibracao_ph4);
+  EEPROM.get(EEPROM_ADDR_PH10, calibracao_ph10);
+  EnviarSerialLn("Calibrações carregadas da EEPROM:");
+  EnviarSerial("calibracao_ph7: ");
+  EnviarSerialLn(calibracao_ph7);
+  EnviarSerial("calibracao_ph4: ");
+  EnviarSerialLn(calibracao_ph4);
+  EnviarSerial("calibracao_ph10: ");
+  EnviarSerialLn(calibracao_ph10);
+}
+
+
+void FinalizaCOMANDO()
+{
+  flgComando = false;
+  EnviarSerialLn(" ");
+  EnviarSerialLn("flgComando=false");
+  //delay(100);
+}
 
 // Função para enviar dados para a Serial padrão e SoftwareSerial
 void EnviarSerial(const String& mensagem) {
     Serial.print(mensagem);
     serialSoftware.print(mensagem);
+    
 }
 
 // Função para enviar dados para a Serial padrão e SoftwareSerial
 void EnviarSerial(int info) {
     Serial.print(info);
     serialSoftware.print(info);
+    
 }
 
 void EnviarSerialLn(const String& mensagem) {
     Serial.println(mensagem);
     serialSoftware.println(mensagem);
+    delay(100);
     
 }
 
 void EnviarSerialLn(int info) {
     Serial.println(info);
     serialSoftware.println(info);
+    delay(100);
+}
+
+void EnviarSerial(float info) {
+    Serial.print(info, 3);            // Mostra com 3 casas decimais
+    serialSoftware.print(info, 3);    // Também na SoftwareSerial
+    delay(100);
+}
+
+void EnviarSerialLn(float info) {
+    Serial.println(info, 3);            // Mostra com 3 casas decimais
+    serialSoftware.println(info, 3);    // Também na SoftwareSerial
+    delay(100);
 }
 
 
@@ -132,7 +204,7 @@ void WellCome() {
     EnviarSerialLn(F("Modulo de controle de PH do sistema DOCTOR"));
     EnviarSerialLn(F("Autor: Marcelo Maurin Martins"));
     EnviarSerial(F("Versao: "));
-    EnviarSerialLn(VERSAO); // VERSAO já está armazenado em PROGMEM
+    EnviarSerialLn(VERSAO); // VERSAO já esta armazenado em PROGMEM
     EnviarSerialLn(F("===================================="));
 }
 
@@ -143,22 +215,23 @@ void HelpComandos() {
     EnviarSerialLn(F("MOVERLONGDIR     - Move o motor longamente para a direita."));
     EnviarSerialLn(F("MOVERESQ         - Move o motor para a esquerda."));
     EnviarSerialLn(F("MOVERLONGESQ     - Move o motor longamente para a esquerda."));
-    EnviarSerialLn(F("MOVERFIMCURSOESQ - Move o motor até o fim de curso à esquerda."));
+    EnviarSerialLn(F("MOVERFIMCURSOESQ - Move o motor ate o fim de curso a esquerda."));
     EnviarSerialLn(F("RETCARRO         - Retorna o carro ao ponto inicial."));
     EnviarSerialLn(F("LEITURA_PH       - Exibe o valor de pH atual."));
     EnviarSerialLn(F("LEITURA_TEMP     - Exibe a temperatura atual."));
-    EnviarSerialLn(F("ATIVA_PH         - Ativa a leitura contínua de pH."));
-    EnviarSerialLn(F("DESATIVA_PH      - Desativa a leitura contínua de pH."));
-    EnviarSerialLn(F("CALIBRAR         - Inicia a calibração geral."));
-    EnviarSerialLn(F("CALIBRARPH4      - Inicia a calibração com solução de pH 4."));
-    EnviarSerialLn(F("CALIBRARPH7      - Inicia a calibração com solução de pH 7."));
-    EnviarSerialLn(F("CALIBRARPH10     - Inicia a calibração com solução de pH 10."));
-    EnviarSerialLn(F("ENXAGUE          - Inicia o processo de enxágue."));
+    EnviarSerialLn(F("ATIVA_PH         - Ativa a leitura continua de pH."));
+    EnviarSerialLn(F("DESATIVA_PH      - Desativa a leitura continua de pH."));
+    EnviarSerialLn(F("CALIBRAR         - Inicia a calibracao geral."));
+    EnviarSerialLn(F("CLBPH4           - Inicia a calibracao com solucao de pH 4."));
+    EnviarSerialLn(F("CLBPH7           - Inicia a calibracao com solucao de pH 7."));
+    EnviarSerialLn(F("CLBPH10          - Inicia a calibracao com solucao de pH 10."));
+    EnviarSerialLn(F("ENXAGUE          - Inicia o processo de enxague."));
     EnviarSerialLn(F("CALLMODULO       - Inicia o processo de analise."));
     EnviarSerialLn(F("WAITMODULO       - Mostra se processo acabou."));
     EnviarSerialLn(F("RETMODULO        - Mostra resultado obtido."));
     EnviarSerialLn(F("MAN              - Exibe esta lista de comandos."));
     EnviarSerialLn(F("====================================="));
+    FinalizaCOMANDO();
 }
 
 
@@ -170,8 +243,8 @@ void LerFimCurso() {
             estadoAnteriorFimCurso = estadoAtualFimCurso;
             ultimoTempoFimCurso = millis();
 
-            EnviarSerial(F("Estado atual do fim de curso: "));
-            EnviarSerialLn(estadoAtualFimCurso);
+            EnviarSerial(F("FLGFIMM1="));
+            EnviarSerialLn(estadoAtualFimCurso?'ON':'OFF');
 
             if (estadoAtualFimCurso == LOW) {
                 //ERRO_SISTEMA("Fim de curso acionado. Parando o motor.");
@@ -180,6 +253,7 @@ void LerFimCurso() {
                 flagMoverLong = false;
                 passosDados = 0;
                 contadorpassosDados = 0;
+                FinalizaCOMANDO();
             } else {
                 EnviarSerialLn(F("Fim de curso liberado. Movimento permitido."));
             }
@@ -187,68 +261,204 @@ void LerFimCurso() {
     }
 }
 
-// Função para ler o sensor de pH
-float LerPH() {
-    int leitura = analogRead(pin_PH);
-    float phVoltage = leitura * (5.0 / 1023.0);
-    float phValue = -5.70 * phVoltage + 21.34; // Ajuste conforme calibração
-    return phValue;
+void LerTemp() {
+    sensors.requestTemperatures(); // Solicita a leitura do sensor
+    Etemp = sensors.getTempCByIndex(0); // Obtém a temperatura em graus Celsius
+
+    // Se a leitura falhar, DS18B20 retorna -127°C
+    if (Etemp == -127.0) {
+        Serial.println("Erro na leitura do sensor DS18B20!");
+        return;
+    }
+
+    float Etemp = 23.56;  // Exemplo de valor
+    char tempString[10];  // Buffer para a string
+    
+    // Converte o float para string com largura mínima de 4 e 2 casas decimais
+    dtostrf(Etemp, 4, 2, tempString);
+    
+    EnviarSerial("Temperatura: ");
+    EnviarSerial(tempString);
+    EnviarSerialLn(" °C");
+}
+
+float CorrecaoParabolica(float phMedido) {
+    float a = 0.0583;
+    float b = -0.8667;
+    float c = 0.3333;
+
+    // Proteção para garantir que está no intervalo 0 a 14
+    if (phMedido < 0) phMedido = 0;
+    if (phMedido > 14) phMedido = 14;
+
+    float ajuste = a * phMedido * phMedido + b * phMedido + c;
+    // somente valores positivos
+    if(ajuste<0) 
+    {
+      ajuste = 0;
+    }
+    return ajuste;
+}
+
+float CalcularOffset(float phMedido) {
+    // Limita primeiro!
+    if (phMedido < 0) phMedido = 0;
+    if (phMedido > 14) phMedido = 14;
+
+    float m = 0.0050;
+    float b = 0.020;
+
+    float offset = m * phMedido + b + CorrecaoParabolica(phMedido);
+    if(offset>0) 
+    {
+      offset = 0;
+    }
+    Serial.print("offset: ");
+    Serial.println(offset, 3);
+    return offset;
 }
 
 
-void CalibrarPH4() {
-    EnviarSerialLn(F("Iniciando calibração com solução pH 4..."));
+float LerPH(float temperatura) {
+    const int numAmostras = 20; 
+    long somaLeituras = 0;
+    delay(TEMPODELAY);
 
-    // Ler o valor do sensor de pH
-    int leituraPH = analogRead(pin_PH);
-    float phVoltage = leituraPH * (5.0 / 1023.0);
+    for (int i = 0; i < numAmostras; i++) {  
+        int leitura = analogRead(pin_PH);
+        somaLeituras += leitura;
+        delay(500);
+    }
 
-    // Ajustar o coeficiente de calibração para pH 4
-    float calibPH4 = 4.0 / phVoltage; // Exemplo: ajuste o valor conforme necessário
+    float valorMedio = somaLeituras / float(numAmostras); 
+    float tensao = (valorMedio * 5.0) / 1023.0; 
 
-    EnviarSerial(F("Tensão medida: "));
-    EnviarSerialLn(phVoltage);
-    EnviarSerial(F("Coeficiente ajustado para pH 4: "));
-    EnviarSerialLn(calibPH4);
+    Serial.print("Voltagem: ");
+    Serial.println(tensao, 3);
 
-    EnviarSerialLn(F("Calibração para pH 4 concluída."));
+    // Verifica se os valores de calibração são válidos
+    if (calibracao_ph7 == 0.0 || calibracao_ph4 == 0.0 || calibracao_ph10 == 0.0) {
+        Serial.println("Erro: Calibração inválida!");
+        return -1.0;
+    }
+
+    // Determina a inclinação entre os pontos de calibração
+    float slope = (10.0 - 4.0) / (calibracao_ph10 - calibracao_ph4); 
+    float intercept = 7.0 - (slope * calibracao_ph7);
+
+    // Cálculo do pH
+    float phMedido = slope * tensao + intercept;
+    Serial.print("phMedido: ");
+    Serial.println(phMedido, 3);
+
+    // Compensação de temperatura
+    //float phCorrigido = (phMedido + ((Etemp - 25.0) / 10.0) * 0.025);
+    float phCorrigido = (phMedido + ((Etemp - 25.0) / 10.0) * 0.03);
+    Serial.print("phCorrigido1: ");
+    Serial.println(phCorrigido, 3);
+    phCorrigido = phCorrigido+CalcularOffset(phMedido);
+    
+
+    //Serial.print("pH Medido:");
+    //Serial.println(phMedido, 2);
+    
+    Serial.print("Temperliq:");
+    Serial.println(temperatura);
+    Serial.print("PH Medido:");
+    Serial.println(phCorrigido, 2);
+
+    return phCorrigido;
 }
 
-void CalibrarPH7() {
-    EnviarSerialLn(F("Iniciando calibração com solução pH 7..."));
 
-    // Ler o valor do sensor de pH
-    int leituraPH = analogRead(pin_PH);
-    float phVoltage = leituraPH * (5.0 / 1023.0);
 
-    // Ajustar o coeficiente de calibração para pH 7
-    float calibPH7 = 7.0 / phVoltage; // Exemplo: ajuste o valor conforme necessário
 
-    EnviarSerial(F("Tensão medida: "));
-    EnviarSerialLn(phVoltage);
-    EnviarSerial(F("Coeficiente ajustado para pH 7: "));
-    EnviarSerialLn(calibPH7);
+float CalibrarPH4() {
+    const int numAmostras = 20; 
+    int somaLeituras = 0;
+    delay(TEMPODELAY);
+    for (int i = 0; i < numAmostras; i++) {  
+        int leitura = analogRead(pin_PH);
+        somaLeituras += leitura; // Soma os valores corretamente
+        Serial.print("Leitura ");
+        Serial.print(i + 1);
+        Serial.print(": ");
+        Serial.println(leitura);
+        delay(500);
+    }
 
-    EnviarSerialLn(F("Calibração para pH 7 concluída."));
+    float valorMedio = somaLeituras / float(numAmostras); // Calcula a média correta
+    float tensao = (valorMedio * 5.0) / 1023.0; // Ajuste do divisor ADC
+
+    Serial.print("Média das Leituras: ");
+    Serial.println(valorMedio);
+    
+    Serial.print("Voltagem Final: ");
+    Serial.println(tensao, 3); // Mostra 3 casas decimais para maior precisão
+
+    calibracao_ph4 = tensao; 
+    salvarCalibracoes();
+    return tensao;
 }
 
-void CalibrarPH10() {
-    EnviarSerialLn(F("Iniciando calibração com solução pH 10..."));
 
-    // Ler o valor do sensor de pH
-    int leituraPH = analogRead(pin_PH);
-    float phVoltage = leituraPH * (5.0 / 1023.0);
+float CalibrarPH7() {
+    const int numAmostras = 20; 
+    int somaLeituras = 0;
+    delay(TEMPODELAY);
+    for (int i = 0; i < numAmostras; i++) {  
+        int leitura = analogRead(pin_PH);
+        somaLeituras += leitura; // Soma os valores corretamente
+        Serial.print("Leitura ");
+        Serial.print(i + 1);
+        Serial.print(": ");
+        Serial.println(leitura);
+        delay(500);
+    }
 
-    // Ajustar o coeficiente de calibração para pH 10
-    float calibPH10 = 10.0 / phVoltage; // Exemplo: ajuste o valor conforme necessário
+    float valorMedio = somaLeituras / float(numAmostras); // Calcula a média correta
+    float tensao = (valorMedio * 5.0) / 1023.0; // Conversão para tensão corrigida
 
-    EnviarSerial(F("Tensão medida: "));
-    EnviarSerialLn(phVoltage);
-    EnviarSerial(F("Coeficiente ajustado para pH 10: "));
-    EnviarSerialLn(calibPH10);
+    Serial.print("Média das Leituras: ");
+    Serial.println(valorMedio);
+    
+    Serial.print("Voltagem Final: ");
+    Serial.println(tensao, 3); // Mostra 3 casas decimais para maior precisão
 
-    EnviarSerialLn(F("Calibração para pH 10 concluída."));
+    calibracao_ph7 = tensao; 
+    salvarCalibracoes();
+    return tensao;
 }
+
+
+float CalibrarPH10() {
+    const int numAmostras = 6; 
+    int somaLeituras = 0;
+    delay(TEMPODELAY);
+    for (int i = 0; i < numAmostras; i++) {  
+        int leitura = analogRead(pin_PH);
+        somaLeituras += leitura; // Soma os valores corretamente
+        Serial.print("Leitura ");
+        Serial.print(i + 1);
+        Serial.print(": ");
+        Serial.println(leitura);
+        delay(500);
+    }
+
+    float valorMedio = somaLeituras / float(numAmostras); // Calcula a média correta
+    float tensao = (valorMedio * 5.0) / 1023.0; // Ajuste do divisor ADC
+
+    Serial.print("Média das Leituras: ");
+    Serial.println(valorMedio);
+    
+    Serial.print("Voltagem Final: ");
+    Serial.println(tensao, 3); // Mostra 3 casas decimais para maior precisão
+
+    calibracao_ph10 = tensao; 
+    salvarCalibracoes();
+    return tensao;
+}
+
 
 void Enxaguar() {
     EnviarSerialLn(F("Iniciando processo de enxágue..."));
@@ -276,61 +486,9 @@ void Enxaguar() {
 
         delay(1000); // Pausa entre as etapas
     }
-
+    FinalizaCOMANDO();
     EnviarSerialLn("Processo de enxágue concluído.");
 }
-
-
-// Função para ler o sensor de temperatura
-float LerTemp() {
-    int leitura = analogRead(pin_TEMP);
-    float tempVoltage = leitura * (5.0 / 1023.0);
-    float tempValue = tempVoltage * 10.0; // Ajuste conforme calibração
-    return tempValue;
-}
-
-// Função para leitura de pH e temperatura com múltiplas amostras
-void Ler_ph() {
-
-    if (!flg_PH) {
-        return; // Retorna imediatamente se o flag estiver desativado
-    }
-    float phTot = 0;
-    float temTot = 0;
-
-    // Obtendo 10 amostras com atraso de 10ms entre cada uma
-    for (int x = 0; x < 10; x++) {
-        phTot += analogRead(pin_PH);
-        temTot += analogRead(pin_TEMP);
-        delay(10);
-    }
-
-    float temAvg = temTot / 10.0;
-    float phAvg = phTot / 10.0;
-    float temVoltage = temAvg * (5000.0 / 1023.0); // Convertendo leitura para mV
-    float phVoltage = phAvg * (5.0 / 1023.0); // Convertendo leitura para mV
-
-    sensors.requestTemperatures(); // Obtendo temperaturas dos sensores 1-Wire
-    Etemp = temVoltage * 0.1; // Convertendo mV para °C
-    pHValue = phVoltage * 0.0178 + 0.1; // Ajustar os valores conforme calibração
-    float Wtemp = sensors.getTempCByIndex(0);
-    float TempDif = fabs(Etemp - Wtemp); // Diferença absoluta entre temperaturas
-
-    // Exibindo valores via Serial
-    EnviarSerial(F("pH calculado: "));
-    EnviarSerialLn(pHValue);
-    EnviarSerial(F("Temperatura (Etemp): "));
-    EnviarSerialLn(Etemp);
-    //EnviarSerial(F("Temperatura (1-Wire): "));
-    //EnviarSerialLn(Wtemp);
-    //EnviarSerial(F("Diferenca de temperatura: "));
-    //EnviarSerialLn(TempDif);
-    
-    flg_PH = 0;
-    MoverRetCarro();
-}
-
-
 
 
 void MoverLongEsq()
@@ -381,7 +539,7 @@ void MoverEsq()
 
 void MoverRetCarro()
 {
-        EnviarSerialLn(F("Comando RETCARRO recebido."));
+        EnviarSerialLn(F("ALERTA:Comando RETCARRO recebido."));
         flagMoverFimCursoEsq = false;
         flagRetCarro = true; // Ativa o movimento de retorno
         flagMoverDir = true;
@@ -430,62 +588,111 @@ void RetModulo()
 
 void ChamaComandos(const String& comando) {
     if (comando.indexOf("MOVERDIR") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         MoverDir();
     } else if (comando.indexOf("MOVERLONGDIR") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         MoverLongDir();
     } else if (comando.indexOf("MOVERESQ") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         MoverEsq();
     } else if (comando.indexOf("MOVERLONGESQ") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         MoverLongEsq();
     } else if (comando.indexOf("LEITURA_PH") != -1) {
-        EnviarSerial(F("Valor de pH: "));
-        EnviarSerialLn(LerPH());
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
+        pHValue = LerPH(Etemp);
+        EnviarSerial(F("PH:"));        
+        
+        EnviarSerialLn(pHValue);
+        EnviarSerial(F("IMPRIMIR=PH:"));
+        EnviarSerialLn(pHValue);        
+        FinalizaCOMANDO();
     } else if (comando.indexOf("LEITURA_TEMP") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         EnviarSerial(F("Temperatura: "));
-        EnviarSerialLn(LerTemp());
+        LerTemp();
+        EnviarSerialLn(Etemp);
+        EnviarSerial(F("IMPRIMIR=Temperatura:"));
+        EnviarSerialLn(Etemp);
     } else if (comando.indexOf("ATIVA_PH") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         flg_PH = true; // Ativa a leitura de pH
         EnviarSerialLn(F("Leitura de pH ativada."));
+        FinalizaCOMANDO();
     } else if (comando.indexOf("DESATIVA_PH") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
+        EnviarSerialLn(F("CMD OK"));
         flg_PH = false; // Desativa a leitura de pH
         EnviarSerialLn(F("Leitura de pH desativada."));
+        FinalizaCOMANDO();
     } else if (comando.indexOf("MOVERLONGESQ") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         MoverLongEsq();
-    }  else if (comando.indexOf("MOVERFIMCURSOESQ") != -1) {
+    }  else if (comando.indexOf("MOVERFIMCURSOESQ") != -1) {        
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         MoverFimCursoEsq();
     } else if (comando.indexOf("RETCARRO") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
+        EnviarSerialLn(F("Iniciando retorno de carro."));
         MoverRetCarro();
     }  else if (comando.indexOf("CALIBRAR") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         EnviarSerialLn(F("Comando CALIBRAR recebido."));
         //ConfiguraSensorFim();
         Calibrar();
         // Insira aqui a funcionalidade para calibrar o sistema
         EnviarSerialLn(F("Iniciando calibração geral..."));
         // Exemplo: Alguma lógica de calibração pode ser adicionada
-    } else if (comando.indexOf("CALIBRARPH4") != -1) {
+    } else if (comando.indexOf("CLBPH4") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         EnviarSerialLn(F("Comando CALIBRARPH4 recebido."));
+        // Insira aqui a funcionalidade específica para calibrar o sensor de pH
+        EnviarSerialLn(F("Iniciando calibração do sensor de pH..."));
         CalibrarPH4();
-        // Insira aqui a funcionalidade específica para calibrar o sensor de pH
-        EnviarSerialLn(F("Iniciando calibração do sensor de pH..."));
-        // Exemplo: Alguma lógica de calibração de pH pode ser adicionada
-    } else if (comando.indexOf("CALIBRARPH7") != -1) {
+        FinalizaCOMANDO();
+    } else if (comando.indexOf("CLBPH7") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         EnviarSerialLn(F("Comando CALIBRARPH7 recebido."));
+        EnviarSerialLn(F("Iniciando calibração do sensor de pH..."));
         CalibrarPH7();
-        // Insira aqui a funcionalidade específica para calibrar o sensor de pH
-        EnviarSerialLn(F("Iniciando calibração do sensor de pH..."));
+        FinalizaCOMANDO();
         // Exemplo: Alguma lógica de calibração de pH pode ser adicionada
-    } else if (comando.indexOf("CALIBRARPH10") != -1) {
+    } else if (comando.indexOf("CLBPH10") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         EnviarSerialLn(F("Comando CALIBRARPH10 recebido."));
-        CalibrarPH10();
-        // Insira aqui a funcionalidade específica para calibrar o sensor de pH
         EnviarSerialLn(F("Iniciando calibração do sensor de pH..."));
+        CalibrarPH10();     
+        FinalizaCOMANDO();
         // Exemplo: Alguma lógica de calibração de pH pode ser adicionada
     }  else if (comando.indexOf("ENXAGUE") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         EnviarSerialLn(F("Comando ENXAGUE recebido."));
         Enxaguar();
     } else if (comando.indexOf("MAN") != -1) {
+        flgComando = true;
         HelpComandos(); // Chama a função de ajuda
+        FinalizaCOMANDO();
     } else if (comando.indexOf("CALLMODULO") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         EnviarSerialLn(F("Comando CALLMODULO recebido."));
         MoverFimCursoEsq();
         EnviarSerialLn(F("Posicionando sensor"));
@@ -493,17 +700,22 @@ void ChamaComandos(const String& comando) {
         EnviarSerialLn(F("flgCallModulo=ATIVO"));
         
     } else if (comando.indexOf("WAITMODULO") != -1) {
+        EnviarSerialLn(F("CMD OK"));
+        flgComando = true;
         WaitModulo();
+        FinalizaCOMANDO();      
         
     } else if (comando.indexOf("RETMODULO") != -1) {
+        flgComando = true;
         //EnviarSerialLn(F("Comando RETMODULO recebido."));
         RetModulo();
-    } else {
+    } else {        
         //ERRO_SISTEMA("Comando desconhecido recebido.");
         //Serial.println(F("Comando desconhecido recebido."));
         EnviarSerial(F("Comando desconhecido recebido"));
         EnviarSerialLn(comando);
     }
+    //FinalizaCOMANDO();
 }
 
 // Função para processar o buffer
@@ -542,6 +754,7 @@ void MoverMotor(int passos, bool horario) {
         passosDados = 0;
         EnviarSerialLn(F("flgCallModulo=INATIVO"));
         flgCallModulo = 0;
+        FinalizaCOMANDO();
         return;
     }
 
@@ -552,9 +765,18 @@ void MoverMotor(int passos, bool horario) {
         passos);
         passosDados += abs(passos);
         contadorpassosDados += (horario ? -passos : +passos);
+    } else {
+      // Movimento permitido
+      if (flagRetCarro) {
+          motor.setSpeed(75); // Define a velocidade do motor
+          motor.step(horario ? passos : -
+          passos);
+          passosDados += abs(passos);
+          contadorpassosDados += (horario ? -passos : +passos);
+      }
     }
 
-    EnviarSerial("Posição absoluta:");
+    EnviarSerial("POSSERVM=");
     EnviarSerialLn(contadorpassosDados);
 }
 
@@ -569,7 +791,7 @@ void MoverDireita() {
     }
     if(flagMoverLong)
     {
-      MoverMotor(100, true);
+      MoverMotor(NUM_PASSOS, true);
     } else {
       MoverMotor(1, true);
     }
@@ -588,6 +810,11 @@ void MoverEsquerda() {
             EnviarSerialLn(F("Iniciando Leitura de Devices."));
             flg_PH = 1;
           }
+          //MMM
+          if(flagMoverFimCursoEsq)
+          {
+            FinalizaCOMANDO();
+          }
           flagMoverEsq = false;
           flagMoverFimCursoEsq  = false;
         } else if ((passosDados >= NUM_PASSOS)&(!flagMoverFimCursoEsq )) 
@@ -599,7 +826,7 @@ void MoverEsquerda() {
         {            
             if(flagMoverLong)
             {
-              MoverMotor(100, false);
+              MoverMotor(NUM_PASSOS, false);
             } else 
             {
               MoverMotor(1, false);
@@ -629,13 +856,32 @@ void Analisar() {
           flagRetCarro = false;
           flagMoverLong = false;
           passosDados = 0;
-      } else {
+      } else 
+      {
           if(flagMoverDir)
           {
-            passosDados = 0;
-            flagMoverLong = true; 
-            flagMoverDir = true;
-            //EnviarSerialLn(F("Retornando carro..."));
+            
+            if(!flagMoverFimCursoEsq) 
+            {
+              EnviarSerialLn(passosDados);
+              if(passosDados> NUM_PASSOS)
+              {
+                passosDados = -100;
+              
+                flagMoverLong = true; 
+                flagMoverDir = true;
+              } else {
+                //EnviarSerialLn("entrou aqui");
+                passosDados = 0;
+                flagMoverLong = true; 
+                flagMoverDir = true;
+              }
+              //EnviarSerialLn(F("Retornando carro..."));
+            } else
+            {              
+              EnviarSerialLn(F("terminou"));
+              FinalizaCOMANDO();  
+            }
           }         
       }
     }
@@ -666,9 +912,10 @@ void Ler() {
     LeSerial();
     
     LerFimCurso();
+    LerTemp();
     // Chama Ler_ph apenas se o flag estiver ativo
     if (flg_PH) {
-        Ler_ph();
+        LerPH(Etemp);
     }
 }
 
@@ -681,6 +928,7 @@ void setup() {
     ConfiguraSensorFim(); 
     WellCome();
     Calibrar();
+    carregarCalibracoes();
     Serial.println('Feito!');
 }
 
