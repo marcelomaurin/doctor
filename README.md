@@ -5,7 +5,7 @@ Trabalho de Conclusão de Curso  para a faculdade de Sistemas Biomédicos da FAT
 Sistema Open Source e Open Hardware destinado a Automação de Analise Laboratorial.
 
 O sistema permite desenvolver projetos customizaveis, de forma semelhante a construção de legos.
-[Video](WhatsApp Video 2025-06-06 at 14.24.36.mp4)
+[[Video]([WhatsApp Video 2025-06-06 at 14.24.36.mp4](https://github.com/marcelomaurin/doctor/raw/refs/heads/main/WhatsApp%20Video%202025-06-06%20at%2014.24.36.mp4))](https://github.com/marcelomaurin/doctor/raw/refs/heads/main/WhatsApp%20Video%202025-06-06%20at%2014.24.36.mp4)
 
 Site do projeto
 http://maurinsoft.com.br/index.php/doctor/
